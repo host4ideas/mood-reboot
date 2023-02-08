@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace MoodReboot.Controller
+namespace MoodReboot.Controllers
 {
     public class HomeController : Controller
     {
