@@ -2,19 +2,19 @@
 
 namespace MoodReboot.Controllers
 {
-    public class UserController : Controller
+    public class AuthController : Controller
     {
-        public IActionResult Profile()
+        public IActionResult Login()
         {
             return View();
         }
 
-        public IActionResult Courses()
+        public IActionResult Logout()
         {
             return View();
         }
 
-        public IActionResult Centers()
+        public IActionResult Signup()
         {
             return View();
         }
