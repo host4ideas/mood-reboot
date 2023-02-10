@@ -8,15 +8,5 @@ namespace MoodReboot.Controllers
         {
             return View();
         }
-
-        public IActionResult Courses()
-        {
-            return View();
-        }
-
-        public IActionResult Centers()
-        {
-            return View();
-        }
     }
 }
