@@ -2,9 +2,9 @@
 
 namespace MoodReboot.Controllers
 {
-    public class UserController : Controller
+    public class MessagesController : Controller
     {
-        public IActionResult Profile()
+        public IActionResult Index()
         {
             return View();
         }
