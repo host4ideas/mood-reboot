@@ -8,11 +8,6 @@ namespace MoodReboot.Controllers
     {
         public IActionResult Home()
         {
-
-            var result = Markdown.ToHtml("This is a text with some *emphasis*");
-
-            Debug.WriteLine(result);
-
             return View();
         }
     }
