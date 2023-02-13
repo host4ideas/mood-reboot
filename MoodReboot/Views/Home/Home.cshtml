@@ -4,20 +4,24 @@
 
 <hr />
 
-<div>
-    <form asp-controller="FileUpload" asp-action="Index" enctype="multipart/form-data" method="POST">
-        <input type="file" name="file" />
-        <button type="submit" class="btn btn-primary">Save</button>
-    </form>
-</div>
+<img src="" id="img1" class="h-auto max-w-xs rounded-lg" style="display:none">
+<br>
 
-<form asp-controller="FileUpload" asp-action="Index" enctype="multipart/form-data" method="POST">
+<div id="excel_data" class="mt-5"></div>
+
+<canvas id="pdfViewer" style="max-width:200px"></canvas>
+
+<canvas id="pdf-preview"></canvas>
+@*<img class="h-auto max-w-xs rounded-lg" id="previewImg" src="/examples/images/transparent.png" alt="image description">*@
+
+<form asp-controller="FileUpload" asp-action="Index" enctype="multipart/form-data" method="POST" accept-charset="">
     <label for="chat" class="sr-only">Your message</label>
     <div class="flex items-center px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700">
-        <button type="button" class="inline-flex justify-center p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
+        <label for="hidden-file" title="Upload image" class="inline-flex justify-center p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
             <svg aria-hidden="true" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path></svg>
             <span class="sr-only">Upload image</span>
-        </button>
+        </label>
+        <input type="file" id="hidden-file" name="file" class="hidden" />
         <button type="button" class="p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
             <svg aria-hidden="true" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-.464 5.535a1 1 0 10-1.415-1.414 3 3 0 01-4.242 0 1 1 0 00-1.415 1.414 5 5 0 007.072 0z" clip-rule="evenodd"></path></svg>
             <span class="sr-only">Add emoji</span>
@@ -30,6 +34,112 @@
     </div>
 </form>
 
+@section scripts {
+    <script>
+        //  tag, create shortcut to access PDF.js exports.
+        var pdfjsLib = window['pdfjs-dist/build/pdf'];
+        // The workerSrc property shall be specified.
+        pdfjsLib.GlobalWorkerOptions.workerSrc = './js/pdfjs-3.3.122-dist/build/pdf.worker.js';
+        //pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://mozilla.github.io/pdf.js/build/pdf.worker.js';
+
+        $("#hidden-file").on("change", function (e) {
+            var file = e.target.files[0]
+
+            if (file.type == "application/pdf") {
+                var fileReader = new FileReader();
+                fileReader.onload = function () {
+                    var pdfData = new Uint8Array(this.result);
+                    // Using DocumentInitParameters object to load binary data.
+                    var loadingTask = pdfjsLib.getDocument({ data: pdfData });
+                    loadingTask.promise.then(function (pdf) {
+                        console.log('PDF loaded');
+
+                        // Fetch the first page
+                        var pageNumber = 1;
+                        pdf.getPage(pageNumber).then(function (page) {
+                            console.log('Page loaded');
+
+                            var scale = 1.5;
+                            var viewport = page.getViewport({ scale: scale });
+
+                            // Prepare canvas using PDF page dimensions
+                            var canvas = $("#pdfViewer")[0];
+                            var context = canvas.getContext('2d');
+                            canvas.height = viewport.height;
+                            canvas.width = viewport.width;
+
+                            // Render PDF page into canvas context
+                            var renderContext = {
+                                canvasContext: context,
+                                viewport: viewport
+                            };
+                            var renderTask = page.render(renderContext);
+                            renderTask.promise.then(function () {
+                                console.log('Page rendered');
+                            });
+                        });
+                    }, function (reason) {
+                        // PDF loading error
+                        console.error(reason);
+                    });
+                };
+                fileReader.readAsArrayBuffer(file);
+            }
+            //$('#excel_data').empty("");
+
+            if (file.type == "image/jpeg" || file.type == "image/png" || file.type == "image/webp" || file.type == "image/gif") {
+                document.getElementById("img1").style.display = "block";
+
+                var reader = new FileReader();
+                reader.onload = function () {
+                    var output = document.getElementById('img1');
+                    output.src = reader.result;
+                };
+                reader.readAsDataURL(e.target.files[0]);
+
+                //  $('#img1').attr("src", "");
+            }
+            if (file.type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+                var reader = new FileReader();
+
+                reader.readAsArrayBuffer(e.target.files[0]);
+
+                reader.onload = function (e) {
+
+                    var data = new Uint8Array(reader.result);
+
+                    var work_book = XLSX.read(data, { type: 'array' });
+
+                    var sheet_name = work_book.SheetNames;
+
+                    var sheet_data = XLSX.utils.sheet_to_json(work_book.Sheets[sheet_name[0]], { header: 1 });
+
+                    if (sheet_data.length > 0) {
+                        var table_output = '<table class="table table-striped table-bordered">';
+
+                        for (var row = 0; row < sheet_data.length; row++) {
+
+                            table_output += '<tr>';
+
+                            for (var cell = 0; cell < sheet_data[row].length; cell++) {
+
+                                if (row == 0) {
+                                    table_output += '<th>' + sheet_data[row][cell] + '</th>';
+                                }
+                                else {
+                                    table_output += '<td>' + sheet_data[row][cell] + '</td>';
+                                }
+                            }
+                            table_output += '</tr>';
+                        }
+                        table_output += '</table>';
+                        document.getElementById('excel_data').innerHTML = table_output;
+                    }
+                }
+            }
+        });
+    </script>
+    }
 
 @if (ViewBag.Message != null)
 {
