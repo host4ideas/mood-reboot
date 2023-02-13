@@ -1,18 +1,32 @@
 ﻿@using Markdig;
 
-<h1>Stream File Upload</h1>
+<!-- File attachment preview -->
+<div id="previewContent" class="hidden">
+    <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
 
-<hr />
+    <!-- Prev button -->
+    <button id="prev" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
+        <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+            Previous
+        </span>
+    </button>
+    <!-- Next button -->
+    <button id="next" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">
+        <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+            Next
+        </span>
+    </button>
 
-<img src="" id="img1" class="h-auto max-w-xs rounded-lg" style="display:none">
-<br>
+    <!-- Page progress bar -->
+    <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700" style="max-height:20px">
+        <div id="pageProgressBar" class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: 0%"><span id="page_num"></span> / <span id="page_count"></span></div>
+    </div>
 
-<div id="excel_data" class="mt-5"></div>
+    <!-- Preview content canvas -->
+    <canvas id="the-canvas" style="max-width:250px"></canvas>
 
-<canvas id="pdfViewer" style="max-width:200px"></canvas>
-
-<canvas id="pdf-preview"></canvas>
-@*<img class="h-auto max-w-xs rounded-lg" id="previewImg" src="/examples/images/transparent.png" alt="image description">*@
+    <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
+</div>
 
 <form asp-controller="FileUpload" asp-action="Index" enctype="multipart/form-data" method="POST" accept-charset="">
     <label for="chat" class="sr-only">Your message</label>
@@ -35,111 +49,8 @@
 </form>
 
 @section scripts {
-    <script>
-        //  tag, create shortcut to access PDF.js exports.
-        var pdfjsLib = window['pdfjs-dist/build/pdf'];
-        // The workerSrc property shall be specified.
-        pdfjsLib.GlobalWorkerOptions.workerSrc = './js/pdfjs-3.3.122-dist/build/pdf.worker.js';
-        //pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://mozilla.github.io/pdf.js/build/pdf.worker.js';
-
-        $("#hidden-file").on("change", function (e) {
-            var file = e.target.files[0]
-
-            if (file.type == "application/pdf") {
-                var fileReader = new FileReader();
-                fileReader.onload = function () {
-                    var pdfData = new Uint8Array(this.result);
-                    // Using DocumentInitParameters object to load binary data.
-                    var loadingTask = pdfjsLib.getDocument({ data: pdfData });
-                    loadingTask.promise.then(function (pdf) {
-                        console.log('PDF loaded');
-
-                        // Fetch the first page
-                        var pageNumber = 1;
-                        pdf.getPage(pageNumber).then(function (page) {
-                            console.log('Page loaded');
-
-                            var scale = 1.5;
-                            var viewport = page.getViewport({ scale: scale });
-
-                            // Prepare canvas using PDF page dimensions
-                            var canvas = $("#pdfViewer")[0];
-                            var context = canvas.getContext('2d');
-                            canvas.height = viewport.height;
-                            canvas.width = viewport.width;
-
-                            // Render PDF page into canvas context
-                            var renderContext = {
-                                canvasContext: context,
-                                viewport: viewport
-                            };
-                            var renderTask = page.render(renderContext);
-                            renderTask.promise.then(function () {
-                                console.log('Page rendered');
-                            });
-                        });
-                    }, function (reason) {
-                        // PDF loading error
-                        console.error(reason);
-                    });
-                };
-                fileReader.readAsArrayBuffer(file);
-            }
-            //$('#excel_data').empty("");
-
-            if (file.type == "image/jpeg" || file.type == "image/png" || file.type == "image/webp" || file.type == "image/gif") {
-                document.getElementById("img1").style.display = "block";
-
-                var reader = new FileReader();
-                reader.onload = function () {
-                    var output = document.getElementById('img1');
-                    output.src = reader.result;
-                };
-                reader.readAsDataURL(e.target.files[0]);
-
-                //  $('#img1').attr("src", "");
-            }
-            if (file.type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
-                var reader = new FileReader();
-
-                reader.readAsArrayBuffer(e.target.files[0]);
-
-                reader.onload = function (e) {
-
-                    var data = new Uint8Array(reader.result);
-
-                    var work_book = XLSX.read(data, { type: 'array' });
-
-                    var sheet_name = work_book.SheetNames;
-
-                    var sheet_data = XLSX.utils.sheet_to_json(work_book.Sheets[sheet_name[0]], { header: 1 });
-
-                    if (sheet_data.length > 0) {
-                        var table_output = '<table class="table table-striped table-bordered">';
-
-                        for (var row = 0; row < sheet_data.length; row++) {
-
-                            table_output += '<tr>';
-
-                            for (var cell = 0; cell < sheet_data[row].length; cell++) {
-
-                                if (row == 0) {
-                                    table_output += '<th>' + sheet_data[row][cell] + '</th>';
-                                }
-                                else {
-                                    table_output += '<td>' + sheet_data[row][cell] + '</td>';
-                                }
-                            }
-                            table_output += '</tr>';
-                        }
-                        table_output += '</table>';
-                        document.getElementById('excel_data').innerHTML = table_output;
-                    }
-                }
-            }
-        });
-    </script>
-    }
+    <script src="~/js/filePreview.js"></script>
+}
 
 @if (ViewBag.Message != null)
 {
