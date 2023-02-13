@@ -10,8 +10,4 @@
     <PackageReference Include="Markdig" Version="0.30.4" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="UploadedFiles\" />
-  </ItemGroup>
-
 </Project>
