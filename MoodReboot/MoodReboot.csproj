@@ -11,8 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="UploadedFiles\Images\" />
-    <Folder Include="UploadedFiles\Files\" />
+    <Folder Include="UploadedFiles\" />
   </ItemGroup>
 
 </Project>
