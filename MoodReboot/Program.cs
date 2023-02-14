@@ -14,7 +14,7 @@ app.UseStaticFiles();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Home}"
+    pattern: "{controller=Home}/{action=Index}"
     );
 
 app.MapHub<ChatHub>("/chatHub");
