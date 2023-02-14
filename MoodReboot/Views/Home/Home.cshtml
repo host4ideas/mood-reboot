@@ -1,8 +1,94 @@
 ﻿@using Markdig;
 
+<div id="tableDataPreview" class="hidden relative overflow-x-auto">
+    <button id="toggleExcelPreview" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
+        <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+            Toggle preview
+        </span>
+    </button>
+    <table>
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+                <th scope="col" class="px-6 py-3">
+                    Product name
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Color
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Category
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Price
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    Apple MacBook Pro 17"
+                </th>
+                <td class="px-6 py-4">
+                    Sliver
+                </td>
+                <td class="px-6 py-4">
+                    Laptop
+                </td>
+                <td class="px-6 py-4">
+                    $2999
+                </td>
+            </tr>
+            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    Microsoft Surface Pro
+                </th>
+                <td class="px-6 py-4">
+                    White
+                </td>
+                <td class="px-6 py-4">
+                    Laptop PC
+                </td>
+                <td class="px-6 py-4">
+                    $1999
+                </td>
+            </tr>
+            <tr class="bg-white dark:bg-gray-800">
+                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    Magic Mouse 2
+                </th>
+                <td class="px-6 py-4">
+                    Black
+                </td>
+                <td class="px-6 py-4">
+                    Accessories
+                </td>
+                <td class="px-6 py-4">
+                    $99
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div id="previewImage" class="hidden">
+    <button id="toggleImgPreview" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
+        <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+            Toggle preview
+        </span>
+    </button>
+    <img class="h-auto max-w-xs" id="imgImagePreview" alt="image description" />
+</div>
+
 <!-- File attachment preview -->
 <div id="previewContent" class="hidden">
     <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
+
+    <!-- Toggle preview button -->
+    <button id="togglePdfPreview" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
+        <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+            Toogle preview
+        </span>
+    </button>
 
     <!-- Prev button -->
     <button id="prev" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
@@ -22,8 +108,8 @@
         <div id="pageProgressBar" class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: 0%"><span id="page_num"></span> / <span id="page_count"></span></div>
     </div>
 
-    <!-- Preview content canvas -->
-    <canvas id="the-canvas" style="max-width:250px"></canvas>
+    <!-- Preview pdf content canvas -->
+    <canvas id="canvasPdfPreview" style="max-width:250px"></canvas>
 
     <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
 </div>
