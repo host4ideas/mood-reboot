@@ -1,4 +1,4 @@
-namespace MvcNetCoreEF.Models
+namespace MoodReboot.Models
 {
     public class ErrorViewModel
     {
