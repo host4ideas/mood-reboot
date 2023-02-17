@@ -1,3 +1,7 @@
+--TODO: When a course is deleted, delete it's related GROUP
+--TODO: When a course is deleted, delete it's related content
+
+
 CREATE OR ALTER PROCEDURE SP_CREATE_COURSE
 (@NAME NVARCHAR(30), @DESCRIPTION NVARCHAR(350) = '', @IMAGE NVARCHAR(MAX) = '')
 AS
