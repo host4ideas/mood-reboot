@@ -171,138 +171,139 @@
     </div>
 
     <!-- Chat window -->
-    <div id="chatWindow" class="fixed" style="bottom:70px; right: 40px; display: none;">
-        <div class="flex">
-            <div id="tableDataPreview" class="hidden relative overflow-x-auto">
-                <button id="toggleExcelPreview" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
-                    <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                        Toggle preview
-                    </span>
-                </button>
-                <table>
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                        <tr>
-                            <th scope="col" class="px-6 py-3">
-                                Product name
-                            </th>
-                            <th scope="col" class="px-6 py-3">
-                                Color
-                            </th>
-                            <th scope="col" class="px-6 py-3">
-                                Category
-                            </th>
-                            <th scope="col" class="px-6 py-3">
-                                Price
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                Apple MacBook Pro 17"
-                            </th>
-                            <td class="px-6 py-4">
-                                Sliver
-                            </td>
-                            <td class="px-6 py-4">
-                                Laptop
-                            </td>
-                            <td class="px-6 py-4">
-                                $2999
-                            </td>
-                        </tr>
-                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                Microsoft Surface Pro
-                            </th>
-                            <td class="px-6 py-4">
-                                White
-                            </td>
-                            <td class="px-6 py-4">
-                                Laptop PC
-                            </td>
-                            <td class="px-6 py-4">
-                                $1999
-                            </td>
-                        </tr>
-                        <tr class="bg-white dark:bg-gray-800">
-                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                Magic Mouse 2
-                            </th>
-                            <td class="px-6 py-4">
-                                Black
-                            </td>
-                            <td class="px-6 py-4">
-                                Accessories
-                            </td>
-                            <td class="px-6 py-4">
-                                $99
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+    <div id="chatWindow" class="fixed bg-blue-300 rounded p-4 max-h-72 max-w-72 dark:bg-blue-900" style="bottom:70px; right: 20px; display: none; z-index:999; overflow-y:scroll">
+        <button id="toggleExcelPreview" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
+            <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                Toggle preview
+            </span>
+        </button>
+
+        <div id="tableDataPreview" class="hidden relative overflow-x-auto max-w-36 max-h-72">
+            <table>
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th scope="col" class="px-6 py-3">
+                            Product name
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Color
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Category
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Price
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            Apple MacBook Pro 17"
+                        </th>
+                        <td class="px-6 py-4">
+                            Sliver
+                        </td>
+                        <td class="px-6 py-4">
+                            Laptop
+                        </td>
+                        <td class="px-6 py-4">
+                            $2999
+                        </td>
+                    </tr>
+                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            Microsoft Surface Pro
+                        </th>
+                        <td class="px-6 py-4">
+                            White
+                        </td>
+                        <td class="px-6 py-4">
+                            Laptop PC
+                        </td>
+                        <td class="px-6 py-4">
+                            $1999
+                        </td>
+                    </tr>
+                    <tr class="bg-white dark:bg-gray-800">
+                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            Magic Mouse 2
+                        </th>
+                        <td class="px-6 py-4">
+                            Black
+                        </td>
+                        <td class="px-6 py-4">
+                            Accessories
+                        </td>
+                        <td class="px-6 py-4">
+                            $99
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="previewImage" class="hidden">
+            <button id="toggleImgPreview" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
+                <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                    Toggle preview
+                </span>
+            </button>
+            <img class="h-auto max-w-xs" id="imgImagePreview" alt="image description" />
+        </div>
+
+        <!-- File attachment preview -->
+        <div id="previewContent" class="hidden">
+            <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
+
+            <!-- Toggle preview button -->
+            <button id="togglePdfPreview" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
+                <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                    Toogle preview
+                </span>
+            </button>
+
+            <!-- Prev button -->
+            <button id="prev" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
+                <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                    Previous
+                </span>
+            </button>
+            <!-- Next button -->
+            <button id="next" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">
+                <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                    Next
+                </span>
+            </button>
+
+            <!-- Page progress bar -->
+            <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700" style="max-height:20px">
+                <div id="pageProgressBar" class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: 0%"><span id="page_num"></span> / <span id="page_count"></span></div>
             </div>
 
-            <div id="previewImage" class="hidden">
-                <button id="toggleImgPreview" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
-                    <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                        Toggle preview
-                    </span>
-                </button>
-                <img class="h-auto max-w-xs" id="imgImagePreview" alt="image description" />
+            <!-- Preview pdf content canvas -->
+            <canvas id="canvasPdfPreview" style="max-width:250px"></canvas>
+
+            <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
+        </div>
+
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert" style="margin-top:20px">
+                @ViewBag.Message
             </div>
+        }
 
-            <!-- File attachment preview -->
-            <div id="previewContent" class="hidden">
-                <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
-
-                <!-- Toggle preview button -->
-                <button id="togglePdfPreview" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
-                    <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                        Toogle preview
-                    </span>
-                </button>
-
-                <!-- Prev button -->
-                <button id="prev" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
-                    <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                        Previous
-                    </span>
-                </button>
-                <!-- Next button -->
-                <button id="next" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">
-                    <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                        Next
-                    </span>
-                </button>
-
-                <!-- Page progress bar -->
-                <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700" style="max-height:20px">
-                    <div id="pageProgressBar" class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: 0%"><span id="page_num"></span> / <span id="page_count"></span></div>
+        <!-- Messages list -->
+        <div class="container">
+            <div class="row">&nbsp;</div>
+            <div class="row">
+                <div class="col-2 dark:text-gray-200">User</div>
+                <div class="col-4">
+                    <input type="text" id="userInput" />
                 </div>
-
-                <!-- Preview pdf content canvas -->
-                <canvas id="canvasPdfPreview" style="max-width:250px"></canvas>
-
-                <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
-            </div>
-
-            @if (ViewBag.Message != null)
-            {
-                <div class="alert" style="margin-top:20px">
-                    @ViewBag.Message
-                </div>
-            }
-
-            <!-- Messages list -->
-            <div class="container">
-                <div class="row">&nbsp;</div>
                 <div class="row">
-                    <div class="col-2">User</div>
-                    <div class="col-4"><input type="text" id="userInput" /></div>
-                </div>
-                <div class="row">
-                    <div class="col-2">Message</div>
+                    <div class="col-2 dark:text-gray-200">Message</div>
                     <div class="col-4">
                         <!-- Input message with file upload -->
                         <form asp-controller="FileUpload" asp-action="Index" enctype="multipart/form-data" method="POST" accept-charset="">
@@ -313,12 +314,8 @@
                                     <span class="sr-only">Upload image</span>
                                 </label>
                                 <input type="file" id="hidden-file" name="file" class="hidden" />
-                                <button type="button" class="p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
-                                    <svg aria-hidden="true" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-.464 5.535a1 1 0 10-1.415-1.414 3 3 0 01-4.242 0 1 1 0 00-1.415 1.414 5 5 0 007.072 0z" clip-rule="evenodd"></path></svg>
-                                    <span class="sr-only">Add emoji</span>
-                                </button>
                                 <textarea id="messageInput" rows="1" class="block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Your message..."></textarea>
-                                <button type="submit" id="sendButton" value="Send Message" class="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600">
+                                <button type="submit" id="sendButton" value="Send Message" title="Send message" class="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600">
                                     <svg aria-hidden="true" class="w-6 h-6 rotate-90" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>
                                     <span class="sr-only">Send message</span>
                                 </button>
@@ -339,105 +336,105 @@
                 </div>
             </div>
         </div>
-
-        <!-- Leave a message window -->
-        <div class="flex items-center justify-center p-12">
-            <!-- Author: FormBold Team -->
-            <!-- Learn More: https://formbold.com -->
-            <div class="w-full">
-                <div class="formbold-form-wrapper mx-auto hidden w-full max-w-[550px] rounded-lg border border-[#e0e0e0] bg-white">
-                    <div class="flex items-center justify-between rounded-t-lg bg-[#6A64F1] py-4 px-9">
-                        <h3 class="text-xl font-bold text-white">Let's chat? - Online</h3>
-                        <button onclick="chatboxToogleHandler()" class="text-white">
-                            <svg width="17" height="17" viewBox="0 0 17 17" class="fill-current">
-                                <path fill-rule="evenodd"
-                                      clip-rule="evenodd"
-                                      d="M0.474874 0.474874C1.10804 -0.158291 2.1346 -0.158291 2.76777 0.474874L16.5251 14.2322C17.1583 14.8654 17.1583 15.892 16.5251 16.5251C15.892 17.1583 14.8654 17.1583 14.2322 16.5251L0.474874 2.76777C-0.158291 2.1346 -0.158291 1.10804 0.474874 0.474874Z" />
-                                <path fill-rule="evenodd"
-                                      clip-rule="evenodd"
-                                      d="M0.474874 16.5251C-0.158291 15.892 -0.158291 14.8654 0.474874 14.2322L14.2322 0.474874C14.8654 -0.158292 15.892 -0.158291 16.5251 0.474874C17.1583 1.10804 17.1583 2.1346 16.5251 2.76777L2.76777 16.5251C2.1346 17.1583 1.10804 17.1583 0.474874 16.5251Z" />
-                            </svg>
-                        </button>
-                    </div>
-                    <form action="https://formbold.com/s/FORM_ID"
-                          method="POST"
-                          class="py-6 px-9">
-                        <div class="mb-5">
-                            <label for="name"
-                                   class="mb-3 block text-base font-medium text-[#07074D]">
-                                Your Name
-                            </label>
-                            <input type="text"
-                                   name="name"
-                                   id="name"
-                                   placeholder="ENter your name"
-                                   class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-                        </div>
-                        <div class="mb-5">
-                            <label for="email"
-                                   class="mb-3 block text-base font-medium text-[#07074D]">
-                                Email Address
-                            </label>
-                            <input type="email"
-                                   name="email"
-                                   id="email"
-                                   placeholder="example@domain.com"
-                                   class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-                        </div>
-
-                        <div class="mb-5">
-                            <label for="message"
-                                   class="mb-3 block text-base font-medium text-[#07074D]">
-                                Message
-                            </label>
-                            <textarea rows="4"
-                                      name="message"
-                                      id="message"
-                                      placeholder="Explain your queries"
-                                      class="w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"></textarea>
-                        </div>
-                        <div>
-                            <button class="hover:shadow-form w-full rounded-md bg-[#6A64F1] py-3 px-8 text-center text-base font-semibold text-white outline-none">
-                                Start Chat
-                            </button>
-                        </div>
-                    </form>
-                </div>
-                <div>
-                </div>
-                <div class="mx-auto mt-12 flex max-w-[550px] items-center justify-end space-x-5">
-                    <button class="flex h-[70px] w-[70px] items-center justify-center rounded-full bg-[#6A64F1] text-white"
-                            onclick="chatboxToogleHandler()">
-                        <span id="crossIcon" class="cross-icon hidden">
-                            <svg width="17"
-                                 height="17"
-                                 viewBox="0 0 17 17"
-                                 fill="none"
-                                 xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                      clip-rule="evenodd"
-                                      d="M0.474874 0.474874C1.10804 -0.158291 2.1346 -0.158291 2.76777 0.474874L16.5251 14.2322C17.1583 14.8654 17.1583 15.892 16.5251 16.5251C15.892 17.1583 14.8654 17.1583 14.2322 16.5251L0.474874 2.76777C-0.158291 2.1346 -0.158291 1.10804 0.474874 0.474874Z"
-                                      fill="white" />
-                                <path fill-rule="evenodd"
-                                      clip-rule="evenodd"
-                                      d="M0.474874 16.5251C-0.158291 15.892 -0.158291 14.8654 0.474874 14.2322L14.2322 0.474874C14.8654 -0.158292 15.892 -0.158291 16.5251 0.474874C17.1583 1.10804 17.1583 2.1346 16.5251 2.76777L2.76777 16.5251C2.1346 17.1583 1.10804 17.1583 0.474874 16.5251Z"
-                                      fill="white" />
-                            </svg>
-                        </span>
-                        <span id="chatIcon" class="chat-icon">
-                            <svg width="28"
-                                 height="28"
-                                 viewBox="0 0 28 28"
-                                 fill="none"
-                                 xmlns="http://www.w3.org/2000/svg">
-                                <path d="M19.8333 14.0002V3.50016C19.8333 3.19074 19.7103 2.894 19.4915 2.6752C19.2728 2.45641 18.976 2.3335 18.6666 2.3335H3.49992C3.1905 2.3335 2.89375 2.45641 2.67496 2.6752C2.45617 2.894 2.33325 3.19074 2.33325 3.50016V19.8335L6.99992 15.1668H18.6666C18.976 15.1668 19.2728 15.0439 19.4915 14.8251C19.7103 14.6063 19.8333 14.3096 19.8333 14.0002ZM24.4999 7.00016H22.1666V17.5002H6.99992V19.8335C6.99992 20.1429 7.12284 20.4397 7.34163 20.6585C7.56042 20.8772 7.85717 21.0002 8.16659 21.0002H20.9999L25.6666 25.6668V8.16683C25.6666 7.85741 25.5437 7.56066 25.3249 7.34187C25.1061 7.12308 24.8093 7.00016 24.4999 7.00016Z"
-                                      fill="white" />
-                            </svg>
-                        </span>
+    </div>
+    <!-- Leave a comment/contact window -->
+    <div class="flex items-center justify-center p-12">
+        <!-- Author: FormBold Team -->
+        <!-- Learn More: https://formbold.com -->
+        <div class="w-full">
+            <div class="formbold-form-wrapper mx-auto hidden w-full max-w-[550px] rounded-lg border border-[#e0e0e0] bg-white">
+                <div class="flex items-center justify-between rounded-t-lg bg-[#6A64F1] py-4 px-9">
+                    <h3 class="text-xl font-bold text-white">Let's chat? - Online</h3>
+                    <button onclick="chatboxToogleHandler()" class="text-white">
+                        <svg width="17" height="17" viewBox="0 0 17 17" class="fill-current">
+                            <path fill-rule="evenodd"
+                                  clip-rule="evenodd"
+                                  d="M0.474874 0.474874C1.10804 -0.158291 2.1346 -0.158291 2.76777 0.474874L16.5251 14.2322C17.1583 14.8654 17.1583 15.892 16.5251 16.5251C15.892 17.1583 14.8654 17.1583 14.2322 16.5251L0.474874 2.76777C-0.158291 2.1346 -0.158291 1.10804 0.474874 0.474874Z" />
+                            <path fill-rule="evenodd"
+                                  clip-rule="evenodd"
+                                  d="M0.474874 16.5251C-0.158291 15.892 -0.158291 14.8654 0.474874 14.2322L14.2322 0.474874C14.8654 -0.158292 15.892 -0.158291 16.5251 0.474874C17.1583 1.10804 17.1583 2.1346 16.5251 2.76777L2.76777 16.5251C2.1346 17.1583 1.10804 17.1583 0.474874 16.5251Z" />
+                        </svg>
                     </button>
                 </div>
+                <form action="https://formbold.com/s/FORM_ID"
+                      method="POST"
+                      class="py-6 px-9">
+                    <div class="mb-5">
+                        <label for="name"
+                               class="mb-3 block text-base font-medium text-[#07074D]">
+                            Your Name
+                        </label>
+                        <input type="text"
+                               name="name"
+                               id="name"
+                               placeholder="ENter your name"
+                               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
+                    </div>
+                    <div class="mb-5">
+                        <label for="email"
+                               class="mb-3 block text-base font-medium text-[#07074D]">
+                            Email Address
+                        </label>
+                        <input type="email"
+                               name="email"
+                               id="email"
+                               placeholder="example@domain.com"
+                               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
+                    </div>
+
+                    <div class="mb-5">
+                        <label for="message"
+                               class="mb-3 block text-base font-medium text-[#07074D]">
+                            Message
+                        </label>
+                        <textarea rows="4"
+                                  name="message"
+                                  id="message"
+                                  placeholder="Explain your queries"
+                                  class="w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"></textarea>
+                    </div>
+                    <div>
+                        <button class="hover:shadow-form w-full rounded-md bg-[#6A64F1] py-3 px-8 text-center text-base font-semibold text-white outline-none">
+                            Start Chat
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div>
+            </div>
+            <div class="mx-auto mt-12 flex max-w-[550px] items-center justify-end space-x-5">
+                <button class="flex h-[70px] w-[70px] items-center justify-center rounded-full bg-[#6A64F1] text-white"
+                        onclick="chatboxToogleHandler()">
+                    <span id="crossIcon" class="cross-icon hidden">
+                        <svg width="17"
+                             height="17"
+                             viewBox="0 0 17 17"
+                             fill="none"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                                  clip-rule="evenodd"
+                                  d="M0.474874 0.474874C1.10804 -0.158291 2.1346 -0.158291 2.76777 0.474874L16.5251 14.2322C17.1583 14.8654 17.1583 15.892 16.5251 16.5251C15.892 17.1583 14.8654 17.1583 14.2322 16.5251L0.474874 2.76777C-0.158291 2.1346 -0.158291 1.10804 0.474874 0.474874Z"
+                                  fill="white" />
+                            <path fill-rule="evenodd"
+                                  clip-rule="evenodd"
+                                  d="M0.474874 16.5251C-0.158291 15.892 -0.158291 14.8654 0.474874 14.2322L14.2322 0.474874C14.8654 -0.158292 15.892 -0.158291 16.5251 0.474874C17.1583 1.10804 17.1583 2.1346 16.5251 2.76777L2.76777 16.5251C2.1346 17.1583 1.10804 17.1583 0.474874 16.5251Z"
+                                  fill="white" />
+                        </svg>
+                    </span>
+                    <span id="chatIcon" class="chat-icon">
+                        <svg width="28"
+                             height="28"
+                             viewBox="0 0 28 28"
+                             fill="none"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19.8333 14.0002V3.50016C19.8333 3.19074 19.7103 2.894 19.4915 2.6752C19.2728 2.45641 18.976 2.3335 18.6666 2.3335H3.49992C3.1905 2.3335 2.89375 2.45641 2.67496 2.6752C2.45617 2.894 2.33325 3.19074 2.33325 3.50016V19.8335L6.99992 15.1668H18.6666C18.976 15.1668 19.2728 15.0439 19.4915 14.8251C19.7103 14.6063 19.8333 14.3096 19.8333 14.0002ZM24.4999 7.00016H22.1666V17.5002H6.99992V19.8335C6.99992 20.1429 7.12284 20.4397 7.34163 20.6585C7.56042 20.8772 7.85717 21.0002 8.16659 21.0002H20.9999L25.6666 25.6668V8.16683C25.6666 7.85741 25.5437 7.56066 25.3249 7.34187C25.1061 7.12308 24.8093 7.00016 24.4999 7.00016Z"
+                                  fill="white" />
+                        </svg>
+                    </span>
+                </button>
             </div>
         </div>
+    </div>
 </body>
 
 <script src="~/js/flowbite.min.js"></script>
@@ -447,8 +444,9 @@
 <script src="~/js/pdfjs-3.3.122-dist/build/pdf.js"></script>
 <script src="~/js/xlsx.mini.min.js"></script>
 <script src="~/js/plugins/showdown.min.js"></script>
-<script src="~/js/site.js"></script>
+<script src="~/js/plugins/jquery-ui.min.js"></script>
 <script src="~/js/filePreview.js"></script>
+<script src="~/js/site.js"></script>
 
 @RenderSection("scripts", false)
 </html>
