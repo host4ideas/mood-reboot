@@ -1,6 +1,3 @@
---TODO: When deleting a group delete all it's related messages
-
-
 CREATE OR ALTER PROCEDURE SP_CREATE_MESSAGE
 (@GROUP_ID INT, @USER_ID INT , @CONTENT NVARCHAR(350) = '', @FILE_ID INT = '', @ERROR_MESSAGE NVARCHAR(150) OUTPUT)
 AS

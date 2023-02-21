@@ -1,5 +1,3 @@
---TODO: When a group is deleted delete all it's related messages
-
 CREATE OR ALTER PROCEDURE SP_CREATE_GROUP
 (@NAME NVARCHAR(45), @IMAGE NVARCHAR(MAX) = '')
 AS
