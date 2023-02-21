@@ -8,8 +8,17 @@ $("#hidden-file").on("change", function (e) {
 
     // Clean previews
     $('#imgImagePreview').empty();
-    $('#canvasPdfPreview').empty();
+    $('#previewContent').empty();
     $("#tableDataPreview").empty();
+
+    $('#imgImagePreview').hide();
+    $('#previewContent').hide();
+    $("#tableDataPreview").hide();
+
+    // Hide all preview toggle buttons
+    $("#toggleImgPreview").addClass("hidden");
+    $("#toggleExcelPreview").addClass("hidden");
+    $("#togglePdfPreview").addClass("hidden");
 
     if (file.type == "application/pdf") {
         try {
@@ -110,6 +119,7 @@ $("#hidden-file").on("change", function (e) {
                 });
             };
             fileReader.readAsArrayBuffer(file);
+            $("#togglePdfPreview").removeClass("hidden");
         } catch (e) {
             console.error(e.message);
             $("#previewContent").addClass("hidden");
@@ -121,6 +131,7 @@ $("#hidden-file").on("change", function (e) {
         reader.onload = function () {
             $('#imgImagePreview').attr("src", reader.result);
             $("#previewImage").removeClass("hidden");
+            $('#toggleImgPreview').removeClass("hidden");
         };
         reader.readAsDataURL(e.target.files[0]);
     }
@@ -129,7 +140,6 @@ $("#hidden-file").on("change", function (e) {
         var reader = new FileReader();
         reader.readAsArrayBuffer(e.target.files[0]);
         reader.onload = function (e) {
-
             var data = new Uint8Array(reader.result);
             var work_book = XLSX.read(data, { type: 'array' });
             var sheet_name = work_book.SheetNames;
@@ -155,6 +165,7 @@ $("#hidden-file").on("change", function (e) {
                 }
                 table_output += '</table>';
                 $("#tableDataPreview").removeClass("hidden").html(table_output);
+                $("#toggleExcelPreview").removeClass("hidden");
             }
         }
     }
