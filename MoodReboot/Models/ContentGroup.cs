@@ -17,5 +17,7 @@ namespace MoodReboot.Models
         public Boolean IsVisible { get; set; }
         [Column("COURSE_ID")]
         public int CourseID { get; set; }
+        // Extra
+        public List<Content>? Contents { get; set; }
     }
 }

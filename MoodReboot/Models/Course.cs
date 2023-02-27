@@ -23,5 +23,9 @@ namespace MoodReboot.Models
         public string Name { get; set; }
         [Column("CENTER_ID")]
         public int CenterId { get; set; }
+        [Column("IS_VISIBLE")]
+        public Boolean IsVisible { get; set; }
+        // Extra
+        public List<ContentGroup>? Contents { get; set; }
     }
 }
