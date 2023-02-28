@@ -27,5 +27,6 @@ namespace MoodReboot.Models
         public Boolean IsVisible { get; set; }
         // Extra
         public List<ContentGroup>? Contents { get; set; }
+        public User? Author { get; set; }
     }
 }

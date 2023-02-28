@@ -1,21 +1,162 @@
 ﻿@{
     Layout = "_MenuLayout";
+    CourseListView[] Courses =
+    {
+        new CourseListView()
+        {
+            Author = "John Doe Doe Doe",
+            CenterName = "Tajamar",
+            DateModified = DateTime.Now,
+            DatePublished= DateTime.Now,
+            Description = "Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen.",
+            Id = 0,
+            IsEditor = true,
+            Name = "Mi primer curso de informática"
+        },
+        new CourseListView()
+        {
+            Author = "John Doe Doe Doe",
+            CenterName = "INSTITUTO NOMBRE MUUUUUUUUUY LARGOOOOOOOOOOOOOOOO",
+            DateModified = null,
+            DatePublished= DateTime.Now,
+            Description = "Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen.",
+            Id = 0,
+            IsEditor = true,
+            Name = "Mi primer curso de informática"
+        },
+        new CourseListView()
+        {
+            Author = "John Doe Doe Doe",
+            CenterName = "INSTITUTO NOMBRE MUUUUUUUUUY LARGOOOOOOOOOOOOOOOO",
+            DateModified = null,
+            DatePublished= DateTime.Now,
+            Description = "Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen.",
+            Id = 0,
+            IsEditor = false,
+            Name = "Mi primer curso de informática"
+        }
+    };
 }
 
-<!--  Search -->
-<form class="flex justify-center items-center">
+<!-- Search -->
+<div class="flex justify-center items-center">
     <label for="simple-search" class="sr-only">Search</label>
     <div class="relative w-50">
         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
             <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg>
         </div>
-        <input type="text" id="simple-search" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search" required>
+        <input onkeydown="fuzzySearch()" type="text" id="simple-search" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Escribe..." required>
     </div>
-    <button type="submit" class="p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-        <span class="sr-only">Search</span>
-    </button>
-</form>
+    <button onclick="initialList()" title="Cancelar búsqueda" style="font-size: 1.5rem;">🗑️</button>
+</div>
+
+@section scriptsMenuLayout {
+    <script>
+        const list = @Html.Raw(Json.Serialize(Courses));
+
+        function initialList() {
+            let html = '';
+            list.forEach(course => {
+                let editor = course.isEditor ? '✏️' : '';
+                let modified = course.dateModified != null ? '✏️ ' + new Date(course.dateModified).getDate() + "/" + new Date(course.dateModified).getMonth() + "/" + new Date(course.dateModified).getFullYear() : '';
+                let description = course.description;
+                let published = new Date(course.datePublished).getDate() + "/" + new Date(course.datePublished).getMonth() + "/" + new Date(course.datePublished).getFullYear();
+
+                if (description.length > 150) {
+                    description = description.slice(0, 147) + '...';
+                }
+
+                html += `
+                            <a href='Courses/CourseDetails/${course.id}' class="flex flex-col gap-6 justify-between p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                                <div class="flex justify-between flex-wrap items-center text-gray-500">
+                                    <span class="text-sm">Center: ${course.centerName}</span>
+                                    <div class="flex flex-col">
+                                        <span class="text-sm">👁️ ${published}</span>
+                                        <span class="text-sm">${modified}</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">${course.name}</h5>
+                                    <p class="font-normal text-gray-700 dark:text-gray-400">${description}</p>
+                                </div>
+
+                                <div class="flex items-center space-x-4">
+                                    <img class="w-7 h-7 rounded-full" src="" alt="${course.author} avatar" />
+                                    <span class="font-medium dark:text-white">
+                                        ${course.author}
+                                    </span>
+                                    <span>
+                                        ${editor}
+                                    </span>
+                                </div>
+                            </a>`;
+            });
+
+            $("#courses-list").html(html);
+        }
+
+        initialList();
+
+        const options = {
+            keys: [
+                "description",
+                "name",
+                'center',
+                'author'
+            ]
+        };
+
+        const fuse = new Fuse(list, options);
+
+        function fuzzySearch() {
+            const pattern = $("#simple-search").val();
+
+            const results = fuse.search(pattern);
+
+            let html = "";
+            results.forEach(result => {
+                const course = result.item;
+                let editor = course.isEditor ? '✏️' : '';
+                let modified = course.dateModified != null ? '✏️ ' + new Date(course.dateModified).getDate() + "/" + new Date(course.dateModified).getMonth() + "/" + new Date(course.dateModified).getFullYear() : '';
+                let description = course.description;
+                let published = new Date(course.datePublished).getDate() + "/" + new Date(course.datePublished).getMonth() + "/" + new Date(course.datePublished).getFullYear();
+
+                if (description.length > 150) {
+                    description = description.slice(0, 147) + '...';
+                }
+
+                html += `
+                            <a href='Courses/CourseDetails/${course.id}' class="flex flex-col gap-6 justify-between p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                                <div class="flex justify-between flex-wrap items-center text-gray-500">
+                                    <span class="text-sm">Center: ${course.centerName}</span>
+                                    <div class="flex flex-col">
+                                        <span class="text-sm">👁️ ${published}</span>
+                                        <span class="text-sm">${modified}</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">${course.name}</h5>
+                                    <p class="font-normal text-gray-700 dark:text-gray-400">${description}</p>
+                                </div>
+
+                                <div class="flex items-center space-x-4">
+                                    <img class="w-7 h-7 rounded-full" src="" alt="${course.author} avatar" />
+                                    <span class="font-medium dark:text-white">
+                                        ${course.author}
+                                    </span>
+                                    <span>
+                                        ${editor}
+                                    </span>
+                                </div>
+                            </a>`;
+            });
+
+            $("#courses-list").html(html);
+        }
+    </script>
+}
 
 <!-- My Centers -->
 <section class="bg-white dark:bg-gray-900">
@@ -23,29 +164,8 @@
         <div class="mx-auto max-w-screen-sm text-center lg:mb-16 mb-8">
             <h2 class="mb-4 text-3xl lg:text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Mis centros</h2>
         </div>
-        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-            <!-- Display all the courses -->
-            <a asp-controller="Courses" asp-action="CourseDetails" class="flex flex-col gap-6 justify-between p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-                <div class="flex justify-between items-center text-gray-500">
-                    <span class="bg-primary-100 text-primary-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-primary-200 dark:text-primary-800">
-                        <svg class="mr-1 w-3 h-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M2 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 002 2H4a2 2 0 01-2-2V5zm3 1h6v4H5V6zm6 6H5v2h6v-2z" clip-rule="evenodd"></path><path d="M15 7h1a2 2 0 012 2v5.5a1.5 1.5 0 01-3 0V7z"></path></svg>
-                        Article
-                    </span>
-                    <span class="text-sm">14 days ago</span>
-                </div>
-
-                <div>
-                    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Noteworthy technology acquisitions 2021</h5>
-                    <p class="font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.</p>
-                </div>
-
-                <div class="flex items-center space-x-4">
-                    <img class="w-7 h-7 rounded-full" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/bonnie-green.png" alt="Bonnie Green avatar" />
-                    <span class="font-medium dark:text-white">
-                        Bonnie Green
-                    </span>
-                </div>
-            </a>
+        <!-- Display all the Centers -->
+        <div id="courses-list" class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
         </div>
     </div>
 </section>

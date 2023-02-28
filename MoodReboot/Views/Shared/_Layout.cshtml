@@ -76,15 +76,15 @@
     </div>
 
     <!-- Navbar -->
-    <header class="sticky top-0 w-full z-50" style="border: 10px solid transparent; border-top: 15px solid transparent;">
-        <nav class="w-full border-2 dark:border-gray-600 rounded-lg bg-white p-1 md:p-0 md:px-4 dark:bg-gray-800" style="max-width: 1024px; margin: auto;">
+    <header class="sticky top-0 w-full z-50" style="border: 10px solid transparent; border-top: 15px solid transparent; pointer-events:none;">
+        <nav class="w-full border-2 dark:border-gray-600 rounded-lg bg-white p-1 md:p-0 md:px-4 dark:bg-gray-800" style="max-width: 1024px; margin: auto; pointer-events:auto;">
             <div class="flex flex-wrap justify-between items-center">
                 <!-- Logo && mobile menu -->
                 <div class="flex justify-start items-center">
                     <!-- Logo -->
                     <a asp-controller="Home" asp-action="Index" class="flex">
-                        <img src="https://flowbite.s3.amazonaws.com/logo.svg" class="h-8" alt="FlowBite Logo" />
-                        <span class="hidden self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Flowbite</span>
+                        <img src="~/images/site-logo.jpg" class="h-8" alt="MoodReboot Logo" />
+                        <span class="hidden self-center text-2xl font-semibold whitespace-nowrap dark:text-white">MoodReboot</span>
                     </a>
                     <!-- User Dropdown menu -->
                     <div class="center flex items-center justify-center">
@@ -274,9 +274,9 @@
     <!-- Footer -->
     <footer class="p-4 bg-white shadow md:px-6 md:py-8 dark:bg-gray-900">
         <div class="sm:flex sm:items-center sm:justify-between">
-            <a href="https://flowbite.com/" class="flex items-center mb-4 sm:mb-0">
-                <img src="https://flowbite.com/docs/images/logo.svg" class="h-8 mr-3" alt="Flowbite Logo" />
-                <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Flowbite</span>
+            <a asp-controller="Home" asp-action="Index" class="flex items-center mb-4 sm:mb-0">
+                <img src="~/images/site-logo.jpg" class="h-8 mr-3" alt="MoodReboot Logo" />
+                <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">MoodReboot</span>
             </a>
             <ul class="flex flex-wrap items-center mb-6 text-sm text-gray-500 sm:mb-0 dark:text-gray-400">
                 <li>
@@ -295,7 +295,7 @@
         </div>
         <hr class="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
         <span class="block text-sm text-gray-500 sm:text-center dark:text-gray-400">
-            © 3 <a href="https://flowbite.com/" class="hover:underline">Flowbite™</a>. All Rights Reserved.
+            © 2023 <a asp-controller="Home" asp-action="Index" class="hover:underline">MoodReboot™</a>. All Rights Reserved.
         </span>
     </footer>
 
@@ -304,7 +304,7 @@
             type="button"
             data-te-ripple-init
             data-te-ripple-color="light"
-            class="flex justify-center items-center fixed hidden w-10 h-10 rounded-full dark:text-white text-black bg-red-500 hover:bg-red-600 dark:bg-red-800 dark:hover:bg-red-700"
+            class="flex justify-center items-center fixed hidden w-10 h-10 rounded-full text-black bg-red-500 hover:bg-red-200 dark:text-white dark:bg-red-800 dark:hover:bg-red-700"
             style="bottom: 20px; left: 20px">
         <svg xmlns="http://www.w3.org/2000/svg"
              viewBox="0 0 24 24"
@@ -551,14 +551,17 @@
     </div>
 </body>
 
+<!-- Libraries -->
 <script src="~/js/flowbite.min.js"></script>
 <script src="~/js/jquery-3.6.3.min.js"></script>
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script src="~/js/pdfjs-3.3.122-dist/build/pdf.js"></script>
 <script src="~/js/xlsx.mini.min.js"></script>
 <script src="~/js/plugins/showdown.min.js"></script>
-<script src="~/js/filePreview.js"></script>
+<script src="~/js/plugins/fuse.basic.min.js"></script>
+<!-- Custom JS -->
 <script src="~/js/chat.js"></script>
+<script src="~/js/filePreview.js"></script>
 <script src="~/js/site.js"></script>
 
 @RenderSection("scripts", false)
