@@ -10,6 +10,10 @@ $("#hidden-file").on("change", function (e) {
     $('#imgImagePreview').empty();
     $('#canvasPdfPreview').empty();
     $("#tableDataPreview").empty();
+    // Show preview controls
+    $('#toggleExcelPreview').removeClass("hidden");
+    $('#toggleImgPreview').removeClass("hidden");
+    $('#togglePdfPreview').removeClass("hidden");
 
     if (file.type == "application/pdf") {
         try {

@@ -1,16 +1,13 @@
 ﻿// Chat button
-function buttonHandler() {
+function btnChatToggle() {
     $("#chatWindow").fadeToggle("fast");
 }
 
-$(function () {
-    $("#chatWindow").resizable({
-        maxHeight: 250,
-        maxWidth: 350,
-        minHeight: 150,
-        minWidth: 200
-    });
-});
+function resizeChatWindow(size) {
+    $("#chatWindow").width(size);
+}
+
+resizeChatWindow(300);
 
 // Scroll to top button
 // Get the button 
