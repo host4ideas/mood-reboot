@@ -68,9 +68,9 @@
 
                 html += `
                     <a href='Courses/CourseDetails/${course.id}' class="flex flex-col gap-6 justify-between p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-                        <div class="flex justify-between flex-wrap items-center text-gray-500">
-                            <span class="text-sm">Center: ${course.centerName}</span>
-                            <div class="flex flex-col">
+                        <div class="flex justify-between flex-wrap items-center text-gray-500 overflow-hidden">
+                            <span class="text-sm">${course.centerName}</span>
+                                <div class="flex flex-col">
                                 <span class="text-sm">👁️ ${published}</span>
                                 <span class="text-sm">${modified}</span>
                             </div>
@@ -128,8 +128,8 @@
 
                 html += `
                     <a href='Courses/CourseDetails/${course.id}' class="flex flex-col gap-6 justify-between p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-                        <div class="flex justify-between flex-wrap items-center text-gray-500">
-                            <span class="text-sm">Center: ${course.centerName}</span>
+                        <div class="flex justify-between flex-wrap items-center text-gray-500 overflow-hidden">
+                            <span class="text-sm">${course.centerName}</span>
                             <div class="flex flex-col">
                                 <span class="text-sm">👁️ ${published}</span>
                                 <span class="text-sm">${modified}</span>

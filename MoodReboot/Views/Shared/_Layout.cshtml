@@ -334,7 +334,7 @@
     </div>
 
     <!-- Chat window -->
-    <div id="chatWindow" class="fixed bg-blue-300 rounded p-2 dark:bg-gray-800 z-50" style="bottom: 70px; right: 20px; display: none; overflow: auto; resize: both; max-height: 500px; max-width: 700px;">
+    <div id="chatWindow" class="fixed bg-blue-300 rounded p-2 border-2 border-white dark:border-gray-900 dark:bg-gray-700 z-50" style="bottom: 70px; right: 20px; display: none; overflow: auto; resize: both; max-height: 500px; max-width: 700px;">
 
         <div class="flex justify-center gap-6">
             <button onclick="resizeChatWindow(300)" class="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
@@ -348,7 +348,7 @@
             </button>
         </div>
 
-        <hr class="h-px my-3 bg-gray-200 border-0 dark:bg-gray-700" />
+        <hr class="h-px my-3 bg-gray-200 border-0 dark:bg-gray-600" />
 
         <!-- Toggle excel preview -->
         <button id="toggleExcelPreview" class="hidden relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
@@ -414,38 +414,38 @@
         }
 
         <!-- Messages list -->
-        <div class="container">
+        <div class="row">
+            <div class="col-2 dark:text-gray-200">User</div>
+            <div class="col-4">
+                <div class="flex items-center px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-800">
+                    <textarea id="userInput" rows="1" class="block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Your username..."></textarea>
+                </div>
+            </div>
             <div class="row">
-                <div class="col-2 dark:text-gray-200">User</div>
+                <div class="col-2 dark:text-gray-200">Message</div>
                 <div class="col-4">
-                    <input type="text" id="userInput" />
+                    <!-- Input message with file upload -->
+                    <form asp-controller="FileUpload" asp-action="Index" enctype="multipart/form-data" method="POST" accept-charset="">
+                        <label for="chat" class="sr-only">Your message</label>
+                        <div class="flex items-center px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-800">
+                            <label for="hidden-file" title="Upload image" class="inline-flex justify-center p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
+                                <svg aria-hidden="true" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path></svg>
+                                <span class="sr-only">Upload image</span>
+                            </label>
+                            <input type="file" id="hidden-file" name="file" class="hidden" />
+                            <textarea id="messageInput" rows="1" class="block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Your message..."></textarea>
+                            <button type="submit" id="sendButton" value="Send Message" title="Send message" class="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600">
+                                <svg aria-hidden="true" class="w-6 h-6 rotate-90" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>
+                                <span class="sr-only">Send message</span>
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <div class="row">
-                    <div class="col-2 dark:text-gray-200">Message</div>
-                    <div class="col-4">
-                        <!-- Input message with file upload -->
-                        <form asp-controller="FileUpload" asp-action="Index" enctype="multipart/form-data" method="POST" accept-charset="">
-                            <label for="chat" class="sr-only">Your message</label>
-                            <div class="flex items-center px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700">
-                                <label for="hidden-file" title="Upload image" class="inline-flex justify-center p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
-                                    <svg aria-hidden="true" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path></svg>
-                                    <span class="sr-only">Upload image</span>
-                                </label>
-                                <input type="file" id="hidden-file" name="file" class="hidden" />
-                                <textarea id="messageInput" rows="1" class="block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Your message..."></textarea>
-                                <button type="submit" id="sendButton" value="Send Message" title="Send message" class="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600">
-                                    <svg aria-hidden="true" class="w-6 h-6 rotate-90" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>
-                                    <span class="sr-only">Send message</span>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="row">&nbsp;</div>
-                </div>
-                <div class="row">
-                    <div class="col-6">
-                        <ul id="messagesList"></ul>
-                    </div>
+                <div class="row">&nbsp;</div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <ul id="messagesList"></ul>
                 </div>
             </div>
         </div>
