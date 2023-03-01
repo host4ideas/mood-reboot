@@ -1,42 +1,8 @@
 ﻿@{
     Layout = "_MenuLayout";
-    CourseListView[] Courses =
-    {
-        new CourseListView()
-        {
-            Author = "John Doe Doe Doe",
-            CenterName = "Tajamar",
-            DateModified = DateTime.Now,
-            DatePublished= DateTime.Now,
-            Description = "Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen.",
-            Id = 0,
-            IsEditor = true,
-            Name = "Mi primer curso de informática"
-        },
-        new CourseListView()
-        {
-            Author = "John Doe Doe Doe",
-            CenterName = "INSTITUTO NOMBRE MUUUUUUUUUY LARGOOOOOOOOOOOOOOOO",
-            DateModified = null,
-            DatePublished= DateTime.Now,
-            Description = "Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen.",
-            Id = 0,
-            IsEditor = true,
-            Name = "Mi primer curso de informática"
-        },
-        new CourseListView()
-        {
-            Author = "John Doe Doe Doe",
-            CenterName = "INSTITUTO NOMBRE MUUUUUUUUUY LARGOOOOOOOOOOOOOOOO",
-            DateModified = null,
-            DatePublished= DateTime.Now,
-            Description = "Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen.",
-            Id = 0,
-            IsEditor = false,
-            Name = "Mi primer curso de informática"
-        }
-    };
 }
+
+@model CourseListView[]
 
 <!-- Search -->
 <div class="flex justify-center items-center">
@@ -45,16 +11,16 @@
         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
             <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg>
         </div>
-        <input onkeydown="fuzzySearch()" type="text" id="simple-search" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Escribe..." required>
+        <input onkeyup="fuzzySearch()" type="text" id="simple-search" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Escribe..." required>
     </div>
-    <button onclick="initialList()" title="Cancelar búsqueda" style="font-size: 1.5rem;">🗑️</button>
+    <button onclick="resetSearch()" title="Cancelar búsqueda" style="font-size: 1.5rem;">🗑️</button>
 </div>
 
 @section scriptsMenuLayout {
     <script>
-        const list = @Html.Raw(Json.Serialize(Courses));
+        const list = @Html.Raw(Json.Serialize(Model));
 
-        function initialList(){
+        function initialList() {
             let html = '';
             list.forEach(course => {
                 let editor = course.isEditor ? '✏️' : '';
@@ -67,7 +33,7 @@
                 }
 
                 html += `
-                    <a href='Courses/CourseDetails/${course.id}' class="flex flex-col gap-6 justify-between p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                    <a href='Courses/CourseDetails?id=${course.id}' class="flex flex-col gap-6 justify-between p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                         <div class="flex justify-between flex-wrap items-center text-gray-500 overflow-hidden">
                             <span class="text-sm">${course.centerName}</span>
                                 <div class="flex flex-col">
@@ -96,13 +62,18 @@
             $("#courses-list").html(html);
         }
 
+        function resetSearch() {
+            $("#simple-search").val('');
+            initialList();
+        }
+
         initialList();
 
         const options = {
             keys: [
                 "description",
                 "name",
-                'center',
+                'centerName',
                 'author'
             ]
         };
@@ -111,6 +82,11 @@
 
         function fuzzySearch() {
             const pattern = $("#simple-search").val();
+
+            if (pattern == null || pattern == "") {
+                resetSearch();
+                return;
+            }
 
             const results = fuse.search(pattern);
 
@@ -127,7 +103,7 @@
                 }
 
                 html += `
-                    <a href='Courses/CourseDetails/${course.id}' class="flex flex-col gap-6 justify-between p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                    <a href='Courses/CourseDetails?id=${course.id}' class="flex flex-col gap-6 justify-between p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                         <div class="flex justify-between flex-wrap items-center text-gray-500 overflow-hidden">
                             <span class="text-sm">${course.centerName}</span>
                             <div class="flex flex-col">

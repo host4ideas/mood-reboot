@@ -5,37 +5,26 @@
 <!-- Tabbed menu -->
 <div class="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700 ">
     <ul class="flex flex-wrap -mb-px">
-
         @{
-            string CurrentName = ViewContext.RouteData.Values["controller"]!.ToString()!;
+            string GetActiveLinkClass(string route)
+            {
+                string CurrentName = ViewContext.RouteData.Values["controller"]!.ToString()!;
+                string active = "inline-block p-4 border-b-2 text-blue-600 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500";
+                string notActive = "inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300";
 
-            if (CurrentName.Contains("Courses"))
-            {
-                <li class="mr-2">
-                    <a asp-controller="Courses" asp-action="Index" class="inline-block p-4 text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500">Mis Cursos</a>
-                </li>
-                <li class="mr-2">
-                    <a asp-controller="Centers" asp-action="Index" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300">Mis Centros</a>
-                </li>
+                if (CurrentName.Contains(route))
+                {
+                    return active;
+                }
+                return notActive;
             }
-            else if (CurrentName.Contains("Centers"))
-            {
-                <li class="mr-2">
-                    <a asp-controller="Courses" asp-action="Index" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300">Mis Cursos</a>
-                </li>
-                <li class="mr-2">
-                    <a asp-controller="Centers" asp-action="Index" class="inline-block p-4 text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500">Mis Centros</a>
-                </li>
-            }
-            else
-            {
-                <li class="mr-2">
-                    <a asp-controller="Courses" asp-action="Index" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300">Mis Cursos</a>
-                </li>
-                <li class="mr-2">
-                    <a asp-controller="Centers" asp-action="Index" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300">Mis Centros</a>
-                </li>
-            }
+
+            <li class="mr-2">
+                <a asp-controller="Centers" asp-action="Index" class="@GetActiveLinkClass("Centers")">Mis Centros</a>
+            </li>
+            <li class="mr-2">
+                <a asp-controller="Courses" asp-action="Index" class="@GetActiveLinkClass("Courses")">Mis Cursos</a>
+            </li>
         }
     </ul>
 </div>
