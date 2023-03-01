@@ -9,6 +9,14 @@ function resizeChatWindow(size) {
 
 resizeChatWindow(300);
 
+// Resize text area with it's content height'
+function resizeTextArea(e) {
+    e.target.style.height = "";
+    e.target.style.height = e.target.scrollHeight + "px"
+}
+
+oninput = 'this.style.height = "";this.style.height = this.scrollHeight + "px"'
+
 // Scroll to top button
 // Get the button 
 let mybutton = document.getElementById('btn-back-to-top'); // When the user scrolls down 20px from the top of the document, show the button

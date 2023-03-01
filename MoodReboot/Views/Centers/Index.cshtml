@@ -2,10 +2,10 @@
     Layout = "_MenuLayout";
 }
 
-@model CourseListView[]
+@model CenterListView[]
 
 <!-- Search -->
-<div class="flex justify-center items-center">
+<div class="flex justify-center items-center" style="margin-top: 20px;">
     <label for="simple-search" class="sr-only">Search</label>
     <div class="relative w-50">
         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -13,7 +13,7 @@
         </div>
         <input onkeyup="fuzzySearch()" type="text" id="simple-search" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Escribe..." required>
     </div>
-    <button onclick="resetSearch()" title="Cancelar búsqueda" style="font-size: 1.5rem;">🗑️</button>
+    <button onclick="resetSearch()" class="text-2xl" title="Cancelar búsqueda">🗑️</button>
 </div>
 
 @section scriptsMenuLayout {
@@ -22,44 +22,30 @@
 
         function initialList() {
             let html = '';
-            list.forEach(course => {
-                let editor = course.isEditor ? '✏️' : '';
-                let modified = course.dateModified != null ? '✏️ ' + new Date(course.dateModified).getDate() + "/" + new Date(course.dateModified).getMonth() + "/" + new Date(course.dateModified).getFullYear() : '';
-                let description = course.description;
-                let published = new Date(course.datePublished).getDate() + "/" + new Date(course.datePublished).getMonth() + "/" + new Date(course.datePublished).getFullYear();
-
-                if (description.length > 150) {
-                    description = description.slice(0, 147) + '...';
-                }
-
+            list.forEach(center => {
                 html += `
-                    <a href='Courses/CourseDetails?id=${course.id}' class="flex flex-col gap-6 justify-between p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                    <a href='Centers/CenterDetails?id=${center.id}' class="flex flex-col gap-6 justify-between p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 overflow-hidden">
+
                         <div class="flex justify-between flex-wrap items-center text-gray-500 overflow-hidden">
-                            <span class="text-sm">${course.centerName}</span>
-                                <div class="flex flex-col">
-                                <span class="text-sm">👁️ ${published}</span>
-                                <span class="text-sm">${modified}</span>
-                            </div>
+                            <span class="text-sm">${center.telephone}</span>
+                            <span class="text-sm">${center.email}</span>
                         </div>
 
-                        <div>
-                            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">${course.name}</h5>
-                            <p class="font-normal text-gray-700 dark:text-gray-400">${description}</p>
+                        <div class="text-gray-500 overflow-hidden">
+                            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">${center.centerName}</h5>
+                            <img class="w-7 h-7 rounded-full" src="" alt="${center.director} avatar" />
                         </div>
 
                         <div class="flex items-center space-x-4">
-                            <img class="w-7 h-7 rounded-full" src="" alt="${course.author} avatar" />
+                            <img class="w-7 h-7 rounded-full" src="" alt="${center.director} avatar" />
                             <span class="font-medium dark:text-white">
-                                ${course.author}
-                            </span>
-                            <span>
-                                ${editor}
+                                ${center.director}
                             </span>
                         </div>
                     </a>`;
             });
 
-            $("#courses-list").html(html);
+            $("#centers-list").html(html);
         }
 
         function resetSearch() {
@@ -71,10 +57,10 @@
 
         const options = {
             keys: [
-                "description",
-                "name",
+                "email",
+                "director",
                 'centerName',
-                'author'
+                'telephone'
             ]
         };
 
@@ -92,56 +78,43 @@
 
             let html = "";
             results.forEach(result => {
-                const course = result.item;
-                let editor = course.isEditor ? '✏️' : '';
-                let modified = course.dateModified != null ? '✏️ ' + new Date(course.dateModified).getDate() + "/" + new Date(course.dateModified).getMonth() + "/" + new Date(course.dateModified).getFullYear() : '';
-                let description = course.description;
-                let published = new Date(course.datePublished).getDate() + "/" + new Date(course.datePublished).getMonth() + "/" + new Date(course.datePublished).getFullYear();
-
-                if (description.length > 150) {
-                    description = description.slice(0, 147) + '...';
-                }
+                const center = result.item;
 
                 html += `
-                    <a href='Courses/CourseDetails?id=${course.id}' class="flex flex-col gap-6 justify-between p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-                        <div class="flex justify-between flex-wrap items-center text-gray-500 overflow-hidden">
-                            <span class="text-sm">${course.centerName}</span>
-                            <div class="flex flex-col">
-                                <span class="text-sm">👁️ ${published}</span>
-                                <span class="text-sm">${modified}</span>
-                            </div>
-                        </div>
+                <a href='Centers/CenterDetails?id=${center.id}' class="flex flex-col gap-6 justify-between p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 overflow-hidden">
 
-                        <div>
-                            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">${course.name}</h5>
-                            <p class="font-normal text-gray-700 dark:text-gray-400">${description}</p>
-                        </div>
+                    <div class="flex justify-between flex-wrap items-center text-gray-500 overflow-hidden">
+                        <span class="text-sm">${center.telephone}</span>
+                        <span class="text-sm">${center.email}</span>
+                    </div>
 
-                        <div class="flex items-center space-x-4">
-                            <img class="w-7 h-7 rounded-full" src="" alt="${course.author} avatar" />
-                            <span class="font-medium dark:text-white">
-                                ${course.author}
-                            </span>
-                            <span>
-                                ${editor}
-                            </span>
-                        </div>
-                    </a>`;
+                    <div class="text-gray-500 overflow-hidden">
+                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">${center.centerName}</h5>
+                        <img class="w-7 h-7 rounded-full" src="" alt="${center.director} avatar" />
+                    </div>
+
+                    <div class="flex items-center space-x-4">
+                        <img class="w-7 h-7 rounded-full" src="" alt="${center.director} avatar" />
+                        <span class="font-medium dark:text-white">
+                            ${center.director}
+                        </span>
+                    </div>
+                </a>`;
             });
 
-            $("#courses-list").html(html);
+            $("#centers-list").html(html);
         }
     </script>
 }
 
 <!-- My Centers -->
 <section class="bg-white dark:bg-gray-900">
-    <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6">
+    <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-8 lg:px-6">
         <div class="mx-auto max-w-screen-sm text-center lg:mb-16 mb-8">
             <h2 class="mb-4 text-3xl lg:text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Mis centros</h2>
         </div>
         <!-- Display all the Centers -->
-        <div id="courses-list" class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+        <div id="centers-list" class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
         </div>
     </div>
 </section>
