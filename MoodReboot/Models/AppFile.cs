@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace MoodReboot.Models
 {
     [Table("FILE")]
-    public class File
+    public class AppFile
     {
         [Key]
         [Column("FILE_ID")]

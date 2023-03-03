@@ -10,11 +10,12 @@ namespace MoodReboot.Models
         [Column("CONTENT_ID")]
         public int Id { get; set; }
         [Column("TEXT")]
-        public string Text { get; set; }
+        public string? Text { get; set; }
         [Column("GROUP_CONTENT_ID")]
         public int ContentGroupId { get; set; }
+        [Column("FILE_ID")]
         public int? FileId { get; set; }
         // Extra
-        public File? File { get; set; }
+        public AppFile? File { get; set; }
     }
 }

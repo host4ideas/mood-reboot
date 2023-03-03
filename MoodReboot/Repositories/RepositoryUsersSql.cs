@@ -1,6 +1,6 @@
 ﻿namespace MoodReboot.Repositories
 {
-    public class RepositoryUsers
+    public class RepositoryUsersSql
     {
     }
 }

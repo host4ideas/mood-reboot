@@ -24,6 +24,6 @@ namespace MoodReboot.Models
         [Column("USERNAME")]
         public string UserName { get; set; }
         // Extra
-        public File? Attachment { get; set; }
+        public AppFile? Attachment { get; set; }
     }
 }

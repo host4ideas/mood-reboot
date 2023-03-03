@@ -4,11 +4,11 @@ using MoodReboot.Models;
 
 namespace MoodReboot.Repositories
 {
-    public class RepositoryMessages : IRepositoryMessages
+    public class RepositoryMessagesSql : IRepositoryMessages
     {
-        private MoodRebootSqlContext sqlContext;
+        private MoodRebootContext sqlContext;
 
-        public RepositoryMessages(MoodRebootSqlContext sqlContext)
+        public RepositoryMessagesSql(MoodRebootContext sqlContext)
         {
             this.sqlContext = sqlContext;
         }

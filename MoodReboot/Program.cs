@@ -1,3 +1,4 @@
+using Ganss.Xss;
 using MoodReboot.Hubs;
 using MoodReboot.Interfaces;
 using MoodReboot.Services;
@@ -7,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddSignalR();
 builder.Services.AddTransient<IStreamFileUploadService, StreamFileUploadLocalService>();
+builder.Services.AddSingleton<HtmlSanitizer>();
 
 var app = builder.Build();
 

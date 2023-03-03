@@ -6,11 +6,11 @@ using MoodReboot.Models;
 
 namespace MoodReboot.Repositories
 {
-    public class RepositoryCenters : IRepositoryCenters
+    public class RepositoryCentersSql : IRepositoryCenters
     {
-        private readonly MoodRebootSqlContext _context;
+        private readonly MoodRebootContext _context;
 
-        public RepositoryCenters(MoodRebootSqlContext context)
+        public RepositoryCentersSql(MoodRebootContext context)
         {
             this._context = context;
         }
