@@ -13,8 +13,6 @@ namespace MoodReboot.Models
         public DateTime DatePublished { get; set; }
         [Column("DATE_MODIFIED")]
         public DateTime? DateModified { get; set; }
-        [Column("GROUP_ID")]
-        public int? GroupId { get; set; }
         [Column("DESCRIPTION")]
         public string? Description { get; set; }
         [Column("IMAGE")]
@@ -25,8 +23,7 @@ namespace MoodReboot.Models
         public int CenterId { get; set; }
         [Column("IS_VISIBLE")]
         public Boolean IsVisible { get; set; }
-        // Extra
-        public List<ContentGroup>? Contents { get; set; }
-        public User? Author { get; set; }
+        [Column("GROUP_ID")]
+        public int? GroupId { get; set; }
     }
 }

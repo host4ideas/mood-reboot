@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using MoodReboot.Data;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
+using System.Text.RegularExpressions;
 
 namespace MoodReboot.Repositories
 {
@@ -25,10 +26,18 @@ namespace MoodReboot.Repositories
             return this.context.ContentGroups.FirstOrDefaultAsync(x => x.ContentGroupId == id);
         }
 
-        public List<Content> GetContentsGroup(int groupId)
+        public List<Content> GetContentByGroup(int groupId)
         {
             var consulta = from datos in this.context.Contents
                            where datos.ContentGroupId == groupId
+                           select datos;
+            return consulta.ToList();
+        }
+
+        public List<ContentGroup> GetCourseContentGroups(int courseId)
+        {
+            var consulta = from datos in this.context.ContentGroups
+                           where datos.CourseID == courseId
                            select datos;
             return consulta.ToList();
         }

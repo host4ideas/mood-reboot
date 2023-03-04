@@ -20,10 +20,10 @@
     <script>
         const list = @Html.Raw(Json.Serialize(Model));
 
-        function htmlListItem(editor, modified, description, published, authors) {
+        function htmlListItem(editor, modified, description, published, course) {
             let authorsHtml = "";
-
-            authors.foreach(author => {
+            
+            course.authors.forEach(author => {
                 authorsHtml += `
                     <div class="flex items-center space-x-4">
                         <img class="w-7 h-7 rounded-full" src="" alt="${author.image} avatar" />
@@ -34,7 +34,7 @@
             })
 
             return `
-                <a href='Courses/CourseDetails?id=${course.id}' class="flex flex-col gap-6 justify-between p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 overflow-hidden">
+                <a href='CourseDetails?id=${course.courseId}' class="flex flex-col gap-6 justify-between p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 overflow-hidden">
 
                     <div class="flex justify-between flex-wrap items-center text-gray-500 overflow-hidden">
                         <span class="text-sm">${course.centerName}</span>
@@ -45,7 +45,7 @@
                     </div>
 
                     <div class="text-gray-500 overflow-hidden">
-                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">${course.name}</h5>
+                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">${course.courseName}</h5>
                         <p class="font-normal text-gray-700 dark:text-gray-400">${description}</p>
                     </div>
 
@@ -70,9 +70,7 @@
                     description = description.slice(0, 147) + '...';
                 }
 
-                console.log(course);
-
-                html += htmlListItem(editor, modified, description, published, authors);
+                html += htmlListItem(editor, modified, description, published, course);
             });
             
             $("#courses-list").html(html);
@@ -118,7 +116,7 @@
                     description = description.slice(0, 147) + '...';
                 }
 
-                html += htmlListItem(editor, modified, description, published, authors);
+                html += htmlListItem(editor, modified, description, published, course);
             });
 
             $("#courses-list").html(html);

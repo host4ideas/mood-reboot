@@ -23,7 +23,7 @@
                 <a asp-controller="Centers" asp-action="Index" class="@GetActiveLinkClass("Centers")">Mis Centros</a>
             </li>
             <li class="mr-2">
-                <a asp-controller="Courses" asp-action="Index" class="@GetActiveLinkClass("Courses")">Mis Cursos</a>
+                <a asp-controller="Courses" asp-action="UserCourses" asp-route-userId="0" class="@GetActiveLinkClass("Courses")">Mis Cursos</a>
             </li>
         }
     </ul>

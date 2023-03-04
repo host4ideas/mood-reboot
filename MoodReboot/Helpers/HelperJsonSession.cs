@@ -3,7 +3,7 @@ using System.Text.Json;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace MvcCoreSession.Helpers
+namespace MoodReboot.Helpers
 {
     public class HelperJsonSession
     {

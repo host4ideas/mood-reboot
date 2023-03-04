@@ -13,5 +13,7 @@ namespace MoodReboot.Models
         public int? UserId { get; set; }
         [Column("MIME_TYPE")]
         public string MimeType { get; set; }
+        [Column("NAME")]
+        public string Name { get; set; }
     }
 }

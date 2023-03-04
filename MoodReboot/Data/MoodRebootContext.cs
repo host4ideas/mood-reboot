@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using MoodReboot.Models;
 
 namespace MoodReboot.Data
@@ -13,5 +15,6 @@ namespace MoodReboot.Data
         public DbSet<ContentGroup> ContentGroups { get; set; }
         public DbSet<Content> Contents { get; set; }
         public DbSet<AppFile> Files { get; set; }
+        public DbSet<UserCourse> UserCourses { get; set; }
     }
 }

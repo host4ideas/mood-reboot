@@ -7,7 +7,7 @@ namespace MoodReboot.Controllers
     {
         public IActionResult Index()
         {
-            CenterListView[] centers = new[]
+            List<CenterListView> centers = new()
             {
                 new CenterListView()
                 {

@@ -11,8 +11,6 @@ namespace MoodReboot.Models
         public int ContentGroupId { get; set; }
         [Column("NAME")]
         public string Name { get; set; }
-        [Column("DESCRIPTION")]
-        public string Description { get; set; }
         [Column("IS_VISIBLE")]
         public Boolean IsVisible { get; set; }
         [Column("COURSE_ID")]

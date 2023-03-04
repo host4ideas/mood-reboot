@@ -2,72 +2,259 @@
     Layout = "_MenuLayout";
 }
 
-@{
-    Boolean isEditor = true;
-}
+@model CourseDetailsModel
 
 <section id="accordion-collapse" class="mt-10 mb-10" data-accordion="collapse">
     <h2 class="mb-4 text-3xl lg:text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Unidades</h2>
-    <div id="accordion-collapse-heading-1">
-        <div class="flex flex items-center">
-            <button type="button" class="flex items-center justify-between w-full p-5 font-medium text-left text-gray-500 border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800" data-accordion-target="#accordion-collapse-body-1" aria-expanded="false" aria-controls="accordion-collapse-body-1">
-                <span>What is Flowbite?</span>
-                <svg data-accordion-icon class="w-6 h-6 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-            </button>
-        </div>
-    </div>
-    <div id="accordion-collapse-body-1" class="hidden" aria-labelledby="accordion-collapse-heading-1">
-        <div class="p-5 font-light border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
-            <!-- Content -->
-            <div class="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900">
-                <div class="flex justify-between px-4 mx-auto max-w-screen-xl ">
-                    <article id="0" class="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
-                        Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. No sólo sobrevivió 500 años, sino que tambien ingresó como texto de relleno en documentos electrónicos, quedando esencialmente igual al original. Fue popularizado en los 60s con la creación de las hojas "Letraset", las cuales contenian pasajes de Lorem Ipsum, y más recientemente con software de autoedición, como por ejemplo Aldus PageMaker, el cual incluye versiones de Lorem Ipsum.
-                    </article>
-                    @{
-                        if (isEditor == true)
-                        {
-                            <button onclick="btnEditorHandler(0)" value="test" type="button" class="absolute ml-1 p-4 text-gray-900 bg-white font-medium rounded border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">✏️</button>
-                        }
-                    }
+
+    @{
+        for (int i = 0; i < Model.ContentGroups.Count; i++)
+        {
+            ContentGroup group = Model.ContentGroups[i];
+            int index = i + 1;
+
+            if (i < 1)
+            {
+                <div id="accordion-collapse-heading-@index">
+                    <div class="flex flex items-center">
+                        <button type="button" class="flex items-center justify-between w-full p-5 font-medium text-left text-gray-500 border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800" data-accordion-target="#accordion-collapse-body-@index" aria-expanded="false" aria-controls="accordion-collapse-body-@index">
+                            <span>@group.Name</span>
+                            <svg data-accordion-icon class="w-6 h-6 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        </button>
+                    </div>
                 </div>
-            </div>
-            <div class="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900">
-                <div class="flex justify-between px-4 mx-auto max-w-screen-xl ">
-                    <article id="1" class="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
-                        Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. No sólo sobrevivió 500 años, sino que tambien ingresó como texto de relleno en documentos electrónicos, quedando esencialmente igual al original. Fue popularizado en los 60s con la creación de las hojas "Letraset", las cuales contenian pasajes de Lorem Ipsum, y más recientemente con software de autoedición, como por ejemplo Aldus PageMaker, el cual incluye versiones de Lorem Ipsum.
-                    </article>
-                    @{
-                        if (isEditor == true)
-                        {
-                            <button onclick="btnEditorHandler(1)" value="test" type="button" class="absolute ml-1 p-4 text-gray-900 bg-white font-medium rounded border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">✏️</button>
+                <div id="accordion-collapse-body-@index" class="hidden" aria-labelledby="accordion-collapse-heading-@index">
+                    <div class="p-5 font-light border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
+                        <!-- Content -->
+                        @{
+                            foreach (Content content in group.Contents)
+                            {
+                                <div class="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900">
+                                    <div class="flex justify-between px-4 mx-auto max-w-screen-xl ">
+                                        <article id="@index" class="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
+                                            @{
+                                                if (content.Text != null)
+                                                {
+                                                    @content.Text
+                                                }
+                                                else if (content.File != null)
+                                                {
+                                                    if (content.File.MimeType == "image/webp" || content.File.MimeType == "image/jpeg" || content.File.MimeType == "image/png" || content.File.MimeType == "image/gif")
+                                                    {
+                                                        <img src="~/images/@content.File.Name" width="300" />
+                                                    }
+                                                    else if (content.File.MimeType == "application/pdf")
+                                                    {
+                                                        <!-- PDF preview -->
+                                                        <div id="previewContent" class="hidden">
+                                                            <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
+
+                                                            <!-- Prev button -->
+                                                            <button id="prev" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
+                                                                <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                                                                    Previous
+                                                                </span>
+                                                            </button>
+                                                            <!-- Next button -->
+                                                            <button id="next" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">
+                                                                <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                                                                    Next
+                                                                </span>
+                                                            </button>
+
+                                                            <!-- Page progress bar -->
+                                                            <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700" style="max-height:20px">
+                                                                <div id="pageProgressBar" class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: 0%"><span id="page_num"></span> / <span id="page_count"></span></div>
+                                                            </div>
+
+                                                            <!-- Preview pdf content canvas -->
+                                                            <canvas id="canvasPdfPreview" style="max-width:250px"></canvas>
+                                                        </div>
+                                                    }
+                                                    else if (content.File.MimeType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                                                    {
+                                                        <!-- Excel preview -->
+                                                        <div id="tableDataPreview" class="hidden relative overflow-x-auto max-w-36 max-h-72">
+                                                        </div>
+                                                    }
+                                                }
+                                            }
+                                        </article>
+                                        @{
+                                            if (Model.IsEditor == true)
+                                            {
+                                                <button onclick="btnEditorHandler(@index)" value="test" type="button" class="absolute ml-1 p-4 text-gray-900 bg-white font-medium rounded border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">✏️</button>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            }
                         }
-                    }
+                    </div>
                 </div>
-            </div>
-        </div>
-    </div>
-    <h2 id="accordion-collapse-heading-3">
-        <button type="button" class="flex items-center justify-between w-full p-5 font-medium text-left text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800" data-accordion-target="#accordion-collapse-body-3" aria-expanded="false" aria-controls="accordion-collapse-body-3">
-            <span>What are the differences between Flowbite and Tailwind UI?</span>
-            <svg data-accordion-icon class="w-6 h-6 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-        </button>
-    </h2>
-    <div id="accordion-collapse-body-3" class="hidden" aria-labelledby="accordion-collapse-heading-3">
-        <div class="p-5 font-light border border-t-0 border-gray-200 dark:border-gray-700">
-            <p class="mb-2 text-gray-500 dark:text-gray-400">The main difference is that the core components from Flowbite are open source under the MIT license, whereas Tailwind UI is a paid product. Another difference is that Flowbite relies on smaller and standalone components, whereas Tailwind UI offers sections of pages.</p>
-            <p class="mb-2 text-gray-500 dark:text-gray-400">However, we actually recommend using both Flowbite, Flowbite Pro, and even Tailwind UI as there is no technical reason stopping you from using the best of two worlds.</p>
-            <p class="mb-2 text-gray-500 dark:text-gray-400">Learn more about these technologies:</p>
-            <ul class="pl-5 text-gray-500 list-disc dark:text-gray-400">
-                <li><a href="https://flowbite.com/pro/" class="text-blue-600 dark:text-blue-500 hover:underline">Flowbite Pro</a></li>
-                <li><a href="https://tailwindui.com/" rel="nofollow" class="text-blue-600 dark:text-blue-500 hover:underline">Tailwind UI</a></li>
-            </ul>
-        </div>
-    </div>
+            }
+            else if (i > 0 && i < Model.ContentGroups.Count - 1)
+            {
+                <h2 id="accordion-collapse-heading-@index">
+                    <button type="button" class="flex items-center justify-between w-full p-5 font-medium text-left text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800" data-accordion-target="#accordion-collapse-body-@index" aria-expanded="false" aria-controls="accordion-collapse-body-@index">
+                        <span>@group.Name</span>
+                        <svg data-accordion-icon class="w-6 h-6 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    </button>
+                </h2>
+                <div id="accordion-collapse-body-@index" class="hidden" aria-labelledby="accordion-collapse-heading-@index">
+                    <div class="p-5 font-light border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
+                        <!-- Content -->
+                        @{
+                            foreach (Content content in group.Contents)
+                            {
+                                <div class="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900">
+                                    <div class="flex justify-between px-4 mx-auto max-w-screen-xl ">
+                                        <article id="@index" class="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
+                                            @{
+                                                if (content.Text != null)
+                                                {
+                                                    @content.Text
+                                                }
+                                                else if (content.File != null)
+                                                {
+                                                    if (content.File.MimeType == "image/webp" || content.File.MimeType == "image/jpeg" || content.File.MimeType == "image/png" || content.File.MimeType == "image/gif")
+                                                    {
+                                                        <img src="~/images/@content.File.Name" width="300" />
+                                                    }
+                                                    else if (content.File.MimeType == "application/pdf")
+                                                    {
+                                                        <!-- PDF preview -->
+                                                        <div id="previewContent" class="hidden">
+                                                            <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
+
+                                                            <!-- Prev button -->
+                                                            <button id="prev" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
+                                                                <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                                                                    Previous
+                                                                </span>
+                                                            </button>
+                                                            <!-- Next button -->
+                                                            <button id="next" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">
+                                                                <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                                                                    Next
+                                                                </span>
+                                                            </button>
+
+                                                            <!-- Page progress bar -->
+                                                            <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700" style="max-height:20px">
+                                                                <div id="pageProgressBar" class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: 0%"><span id="page_num"></span> / <span id="page_count"></span></div>
+                                                            </div>
+
+                                                            <!-- Preview pdf content canvas -->
+                                                            <canvas id="canvasPdfPreview" style="max-width:250px"></canvas>
+                                                        </div>
+                                                    }
+                                                    else if (content.File.MimeType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                                                    {
+                                                        <!-- Excel preview -->
+                                                        <div id="tableDataPreview" class="hidden relative overflow-x-auto max-w-36 max-h-72">
+                                                        </div>
+                                                    }
+                                                }
+                                            }
+                                        </article>
+                                        @{
+                                            if (Model.IsEditor == true)
+                                            {
+                                                <button onclick="btnEditorHandler(@index)" value="test" type="button" class="absolute ml-1 p-4 text-gray-900 bg-white font-medium rounded border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">✏️</button>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            }
+            else
+            {
+                <h2 id="accordion-collapse-heading-@index">
+                    <button type="button" class="flex items-center justify-between w-full p-5 font-medium text-left text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800" data-accordion-target="#accordion-collapse-body-@index" aria-expanded="false" aria-controls="accordion-collapse-body-@index">
+                        <span>@group.Name</span>
+                        <svg data-accordion-icon class="w-6 h-6 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    </button>
+                </h2>
+                <div id="accordion-collapse-body-@index" class="hidden" aria-labelledby="accordion-collapse-heading-@index">
+                    <div class="p-5 font-light border border-t-0 border-gray-200 dark:border-gray-700">
+                        <!-- Content -->
+                        @{
+                            foreach (Content content in group.Contents)
+                            {
+                                <div class="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900">
+                                    <div class="flex justify-between px-4 mx-auto max-w-screen-xl ">
+                                        <article id="@index" class="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
+                                            @{
+                                                if (content.Text != null)
+                                                {
+                                                    @content.Text
+                                                }
+                                                else if (content.File != null)
+                                                {
+                                                    if (content.File.MimeType == "image/webp" || content.File.MimeType == "image/jpeg" || content.File.MimeType == "image/png" || content.File.MimeType == "image/gif")
+                                                    {
+                                                        <img src="~/images/@content.File.Name" width="300" />
+                                                    }
+                                                    else if (content.File.MimeType == "application/pdf")
+                                                    {
+                                                        <!-- PDF preview -->
+                                                        <div id="previewContent" class="hidden">
+                                                            <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
+
+                                                            <!-- Prev button -->
+                                                            <button id="prev" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
+                                                                <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                                                                    Previous
+                                                                </span>
+                                                            </button>
+                                                            <!-- Next button -->
+                                                            <button id="next" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">
+                                                                <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                                                                    Next
+                                                                </span>
+                                                            </button>
+
+                                                            <!-- Page progress bar -->
+                                                            <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700" style="max-height:20px">
+                                                                <div id="pageProgressBar" class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: 0%"><span id="page_num"></span> / <span id="page_count"></span></div>
+                                                            </div>
+
+                                                            <!-- Preview pdf content canvas -->
+                                                            <canvas id="canvasPdfPreview" style="max-width:250px"></canvas>
+                                                        </div>
+                                                    }
+                                                    else if (content.File.MimeType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                                                    {
+                                                        <!-- Excel preview -->
+                                                        <div id="tableDataPreview" class="hidden relative overflow-x-auto max-w-36 max-h-72">
+                                                        </div>
+                                                    }
+                                                }
+                                            }
+                                        </article>
+                                        @{
+                                            if (Model.IsEditor == true)
+                                            {
+                                                <button onclick="btnEditorHandler(@index)" value="test" type="button" class="absolute ml-1 p-4 text-gray-900 bg-white font-medium rounded border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">✏️</button>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            }
+        }
+    }
 </section>
 
 <!-- Editor -->
-<div class="hidden" style="margin: 50px auto;">
+<div id="editorWindow" class="hidden" style="margin: 50px auto;">
     <form method="post">
         <div class="w-full mb-4 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
             <div class="flex flex-wrap items-center justify-between px-3 py-2 border-b dark:border-gray-600">
@@ -148,9 +335,6 @@
             const text = $("#editor").val();
             const html = converter.makeHtml(text);
             $("#markdownPreview").html(html);
-
-            e.target.style.height = "";
-            e.target.style.height = e.target.scrollHeight + "px"
         }
 
         $("#editor").keyup(function (e) {
@@ -158,11 +342,179 @@
         });
 
         function btnEditorHandler(idArticle) {
+            console.log("test")
             const id = "#" + idArticle;
-            let html = $(id).html().trim();
-            $("#editor").html(html);
+            let articleHtml = $(id).html().trim();
+            $("#editor").html(articleHtml);
+            $("#editorWindow").toggleClass("hidden");
             parseMarkdown();
         }
+
+        //  tag, create shortcut to access PDF.js exports.
+        var pdfjsLib = window['pdfjs-dist/build/pdf'];
+        // The workerSrc property shall be specified.
+        pdfjsLib.GlobalWorkerOptions.workerSrc = './js/pdfjs-3.3.122-dist/build/pdf.worker.js';
+
+        $("#hidden-file").on("change", function (e) {
+            var file = e.target.files[0]
+
+            // Clean previews
+            $('#imgImagePreview').empty();
+            $('#canvasPdfPreview').empty();
+            $("#tableDataPreview").empty();
+            // Show preview controls
+            $('#toggleExcelPreview').removeClass("hidden");
+            $('#toggleImgPreview').removeClass("hidden");
+            $('#togglePdfPreview').removeClass("hidden");
+
+            if (file.type == "application/pdf") {
+                try {
+                    var fileReader = new FileReader();
+                    fileReader.onload = function () {
+                        var pdfData = new Uint8Array(this.result);
+                        // Using DocumentInitParameters object to load binary data.
+
+                        var pdfDoc = null,
+                            pageNum = 1,
+                            pageRendering = false,
+                            pageNumPending = null,
+                            scale = 0.8,
+                            canvas = document.getElementById('canvasPdfPreview'),
+                            ctx = canvas.getContext('2d');
+
+                        /**
+                         * Get page info from document, resize canvas accordingly, and render page.
+                         * @@param num Page number.
+                         */
+                        function renderPage(num) {
+                            pageRendering = true;
+                            // Using promise to fetch the page
+                            pdfDoc.getPage(num).then(function (page) {
+                                var viewport = page.getViewport({ scale: scale });
+                                canvas.height = viewport.height;
+                                canvas.width = viewport.width;
+
+                                // Render PDF page into canvas context
+                                var renderContext = {
+                                    canvasContext: ctx,
+                                    viewport: viewport
+                                };
+                                var renderTask = page.render(renderContext);
+
+                                // Wait for rendering to finish
+                                renderTask.promise.then(function () {
+                                    pageRendering = false;
+                                    if (pageNumPending !== null) {
+                                        // New page rendering is pending
+                                        renderPage(pageNumPending);
+                                        pageNumPending = null;
+                                    }
+                                });
+                            });
+
+                            // Update page counters
+                            $("#page_num").text(num);
+                            $("#pageProgressBar").css("width", Math.round((num * 100) / pdfDoc.numPages) + "%");
+                        }
+
+                        /**
+                         * If another page rendering in progress, waits until the rendering is
+                         * finised. Otherwise, executes rendering immediately.
+                         */
+                        function queueRenderPage(num) {
+                            if (pageRendering) {
+                                pageNumPending = num;
+                            } else {
+                                renderPage(num);
+                            }
+                        }
+
+                        /**
+                         * Displays previous page.
+                         */
+                        function onPrevPage() {
+                            if (pageNum <= 1) {
+                                return;
+                            }
+                            pageNum--;
+                            queueRenderPage(pageNum);
+                        }
+                        document.getElementById('prev').addEventListener('click', onPrevPage);
+
+                        /**
+                         * Displays next page.
+                         */
+                        function onNextPage() {
+                            if (pageNum >= pdfDoc.numPages) {
+                                return;
+                            }
+                            pageNum++;
+                            queueRenderPage(pageNum);
+                        }
+                        document.getElementById('next').addEventListener('click', onNextPage);
+
+                        /**
+                         * Asynchronously downloads PDF.
+                         */
+                        pdfjsLib.getDocument({ data: pdfData }).promise.then(function (pdfDoc_) {
+                            pdfDoc = pdfDoc_;
+                            ; $("#page_count").text(pdfDoc.numPages);
+                            $("#previewContent").removeClass("hidden");
+
+                            // Initial/first page rendering
+                            renderPage(pageNum);
+                        });
+                    };
+                    fileReader.readAsArrayBuffer(file);
+                } catch (e) {
+                    console.error(e.message);
+                    $("#previewContent").addClass("hidden");
+                }
+            }
+
+            if (file.type == "image/jpeg" || file.type == "image/png" || file.type == "image/webp" || file.type == "image/gif") {
+                var reader = new FileReader();
+                reader.onload = function () {
+                    $('#imgImagePreview').attr("src", reader.result);
+                    $("#previewImage").removeClass("hidden");
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            }
+
+            if (file.type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+                var reader = new FileReader();
+                reader.readAsArrayBuffer(e.target.files[0]);
+                reader.onload = function (e) {
+
+                    var data = new Uint8Array(reader.result);
+                    var work_book = XLSX.read(data, { type: 'array' });
+                    var sheet_name = work_book.SheetNames;
+                    var sheet_data = XLSX.utils.sheet_to_json(work_book.Sheets[sheet_name[0]], { header: 1 });
+
+                    if (sheet_data.length > 0) {
+                        var table_output = '<table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">';
+
+                        for (var row = 0; row < sheet_data.length; row++) {
+
+                            table_output += '<tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">';
+
+                            for (var cell = 0; cell < sheet_data[row].length; cell++) {
+
+                                if (row == 0) {
+                                    table_output += '<th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">' + sheet_data[row][cell] + '</th>';
+                                }
+                                else {
+                                    table_output += '<td class="px-6 py-4">' + sheet_data[row][cell] + '</td>';
+                                }
+                            }
+                            table_output += '</tr>';
+                        }
+                        table_output += '</table>';
+                        $("#tableDataPreview").removeClass("hidden").html(table_output);
+                    }
+                }
+            }
+        });
     </script>
 }
 

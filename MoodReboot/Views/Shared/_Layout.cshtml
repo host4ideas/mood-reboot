@@ -262,9 +262,6 @@
                             <li class="flex items-center">
                                 <a asp-controller="Centers" asp-action="Index" class="@GetActiveLinkClass("Centers")">Centros</a>
                             </li>
-                            <li class="flex items-center">
-                                <a asp-controller="Courses" asp-action="Index" class="@GetActiveLinkClass("Courses")">Cursos</a>
-                            </li>
                         }
                         <!-- Hide if the user is logged in -->
                         <li class="flex items-center">
@@ -285,7 +282,7 @@
         </nav>
     </header>
 
-    <main class="relative p-4" style="max-width: 1536px; margin: auto;">
+    <main class="relative p-4 mx-auto max-w-screen-2xl">
         @RenderBody()
     </main>
 
@@ -423,13 +420,6 @@
             <!-- Preview pdf content canvas -->
             <canvas id="canvasPdfPreview" style="max-width:250px"></canvas>
         </div>
-
-        @if (ViewBag.Message != null)
-        {
-            <div class="alert" style="margin-top:20px">
-                @ViewBag.Message
-            </div>
-        }
 
         <!-- Messages list -->
         <div class="row">

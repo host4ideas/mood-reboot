@@ -5,7 +5,8 @@ namespace MoodReboot.Interfaces
     public interface IRepositoryContent
     {
         public Task<Content?> FindContent(int id);
-        public List<Content> GetContentsGroup(int groupId);
+        public List<Content> GetContentByGroup(int groupId);
+        public List<ContentGroup> GetCourseContentGroups(int courseId);
         public Task UpdateContentGroup(int id, string name, Boolean isVisible);
         public Task DeleteContentGroup(int id);
         public Task CreateContentGroup(string name, int courseId, Boolean isVisible = false);

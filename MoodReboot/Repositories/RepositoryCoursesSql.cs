@@ -49,24 +49,72 @@ namespace MoodReboot.Repositories
             return this.context.Courses.ToList();
         }
 
-        public List<Course> GetUserCourses(int id)
+        public List<CourseListView> GetUserCourses(int userId)
         {
-            string sql = "SP_USER_COURSES @USER_ID";
+            var result = from c in context.Courses
+                         join uc in context.UserCourses on c.Id equals uc.CourseId
+                         join u in context.Users on uc.UserId equals u.Id
+                         join ct in context.Centers on c.CenterId equals ct.Id
+                         where uc.UserId == userId
+                         select new CourseListView
+                         {
+                             CourseId = c.Id,
+                             DatePublished = c.DatePublished,
+                             DateModified = c.DateModified,
+                             Description = c.Description,
+                             Image = c.Image,
+                             CourseName = c.Name,
+                             CenterName = ct.Name,
+                             IsEditor = uc.IsEditor
+                         };
 
-            SqlParameter[] sqlParameters = new[]
+            var courseListView = result.ToList();
+
+            foreach (CourseListView courseView in courseListView)
             {
-                new SqlParameter("@USER_ID", id),
-            };
+                var result2 = from u in context.Users
+                              join uc in context.UserCourses on u.Id equals uc.UserId
+                              where uc.IsEditor == true && uc.CourseId == courseView.CourseId
+                              select new Author { UserName = u.UserName, Image = u.Image };
 
-            return this.context.Courses.FromSqlRaw(sql, sqlParameters).ToList();
+                courseView.Authors = result2.ToList();
+            }
+
+            return courseListView;
         }
 
-        public List<Course> GetCenterCourses(int id)
+        public List<CourseListView> GetCenterCourses(int courseId)
         {
-            var consulta = from datos in this.context.Courses
-                          where datos.CenterId == id
-                          select datos;
-            return consulta.ToList();
+            var result = from c in context.Courses
+                         join uc in context.UserCourses on c.Id equals uc.CourseId
+                         join u in context.Users on uc.UserId equals u.Id
+                         join ct in context.Centers on c.CenterId equals ct.Id
+                         where uc.CourseId == courseId
+                         select new CourseListView
+                         {
+                             CourseId = c.Id,
+                             DatePublished = c.DatePublished,
+                             DateModified = c.DateModified,
+                             Description = c.Description,
+                             Image = c.Image,
+                             CourseName = c.Name,
+                             CenterName = ct.Name,
+                             IsEditor = uc.IsEditor
+                         };
+
+            var courseListView = result.ToList();
+
+            foreach (CourseListView courseView in courseListView)
+            {
+                var result2 = from u in context.Users
+                              join uc in context.UserCourses on u.Id equals uc.UserId
+                              where uc.IsEditor == true && uc.CourseId == courseView.CourseId
+                              select new Author { UserName = u.UserName, Image = u.Image };
+
+                courseView.Authors = result2.ToList();
+            }
+
+            return courseListView;
         }
 
         public async Task UpdateCourse(int id, string description, string image, string name, Boolean isVisible)
