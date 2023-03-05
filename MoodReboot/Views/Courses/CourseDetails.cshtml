@@ -31,7 +31,7 @@
                             {
                                 <div class="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900">
                                     <div class="flex justify-between px-4 mx-auto max-w-screen-xl ">
-                                        <article id="@index" class="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
+                                        <article id="@content.Id" class="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
                                             @{
                                                 if (content.Text != null)
                                                 {
@@ -83,9 +83,21 @@
                                         @{
                                             if (Model.IsEditor == true)
                                             {
-                                                <button onclick="btnEditorHandler(@index)" value="test" type="button" class="absolute ml-1 p-4 text-gray-900 bg-white font-medium rounded border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">✏️</button>
+                                                <button onclick="btnUpdateContentHandler(@content.Id)" type="button" class="absolute ml-1 p-4 text-gray-900 bg-white font-medium rounded border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">✏️</button>
                                             }
                                         }
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <button onclick="btnNewContentHandler(@group.ContentGroupId)" data-tooltip-target="tooltip-new-content-@index" type="button" class="p-4 text-gray-900 bg-white font-medium rounded border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                        </svg>
+                                        <span class="sr-only">Añadir nuevo contenido</span>
+                                    </button>
+                                    <div id="tooltip-new-content-@index" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                        Añadir nuevo contenido
+                                        <div class="tooltip-arrow" data-popper-arrow></div>
                                     </div>
                                 </div>
                             }
@@ -109,7 +121,7 @@
                             {
                                 <div class="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900">
                                     <div class="flex justify-between px-4 mx-auto max-w-screen-xl ">
-                                        <article id="@index" class="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
+                                        <article id="@content.Id" class="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
                                             @{
                                                 if (content.Text != null)
                                                 {
@@ -161,9 +173,21 @@
                                         @{
                                             if (Model.IsEditor == true)
                                             {
-                                                <button onclick="btnEditorHandler(@index)" value="test" type="button" class="absolute ml-1 p-4 text-gray-900 bg-white font-medium rounded border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">✏️</button>
+                                                <button onclick="btnUpdateContentHandler(@content.Id)" type="button" class="absolute ml-1 p-4 text-gray-900 bg-white font-medium rounded border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">✏️</button>
                                             }
                                         }
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <button onclick="btnNewContentHandler(@group.ContentGroupId)" data-tooltip-target="tooltip-new-content-@index" type="button" class="p-4 text-gray-900 bg-white font-medium rounded border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                        </svg>
+                                        <span class="sr-only">Añadir nuevo contenido</span>
+                                    </button>
+                                    <div id="tooltip-new-content-@index" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                        Añadir nuevo contenido
+                                        <div class="tooltip-arrow" data-popper-arrow></div>
                                     </div>
                                 </div>
                             }
@@ -187,7 +211,7 @@
                             {
                                 <div class="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900">
                                     <div class="flex justify-between px-4 mx-auto max-w-screen-xl ">
-                                        <article id="@index" class="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
+                                        <article id="@content.Id" class="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
                                             @{
                                                 if (content.Text != null)
                                                 {
@@ -239,9 +263,21 @@
                                         @{
                                             if (Model.IsEditor == true)
                                             {
-                                                <button onclick="btnEditorHandler(@index)" value="test" type="button" class="absolute ml-1 p-4 text-gray-900 bg-white font-medium rounded border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">✏️</button>
+                                                <button onclick="btnUpdateContentHandler(@content.Id)" type="button" class="absolute ml-1 p-4 text-gray-900 bg-white font-medium rounded border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">✏️</button>
                                             }
                                         }
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <button onclick="btnNewContentHandler(@group.ContentGroupId)" data-tooltip-target="tooltip-new-content-@index" type="button" class="p-4 text-gray-900 bg-white font-medium rounded border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                        </svg>
+                                        <span class="sr-only">Añadir nuevo contenido</span>
+                                    </button>
+                                    <div id="tooltip-new-content-@index" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                        Añadir nuevo contenido
+                                        <div class="tooltip-arrow" data-popper-arrow></div>
                                     </div>
                                 </div>
                             }
@@ -255,57 +291,56 @@
 
 <!-- Editor -->
 <div id="editorWindow" class="hidden" style="margin: 50px auto;">
-    <form method="post">
+    <form id="editorForm" method="post" action="">
+        @{
+            // Take userId from session
+            <input type="hidden" value="0" name="userId" />
+            // Take courseId from Model
+            <input type="hidden" value="@Model.Course.Id" name="courseId" />
+        }
+        <input id="grupId" type="hidden" value="0" name="groupId" />
+        <input id="contentId" type="hidden" value="0" name="contentId" />
+
         <div class="w-full mb-4 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
             <div class="flex flex-wrap items-center justify-between px-3 py-2 border-b dark:border-gray-600">
                 <div class="flex flex-wrap items-center divide-gray-200 sm:divide-x dark:divide-gray-600">
                     <div class="flex items-center space-x-1 sm:pr-4">
-                        <button type="button" class="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
+                        <button type="button" data-tooltip-target="tooltip-attach-file" class="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
                             <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd"></path></svg>
                             <span class="sr-only">Attach file</span>
                         </button>
-                        <button type="button" class="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
-                            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>
-                            <span class="sr-only">Embed map</span>
-                        </button>
-                        <button type="button" class="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
+                        <div id="tooltip-attach-file" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                            Attach file
+                            <div class="tooltip-arrow" data-popper-arrow></div>
+                        </div>
+                        <button type="button" data-tooltip-target="tooltip-attach-image" class="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
                             <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path></svg>
                             <span class="sr-only">Upload image</span>
                         </button>
-                        <button type="button" class="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
-                            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                            <span class="sr-only">Format code</span>
-                        </button>
-                        <button type="button" class="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
-                            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-.464 5.535a1 1 0 10-1.415-1.414 3 3 0 01-4.242 0 1 1 0 00-1.415 1.414 5 5 0 007.072 0z" clip-rule="evenodd"></path></svg>
-                            <span class="sr-only">Add emoji</span>
-                        </button>
+                        <div id="tooltip-attach-image" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                            Upload image
+                            <div class="tooltip-arrow" data-popper-arrow></div>
+                        </div>
                     </div>
                     <div class="flex flex-wrap items-center space-x-1 sm:pl-4">
-                        <button type="button" class="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
+                        <button type="button" data-tooltip-target="tooltip-add-list" class="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
                             <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path></svg>
                             <span class="sr-only">Add list</span>
                         </button>
-                        <button type="button" class="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
-                            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path></svg>
-                            <span class="sr-only">Settings</span>
-                        </button>
-                        <button type="button" class="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
-                            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path></svg>
-                            <span class="sr-only">Timeline</span>
-                        </button>
-                        <button type="button" class="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
-                            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                            <span class="sr-only">Download</span>
-                        </button>
+                        <div id="tooltip-add-list" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                            Add list
+                            <div class="tooltip-arrow" data-popper-arrow></div>
+                        </div>
                     </div>
                 </div>
-                <button type="button" data-tooltip-target="tooltip-fullscreen" class="p-2 text-gray-500 rounded cursor-pointer sm:ml-auto hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
-                    <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 11-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 111.414-1.414L15 13.586V12a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
-                    <span class="sr-only">Full screen</span>
+                <button id="close-editor" type="button" data-tooltip-target="tooltip-close-editor" class="p-2 text-gray-500 rounded cursor-pointer sm:ml-auto hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
+                    <svg aria-hidden="true" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    <span class="sr-only">Cerrar editor</span>
                 </button>
-                <div id="tooltip-fullscreen" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-                    Show full screen
+                <div id="tooltip-close-editor" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                    Cerrar editor
                     <div class="tooltip-arrow" data-popper-arrow></div>
                 </div>
             </div>
@@ -328,6 +363,7 @@
 </div>
 
 @section scriptsMenuLayout {
+    <script src="~/js/filePreviewContentCourse.js"></script>
     <script>
         const converter = new showdown.Converter({ extensions: ['xssfilter'] })
 
@@ -341,179 +377,34 @@
             parseMarkdown();
         });
 
-        function btnEditorHandler(idArticle) {
-            console.log("test")
-            const id = "#" + idArticle;
-            let articleHtml = $(id).html().trim();
-            $("#editor").html(articleHtml);
+        function btnUpdateContentHandler(contentId) {
+            // Get the content's content (article tag)
+            const id = "#" + contentId;
+            let contentHtml = $(id).html().trim();
+            $("#editor").html(contentHtml);
+            // Show the editor
             $("#editorWindow").toggleClass("hidden");
+            // Set contentId hidden input value
+            $("#contentId").val(contentId);
+            // Update editor's form action
+            document.getElementById("editorForm").action = "/Content/UpdateContentAsync"
+            // Display nicely the content's HTML in the editor preview
             parseMarkdown();
         }
 
-        //  tag, create shortcut to access PDF.js exports.
-        var pdfjsLib = window['pdfjs-dist/build/pdf'];
-        // The workerSrc property shall be specified.
-        pdfjsLib.GlobalWorkerOptions.workerSrc = './js/pdfjs-3.3.122-dist/build/pdf.worker.js';
+        function btnNewContentHandler(contentGroupId) {
+            // Show the editor
+            $("#editor").html("");
+            $("#editorWindow").toggleClass("hidden");
+            // Sset groupId hidden input value
+            $("#grupId").val(contentGroupId);
+            // Update editor's form action
+            document.getElementById("editorForm").action = "/Content/AddContentAsync"
+        }
 
-        $("#hidden-file").on("change", function (e) {
-            var file = e.target.files[0]
-
-            // Clean previews
-            $('#imgImagePreview').empty();
-            $('#canvasPdfPreview').empty();
-            $("#tableDataPreview").empty();
-            // Show preview controls
-            $('#toggleExcelPreview').removeClass("hidden");
-            $('#toggleImgPreview').removeClass("hidden");
-            $('#togglePdfPreview').removeClass("hidden");
-
-            if (file.type == "application/pdf") {
-                try {
-                    var fileReader = new FileReader();
-                    fileReader.onload = function () {
-                        var pdfData = new Uint8Array(this.result);
-                        // Using DocumentInitParameters object to load binary data.
-
-                        var pdfDoc = null,
-                            pageNum = 1,
-                            pageRendering = false,
-                            pageNumPending = null,
-                            scale = 0.8,
-                            canvas = document.getElementById('canvasPdfPreview'),
-                            ctx = canvas.getContext('2d');
-
-                        /**
-                         * Get page info from document, resize canvas accordingly, and render page.
-                         * @@param num Page number.
-                         */
-                        function renderPage(num) {
-                            pageRendering = true;
-                            // Using promise to fetch the page
-                            pdfDoc.getPage(num).then(function (page) {
-                                var viewport = page.getViewport({ scale: scale });
-                                canvas.height = viewport.height;
-                                canvas.width = viewport.width;
-
-                                // Render PDF page into canvas context
-                                var renderContext = {
-                                    canvasContext: ctx,
-                                    viewport: viewport
-                                };
-                                var renderTask = page.render(renderContext);
-
-                                // Wait for rendering to finish
-                                renderTask.promise.then(function () {
-                                    pageRendering = false;
-                                    if (pageNumPending !== null) {
-                                        // New page rendering is pending
-                                        renderPage(pageNumPending);
-                                        pageNumPending = null;
-                                    }
-                                });
-                            });
-
-                            // Update page counters
-                            $("#page_num").text(num);
-                            $("#pageProgressBar").css("width", Math.round((num * 100) / pdfDoc.numPages) + "%");
-                        }
-
-                        /**
-                         * If another page rendering in progress, waits until the rendering is
-                         * finised. Otherwise, executes rendering immediately.
-                         */
-                        function queueRenderPage(num) {
-                            if (pageRendering) {
-                                pageNumPending = num;
-                            } else {
-                                renderPage(num);
-                            }
-                        }
-
-                        /**
-                         * Displays previous page.
-                         */
-                        function onPrevPage() {
-                            if (pageNum <= 1) {
-                                return;
-                            }
-                            pageNum--;
-                            queueRenderPage(pageNum);
-                        }
-                        document.getElementById('prev').addEventListener('click', onPrevPage);
-
-                        /**
-                         * Displays next page.
-                         */
-                        function onNextPage() {
-                            if (pageNum >= pdfDoc.numPages) {
-                                return;
-                            }
-                            pageNum++;
-                            queueRenderPage(pageNum);
-                        }
-                        document.getElementById('next').addEventListener('click', onNextPage);
-
-                        /**
-                         * Asynchronously downloads PDF.
-                         */
-                        pdfjsLib.getDocument({ data: pdfData }).promise.then(function (pdfDoc_) {
-                            pdfDoc = pdfDoc_;
-                            ; $("#page_count").text(pdfDoc.numPages);
-                            $("#previewContent").removeClass("hidden");
-
-                            // Initial/first page rendering
-                            renderPage(pageNum);
-                        });
-                    };
-                    fileReader.readAsArrayBuffer(file);
-                } catch (e) {
-                    console.error(e.message);
-                    $("#previewContent").addClass("hidden");
-                }
-            }
-
-            if (file.type == "image/jpeg" || file.type == "image/png" || file.type == "image/webp" || file.type == "image/gif") {
-                var reader = new FileReader();
-                reader.onload = function () {
-                    $('#imgImagePreview').attr("src", reader.result);
-                    $("#previewImage").removeClass("hidden");
-                };
-                reader.readAsDataURL(e.target.files[0]);
-            }
-
-            if (file.type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
-                var reader = new FileReader();
-                reader.readAsArrayBuffer(e.target.files[0]);
-                reader.onload = function (e) {
-
-                    var data = new Uint8Array(reader.result);
-                    var work_book = XLSX.read(data, { type: 'array' });
-                    var sheet_name = work_book.SheetNames;
-                    var sheet_data = XLSX.utils.sheet_to_json(work_book.Sheets[sheet_name[0]], { header: 1 });
-
-                    if (sheet_data.length > 0) {
-                        var table_output = '<table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">';
-
-                        for (var row = 0; row < sheet_data.length; row++) {
-
-                            table_output += '<tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">';
-
-                            for (var cell = 0; cell < sheet_data[row].length; cell++) {
-
-                                if (row == 0) {
-                                    table_output += '<th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">' + sheet_data[row][cell] + '</th>';
-                                }
-                                else {
-                                    table_output += '<td class="px-6 py-4">' + sheet_data[row][cell] + '</td>';
-                                }
-                            }
-                            table_output += '</tr>';
-                        }
-                        table_output += '</table>';
-                        $("#tableDataPreview").removeClass("hidden").html(table_output);
-                    }
-                }
-            }
+        $("#close-editor").click(function () {
+            $("#editor").html("");
+            $("#editorWindow").toggleClass("hidden");
         });
     </script>
 }

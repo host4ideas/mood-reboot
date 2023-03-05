@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MoodReboot.Controllers
 {
@@ -19,45 +20,43 @@ namespace MoodReboot.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddContentAsync(int courseId, int groupId, string unsafeHtml)
+        public async Task<IActionResult> AddContentAsync(int userId, int courseId, int groupId, string unsafeHtml, IFormFile file)
         {
-            string html = unsafeHtml;
-            string sanitized = this.sanitizer.Sanitize(html);
+            //if (file != null)
+            //{
+            //    AppFile createdFile = await this.repositoryFile.UploadFile(file, userId);
+            //    await this.repositoryContent.CreateContentFile(contentGroupId: groupId, fileId: createdFile.Id);
+            //}
 
-            await this.repositoryContent.CreateContent(groupId, sanitized);
+            //if (unsafeHtml != null)
+            //{
+            //    string html = unsafeHtml;
+            //    string sanitized = this.sanitizer.Sanitize(html);
+
+            //    await this.repositoryContent.CreateContent(groupId, sanitized);
+            //}
 
             return RedirectToAction("CourseDetails", "CoursesController", new { id = courseId });
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddContentFileAsync(int userId, int courseId, int groupId, IFormFile file)
+        public async Task<IActionResult> UpdateContentAsync(int userId, int courseId, int contentId, string unsafeHtml, IFormFile file)
         {
-            AppFile createdFile = await this.repositoryFile.UploadFile(file, userId);
-            await this.repositoryContent.CreateContentFile(contentGroupId: groupId, fileId: createdFile.Id);
+            //if (file != null)
+            //{
+            //    AppFile createdFile = await this.repositoryFile.UploadFile(file, userId);
+
+            //    await this.repositoryContent.UpdateContent(id: contentId, fileId: createdFile.Id);
+            //}
+
+            //if (unsafeHtml != null)
+            //{
+            //    string sanitized = this.sanitizer.Sanitize(unsafeHtml);
+
+            //    await this.repositoryContent.UpdateContent(id: contentId, text: sanitized);
+            //}
 
             return RedirectToAction("CourseDetails", "CoursesController", new { id = courseId });
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> UpdateContentAsync(int id, int groupId, string text)
-        {
-            string html = text;
-            string sanitized = this.sanitizer.Sanitize(html);
-
-            await this.repositoryContent.UpdateContent(id, sanitized);
-
-            return RedirectToAction("CourseDetails", "CoursesController", new { id = groupId });
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> UpdateContentFileAsync(Content content, int userId, IFormFile file)
-        {
-            AppFile createdFile = await this.repositoryFile.UploadFile(file, userId);
-            content.File = createdFile;
-
-            await this.repositoryContent.UpdateContent(content.Id, content.Text, content.FileId);
-
-            return RedirectToAction("CourseDetails", "CoursesController", new { id = content.ContentGroupId });
         }
     }
 }
