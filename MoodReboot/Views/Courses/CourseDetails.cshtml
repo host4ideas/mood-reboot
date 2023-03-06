@@ -8,283 +8,198 @@
     <h2 class="mb-4 text-3xl lg:text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Unidades</h2>
 
     @{
+        if (Model.IsEditor == true)
+        {
+            <label class="relative inline-flex items-center cursor-pointer my-4">
+                <input id="toggleEditOptions" type="checkbox" value="" class="sr-only peer" checked>
+                <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Mostrar/ocultar opciones editor</span>
+            </label>
+            <form class="editor-option" method="post" action="@Url.Action("AddContentGroup", "ContentGroups")">
+                <div class="mb-4 flex justify-between items-center gap-4 flex-wrap">
+                    <!-- Name -->
+                    <div class="relative grow">
+                        <input name="name" type="text" id="floating_helper" aria-describedby="floating_helper_text" class="block rounded-t-lg px-2.5 pb-2.5 pt-5 w-full text-sm text-gray-900 bg-gray-50 dark:bg-gray-700 border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " />
+                        <label for="floating_helper" class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] left-2.5 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4">Nombre del nuevo grupo</label>
+                    </div>
+                    <div class="flex justify-center items-center gap-4">
+                        <div>
+                            <!-- IsVisible -->
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input name="isVisible" type="checkbox" value="" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Ocultar</span>
+                            </label>
+                        </div>
+                        <!-- Submit -->
+                        <button type="submit" class="p-4 text-gray-900 bg-white font-medium rounded border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        }
+
         for (int i = 0; i < Model.ContentGroups.Count; i++)
         {
             ContentGroup group = Model.ContentGroups[i];
             int index = i + 1;
 
+            // Different headers
             if (i < 1)
             {
                 <div id="accordion-collapse-heading-@index">
                     <div class="flex flex items-center">
-                        <button type="button" class="flex items-center justify-between w-full p-5 font-medium text-left text-gray-500 border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800" data-accordion-target="#accordion-collapse-body-@index" aria-expanded="false" aria-controls="accordion-collapse-body-@index">
+                        <button type="button" class="flex items-center justify-between w-full p-5 font-medium text-left text-gray-500 border-2 border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800" data-accordion-target="#accordion-collapse-body-@index" aria-expanded="false" aria-controls="accordion-collapse-body-@index">
+                            <a asp-controller="ContentGroups" asp-action="DeleteContentGroup" asp-route-id="@group.ContentGroupId" asp-route-courseId="@Model.Course.Id" class="editor-option inline-flex items-center my-1 p-3 text-gray-900 dark:text-white font-medium rounded border border-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-200 bg-red-400 hover:bg-red-200 dark:hover:bg-red-700 dark:bg-red-900 dark:border-gray-600 dark:hover:bg-red-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                </svg>
+                            </a>
                             <span>@group.Name</span>
                             <svg data-accordion-icon class="w-6 h-6 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
                         </button>
-                    </div>
-                </div>
-                <div id="accordion-collapse-body-@index" class="hidden" aria-labelledby="accordion-collapse-heading-@index">
-                    <div class="p-5 font-light border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
-                        <!-- Content -->
-                        @{
-                            foreach (Content content in group.Contents)
-                            {
-                                <div class="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900">
-                                    <div class="flex justify-between px-4 mx-auto max-w-screen-xl ">
-                                        <article id="@content.Id" class="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
-                                            @{
-                                                if (content.Text != null)
-                                                {
-                                                    @content.Text
-                                                }
-                                                else if (content.File != null)
-                                                {
-                                                    if (content.File.MimeType == "image/webp" || content.File.MimeType == "image/jpeg" || content.File.MimeType == "image/png" || content.File.MimeType == "image/gif")
-                                                    {
-                                                        <img src="~/images/@content.File.Name" width="300" />
-                                                    }
-                                                    else if (content.File.MimeType == "application/pdf")
-                                                    {
-                                                        <!-- PDF preview -->
-                                                        <div id="previewContent" class="hidden">
-                                                            <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
-
-                                                            <!-- Prev button -->
-                                                            <button id="prev" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
-                                                                <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                                                                    Previous
-                                                                </span>
-                                                            </button>
-                                                            <!-- Next button -->
-                                                            <button id="next" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">
-                                                                <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                                                                    Next
-                                                                </span>
-                                                            </button>
-
-                                                            <!-- Page progress bar -->
-                                                            <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700" style="max-height:20px">
-                                                                <div id="pageProgressBar" class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: 0%"><span id="page_num"></span> / <span id="page_count"></span></div>
-                                                            </div>
-
-                                                            <!-- Preview pdf content canvas -->
-                                                            <canvas id="canvasPdfPreview" style="max-width:250px"></canvas>
-                                                        </div>
-                                                    }
-                                                    else if (content.File.MimeType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-                                                    {
-                                                        <!-- Excel preview -->
-                                                        <div id="tableDataPreview" class="hidden relative overflow-x-auto max-w-36 max-h-72">
-                                                        </div>
-                                                    }
-                                                }
-                                            }
-                                        </article>
-                                        @{
-                                            if (Model.IsEditor == true)
-                                            {
-                                                <button onclick="btnUpdateContentHandler(@content.Id)" type="button" class="absolute ml-1 p-4 text-gray-900 bg-white font-medium rounded border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">✏️</button>
-                                            }
-                                        }
-                                    </div>
-                                </div>
-                                <div class="text-center">
-                                    <button onclick="btnNewContentHandler(@group.ContentGroupId)" data-tooltip-target="tooltip-new-content-@index" type="button" class="p-4 text-gray-900 bg-white font-medium rounded border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                        </svg>
-                                        <span class="sr-only">Añadir nuevo contenido</span>
-                                    </button>
-                                    <div id="tooltip-new-content-@index" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-                                        Añadir nuevo contenido
-                                        <div class="tooltip-arrow" data-popper-arrow></div>
-                                    </div>
-                                </div>
-                            }
-                        }
                     </div>
                 </div>
             }
             else if (i > 0 && i < Model.ContentGroups.Count - 1)
             {
                 <h2 id="accordion-collapse-heading-@index">
-                    <button type="button" class="flex items-center justify-between w-full p-5 font-medium text-left text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800" data-accordion-target="#accordion-collapse-body-@index" aria-expanded="false" aria-controls="accordion-collapse-body-@index">
+                    <button type="button" class="flex items-center justify-between w-full p-5 font-medium text-left text-gray-500 border-2 border-b-0 border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800" data-accordion-target="#accordion-collapse-body-@index" aria-expanded="false" aria-controls="accordion-collapse-body-@index">
+                        <a asp-controller="ContentGroups" asp-action="DeleteContentGroup" asp-route-id="@group.ContentGroupId" asp-route-courseId="@Model.Course.Id" class="editor-option inline-flex items-center my-1 p-3 text-gray-900 dark:text-white font-medium rounded border border-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-200 bg-red-400 hover:bg-red-200 dark:hover:bg-red-700 dark:bg-red-900 dark:border-gray-600 dark:hover:bg-red-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                            </svg>
+                        </a>
                         <span>@group.Name</span>
                         <svg data-accordion-icon class="w-6 h-6 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
                     </button>
                 </h2>
-                <div id="accordion-collapse-body-@index" class="hidden" aria-labelledby="accordion-collapse-heading-@index">
-                    <div class="p-5 font-light border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
-                        <!-- Content -->
-                        @{
-                            foreach (Content content in group.Contents)
-                            {
-                                <div class="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900">
-                                    <div class="flex justify-between px-4 mx-auto max-w-screen-xl ">
-                                        <article id="@content.Id" class="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
-                                            @{
-                                                if (content.Text != null)
-                                                {
-                                                    @content.Text
-                                                }
-                                                else if (content.File != null)
-                                                {
-                                                    if (content.File.MimeType == "image/webp" || content.File.MimeType == "image/jpeg" || content.File.MimeType == "image/png" || content.File.MimeType == "image/gif")
-                                                    {
-                                                        <img src="~/images/@content.File.Name" width="300" />
-                                                    }
-                                                    else if (content.File.MimeType == "application/pdf")
-                                                    {
-                                                        <!-- PDF preview -->
-                                                        <div id="previewContent" class="hidden">
-                                                            <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
-
-                                                            <!-- Prev button -->
-                                                            <button id="prev" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
-                                                                <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                                                                    Previous
-                                                                </span>
-                                                            </button>
-                                                            <!-- Next button -->
-                                                            <button id="next" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">
-                                                                <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                                                                    Next
-                                                                </span>
-                                                            </button>
-
-                                                            <!-- Page progress bar -->
-                                                            <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700" style="max-height:20px">
-                                                                <div id="pageProgressBar" class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: 0%"><span id="page_num"></span> / <span id="page_count"></span></div>
-                                                            </div>
-
-                                                            <!-- Preview pdf content canvas -->
-                                                            <canvas id="canvasPdfPreview" style="max-width:250px"></canvas>
-                                                        </div>
-                                                    }
-                                                    else if (content.File.MimeType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-                                                    {
-                                                        <!-- Excel preview -->
-                                                        <div id="tableDataPreview" class="hidden relative overflow-x-auto max-w-36 max-h-72">
-                                                        </div>
-                                                    }
-                                                }
-                                            }
-                                        </article>
-                                        @{
-                                            if (Model.IsEditor == true)
-                                            {
-                                                <button onclick="btnUpdateContentHandler(@content.Id)" type="button" class="absolute ml-1 p-4 text-gray-900 bg-white font-medium rounded border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">✏️</button>
-                                            }
-                                        }
-                                    </div>
-                                </div>
-                                <div class="text-center">
-                                    <button onclick="btnNewContentHandler(@group.ContentGroupId)" data-tooltip-target="tooltip-new-content-@index" type="button" class="p-4 text-gray-900 bg-white font-medium rounded border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                        </svg>
-                                        <span class="sr-only">Añadir nuevo contenido</span>
-                                    </button>
-                                    <div id="tooltip-new-content-@index" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-                                        Añadir nuevo contenido
-                                        <div class="tooltip-arrow" data-popper-arrow></div>
-                                    </div>
-                                </div>
-                            }
-                        }
-                    </div>
-                </div>
             }
             else
             {
                 <h2 id="accordion-collapse-heading-@index">
-                    <button type="button" class="flex items-center justify-between w-full p-5 font-medium text-left text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800" data-accordion-target="#accordion-collapse-body-@index" aria-expanded="false" aria-controls="accordion-collapse-body-@index">
+                    <button type="button" class="flex items-center justify-between w-full p-5 font-medium text-left text-gray-500 border-2 border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800" data-accordion-target="#accordion-collapse-body-@index" aria-expanded="false" aria-controls="accordion-collapse-body-@index">
+                        <a asp-controller="ContentGroups" asp-action="DeleteContentGroup" asp-route-id="@group.ContentGroupId" asp-route-courseId="@Model.Course.Id" class="editor-option inline-flex items-center my-1 p-3 text-gray-900 dark:text-white font-medium rounded border border-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-200 bg-red-400 hover:bg-red-200 dark:hover:bg-red-700 dark:bg-red-900 dark:border-gray-600 dark:hover:bg-red-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                            </svg>
+                        </a>
                         <span>@group.Name</span>
                         <svg data-accordion-icon class="w-6 h-6 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
                     </button>
                 </h2>
-                <div id="accordion-collapse-body-@index" class="hidden" aria-labelledby="accordion-collapse-heading-@index">
-                    <div class="p-5 font-light border border-t-0 border-gray-200 dark:border-gray-700">
-                        <!-- Content -->
-                        @{
-                            foreach (Content content in group.Contents)
-                            {
-                                <div class="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900">
-                                    <div class="flex justify-between px-4 mx-auto max-w-screen-xl ">
-                                        <article id="@content.Id" class="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
-                                            @{
-                                                if (content.Text != null)
-                                                {
-                                                    @content.Text
-                                                }
-                                                else if (content.File != null)
-                                                {
-                                                    if (content.File.MimeType == "image/webp" || content.File.MimeType == "image/jpeg" || content.File.MimeType == "image/png" || content.File.MimeType == "image/gif")
-                                                    {
-                                                        <img src="~/images/@content.File.Name" width="300" />
-                                                    }
-                                                    else if (content.File.MimeType == "application/pdf")
-                                                    {
-                                                        <!-- PDF preview -->
-                                                        <div id="previewContent" class="hidden">
-                                                            <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
+            }
 
-                                                            <!-- Prev button -->
-                                                            <button id="prev" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
-                                                                <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                                                                    Previous
-                                                                </span>
-                                                            </button>
-                                                            <!-- Next button -->
-                                                            <button id="next" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">
-                                                                <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                                                                    Next
-                                                                </span>
-                                                            </button>
+            // Different bodies
+            string contentBodyClass = "";
 
-                                                            <!-- Page progress bar -->
-                                                            <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700" style="max-height:20px">
-                                                                <div id="pageProgressBar" class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: 0%"><span id="page_num"></span> / <span id="page_count"></span></div>
-                                                            </div>
+            if (i < 1 || (i > 0 && i < Model.ContentGroups.Count - 1))
+            {
+                contentBodyClass = "p-5 font-light border-2 border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900";
+            }
+            else
+            {
+                contentBodyClass = "p-5 font-light border-2 border-t-0 border-gray-200 dark:border-gray-700";
+            }
 
-                                                            <!-- Preview pdf content canvas -->
-                                                            <canvas id="canvasPdfPreview" style="max-width:250px"></canvas>
-                                                        </div>
-                                                    }
-                                                    else if (content.File.MimeType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-                                                    {
-                                                        <!-- Excel preview -->
-                                                        <div id="tableDataPreview" class="hidden relative overflow-x-auto max-w-36 max-h-72">
-                                                        </div>
-                                                    }
-                                                }
-                                            }
-                                        </article>
+            <div id="accordion-collapse-body-@index" class="hidden" aria-labelledby="accordion-collapse-heading-@index">
+                <div class="@contentBodyClass">
+                    <!-- Content -->
+                    @{
+                        foreach (Content content in group.Contents)
+                        {
+                            <div class="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900">
+                                @{
+                                    if (Model.IsEditor == true)
+                                    {
+                                        <div class="editor-option text-center mb-2">
+                                            <button onclick="btnUpdateContentHandler(@content.Id)" type="button" class="my-1 p-3 text-gray-900 bg-white font-medium rounded border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                                                </svg>
+                                            </button>
+                                            <a asp-controller="Content" asp-action="DeleteContent" asp-route-id="@content.Id" asp-route-courseId="@Model.Course.Id" class="inline-flex items-center my-1 p-3 text-gray-900 dark:text-white font-medium rounded border border-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-200 bg-red-400 hover:bg-red-200 dark:hover:bg-red-700 dark:bg-red-900 dark:border-gray-600 dark:hover:bg-red-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    }
+                                }
+                                <div class="flex justify-between px-4 mx-auto max-w-screen-xl ">
+                                    <article id="@content.Id" class="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
                                         @{
-                                            if (Model.IsEditor == true)
+                                            if (content.Text != null)
                                             {
-                                                <button onclick="btnUpdateContentHandler(@content.Id)" type="button" class="absolute ml-1 p-4 text-gray-900 bg-white font-medium rounded border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">✏️</button>
+                                                @content.Text
+                                            }
+                                            else if (content.File != null)
+                                            {
+                                                if (content.File.MimeType == "image/webp" || content.File.MimeType == "image/jpeg" || content.File.MimeType == "image/png" || content.File.MimeType == "image/gif")
+                                                {
+                                                    <img src="~/images/@content.File.Name" width="300" />
+                                                }
+                                                else if (content.File.MimeType == "application/pdf")
+                                                {
+                                                    <!-- PDF preview -->
+                                                    <div id="previewContent" class="hidden">
+                                                        <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
+
+                                                        <!-- Prev button -->
+                                                        <button id="prev" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
+                                                            <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                                                                Previous
+                                                            </span>
+                                                        </button>
+                                                        <!-- Next button -->
+                                                        <button id="next" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">
+                                                            <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                                                                Next
+                                                            </span>
+                                                        </button>
+
+                                                        <!-- Page progress bar -->
+                                                        <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700" style="max-height:20px">
+                                                            <div id="pageProgressBar" class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: 0%"><span id="page_num"></span> / <span id="page_count"></span></div>
+                                                        </div>
+
+                                                        <!-- Preview pdf content canvas -->
+                                                        <canvas id="canvasPdfPreview" style="max-width:250px"></canvas>
+                                                    </div>
+                                                }
+                                                else if (content.File.MimeType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                                                {
+                                                    <!-- Excel preview -->
+                                                    <div id="tableDataPreview" class="hidden relative overflow-x-auto max-w-36 max-h-72">
+                                                    </div>
+                                                }
                                             }
                                         }
-                                    </div>
+                                    </article>
                                 </div>
-                                <div class="text-center">
-                                    <button onclick="btnNewContentHandler(@group.ContentGroupId)" data-tooltip-target="tooltip-new-content-@index" type="button" class="p-4 text-gray-900 bg-white font-medium rounded border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                        </svg>
-                                        <span class="sr-only">Añadir nuevo contenido</span>
-                                    </button>
-                                    <div id="tooltip-new-content-@index" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-                                        Añadir nuevo contenido
-                                        <div class="tooltip-arrow" data-popper-arrow></div>
-                                    </div>
-                                </div>
-                            }
+                            </div>
                         }
-                    </div>
+                        if (Model.IsEditor == true)
+                        {
+                            <div class="editor-option text-center">
+                                <button onclick="btnNewContentHandler(@group.ContentGroupId)" data-tooltip-target="tooltip-new-content-@index" type="button" class="p-4 text-gray-900 bg-white font-medium rounded border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                    </svg>
+                                    <span class="sr-only">Añadir nuevo contenido</span>
+                                </button>
+                                <div id="tooltip-new-content-@index" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                    Añadir nuevo contenido
+                                    <div class="tooltip-arrow" data-popper-arrow></div>
+                                </div>
+                            </div>
+                        }
+                    }
                 </div>
-            }
+            </div>
         }
     }
 </section>
@@ -348,7 +263,7 @@
                 <div class="w-1/2 m-5 mb-5 px-4 py-2 bg-white rounded-b-lg dark:bg-gray-800">
                     <label for="editor" class="sr-only">Publish post</label>
                     <!-- Text Area -->
-                    <textarea id="editor" cols="100" class="block w-full px-0 text-sm text-gray-800 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400 scrollbar-styled" placeholder="Write an article..." required></textarea>
+                    <textarea id="editor" name="unsafeHtml" oninput="resizeTextArea(event)" cols="100" class="block w-full px-0 text-sm text-gray-800 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400 scrollbar-styled" placeholder="Write an article..." required></textarea>
                 </div>
                 <div class="block w-1/2 m-5 px-4 py-2 bg-white rounded-b-lg dark:bg-gray-800 scrollbar-hide">
                     <!-- Markdown preview -->
@@ -356,7 +271,7 @@
                 </div>
             </div>
         </div>
-        <button type="submit" class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">
+        <button type="submit" id="btnEditorSubmit" class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">
             Añadir sección
         </button>
     </form>
@@ -384,6 +299,7 @@
             $("#editor").html(contentHtml);
             // Show the editor
             $("#editorWindow").toggleClass("hidden");
+            $("#btnEditorSubmit").text("Actualizar")
             // Set contentId hidden input value
             $("#contentId").val(contentId);
             // Update editor's form action
@@ -395,7 +311,9 @@
         function btnNewContentHandler(contentGroupId) {
             // Show the editor
             $("#editor").html("");
+            $("#markdownPreview").html("");
             $("#editorWindow").toggleClass("hidden");
+            $("#btnEditorSubmit").text("Añadir")
             // Sset groupId hidden input value
             $("#grupId").val(contentGroupId);
             // Update editor's form action
@@ -405,6 +323,10 @@
         $("#close-editor").click(function () {
             $("#editor").html("");
             $("#editorWindow").toggleClass("hidden");
+        });
+
+        $("#toggleEditOptions").click(function () {
+            $(".editor-option").toggle("fast");
         });
     </script>
 }

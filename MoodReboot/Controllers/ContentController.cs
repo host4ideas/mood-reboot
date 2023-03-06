@@ -21,6 +21,12 @@ namespace MoodReboot.Controllers
             this.helperFile = helperFile;
         }
 
+        public IActionResult DeleteContent(int id, int courseId)
+        {
+            this.repositoryContent.DeleteContent(id);
+            return RedirectToAction("CourseDetails", "Courses", new { id = courseId });
+        }
+
         [HttpPost]
         public async Task<IActionResult> AddContent(int userId, int courseId, int groupId, string unsafeHtml, IFormFile file)
         {

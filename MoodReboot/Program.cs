@@ -21,6 +21,7 @@ builder.Services.AddSingleton<HelperMail>();
 // Repositories
 builder.Services.AddTransient<IRepositoryCourses, RepositoryCoursesSql>();
 builder.Services.AddTransient<IRepositoryContent, RepositoryContentSql>();
+builder.Services.AddTransient<IRepositoryContentGroups, RepositoryCntGroupsSql>();
 builder.Services.AddTransient<IRepositoryFile, RepositoryFileSql>();
 // DB Context
 builder.Services.AddDbContext<MoodRebootContext>(options => options.UseSqlServer(connectionString));

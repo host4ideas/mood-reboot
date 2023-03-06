@@ -3,6 +3,7 @@ function btnChatToggle() {
     $("#chatWindow").fadeToggle("fast");
 }
 
+// Resize chat window button
 function resizeChatWindow(size) {
     $("#chatWindow").width(size);
 }
@@ -10,12 +11,11 @@ function resizeChatWindow(size) {
 resizeChatWindow(300);
 
 // Resize text area with it's content height'
+// oninput = 'this.style.height = "";this.style.height = this.scrollHeight + "px"'
 function resizeTextArea(e) {
     e.target.style.height = "";
     e.target.style.height = e.target.scrollHeight + "px"
 }
-
-oninput = 'this.style.height = "";this.style.height = this.scrollHeight + "px"'
 
 // Scroll to top button
 // Get the button 

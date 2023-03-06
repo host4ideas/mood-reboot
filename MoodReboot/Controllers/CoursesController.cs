@@ -9,11 +9,13 @@ namespace MoodReboot.Controllers
     {
         private readonly IRepositoryCourses repositoryCourses;
         private readonly IRepositoryContent repositoryContent;
+        private readonly IRepositoryContentGroups repositoryContentGroups;
 
-        public CoursesController(IRepositoryCourses repositoryCourses, IRepositoryContent repositoryContent)
+        public CoursesController(IRepositoryCourses repositoryCourses, IRepositoryContent repositoryContent, IRepositoryContentGroups repositoryContentGroups)
         {
             this.repositoryCourses = repositoryCourses;
             this.repositoryContent = repositoryContent;
+            this.repositoryContentGroups = repositoryContentGroups;
         }
 
         public IActionResult UserCourses(int userId)
@@ -36,7 +38,7 @@ namespace MoodReboot.Controllers
 
         public async Task<IActionResult> CourseDetails(int id)
         {
-            List<ContentGroup> contentGroups = this.repositoryContent.GetCourseContentGroups(id);
+            List<ContentGroup> contentGroups = this.repositoryContentGroups.GetCourseContentGroups(id);
 
             foreach (ContentGroup group in contentGroups)
             {
