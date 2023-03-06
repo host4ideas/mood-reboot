@@ -1,10 +1,9 @@
-﻿using MoodReboot.Models;
-
-namespace MoodReboot.Interfaces
+﻿namespace MoodReboot.Interfaces
 {
     public interface IRepositoryFile
     {
-        public Task<AppFile> UploadFile(IFormFile file, int userId = -1);
-        public Task DeleteFile(int fileId);
+        Task DeleteFile(int fileId);
+        Task<int> InsertFileAsync(string name, string mimeType);
+        Task<int> InsertFileAsync(string name, string mimeType, int userId);
     }
 }

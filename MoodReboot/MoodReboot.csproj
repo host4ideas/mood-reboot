@@ -19,6 +19,7 @@
     <Folder Include="Models\DbTables\" />
     <Folder Include="Models\Custom\" />
     <Folder Include="wwwroot\images\icons\" />
+    <Folder Include="wwwroot\uploads\temp\" />
   </ItemGroup>
 
 </Project>

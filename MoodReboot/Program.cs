@@ -1,10 +1,11 @@
 using Ganss.Xss;
 using Microsoft.EntityFrameworkCore;
 using MoodReboot.Data;
+using MoodReboot.Helpers;
 using MoodReboot.Hubs;
 using MoodReboot.Interfaces;
 using MoodReboot.Repositories;
-using MoodReboot.Services;
+using MvcCoreUtilidades.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,11 +13,15 @@ string connectionString = builder.Configuration.GetConnectionString("SqlMoodRebo
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddSignalR();
-// Upload files service
-builder.Services.AddTransient<IStreamFileUploadService, StreamFileUploadLocalService>();
+// Helpers
+builder.Services.AddSingleton<HelperPath>();
+builder.Services.AddTransient<HelperFile>();
+builder.Services.AddSingleton<HelperJsonSession>();
+builder.Services.AddSingleton<HelperMail>();
 // Repositories
 builder.Services.AddTransient<IRepositoryCourses, RepositoryCoursesSql>();
 builder.Services.AddTransient<IRepositoryContent, RepositoryContentSql>();
+builder.Services.AddTransient<IRepositoryFile, RepositoryFileSql>();
 // DB Context
 builder.Services.AddDbContext<MoodRebootContext>(options => options.UseSqlServer(connectionString));
 // Sessions
