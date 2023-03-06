@@ -387,7 +387,7 @@
             // Set contentId hidden input value
             $("#contentId").val(contentId);
             // Update editor's form action
-            document.getElementById("editorForm").action = "/Content/UpdateContentAsync"
+            document.getElementById("editorForm").action = "/Content/UpdateContent"
             // Display nicely the content's HTML in the editor preview
             parseMarkdown();
         }
@@ -399,7 +399,7 @@
             // Sset groupId hidden input value
             $("#grupId").val(contentGroupId);
             // Update editor's form action
-            document.getElementById("editorForm").action = "/Content/AddContentAsync"
+            document.getElementById("editorForm").action = "/Content/AddContent"
         }
 
         $("#close-editor").click(function () {

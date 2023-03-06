@@ -1,10 +1,7 @@
-﻿using Ganss.Xss;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MoodReboot.Extensions;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
-using MoodReboot.Repositories;
-using System.Diagnostics;
 
 namespace MoodReboot.Controllers
 {
@@ -51,7 +48,7 @@ namespace MoodReboot.Controllers
 
             if (course == null || contentGroups == null)
             {
-                var currentLoggedUser = HttpContext.Session.GetObject<SessionUser>("user");
+                SessionUser currentLoggedUser = HttpContext.Session.GetObject<SessionUser>("user")!;
                 return RedirectToAction("Courses", new { userId = currentLoggedUser.Id });
             }
 
