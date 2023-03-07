@@ -15,21 +15,24 @@ namespace MoodReboot.Controllers
 
         public async Task<IActionResult> DeleteContentGroup(int id, int courseId)
         {
-            await this.repo.DeleteContentGroup(id);
+            await this.repo.DeleteContentGroupAsync(id);
             return RedirectToAction("CourseDetails", "Courses", new { id = courseId });
         }
 
         [HttpPost]
-        public IActionResult AddContentGroup(string name, int courseId, bool isVisible)
+        public async Task<IActionResult> CreateContentGroup(string name, int courseId, bool isVisible)
         {
-            this.repo.CreateContentGroup(name, courseId, isVisible);
+            if (name != null && courseId >= 0)
+            {
+                await this.repo.CreateContentGroupAsync(name, courseId, isVisible);
+            }
             return RedirectToAction("CourseDetails", "Courses", new { id = courseId });
         }
 
         [HttpPost]
         public async Task<IActionResult> UpdateContentGroup(int id, string name, int courseId, bool isVisible)
         {
-            await this.repo.UpdateContentGroup(id, name, isVisible);
+            await this.repo.UpdateContentGroupAsync(id, name, isVisible);
             return RedirectToAction("CourseDetails", "Courses", new { id = courseId });
         }
     }

@@ -54,14 +54,14 @@ namespace MoodReboot.Controllers
                 return RedirectToAction("Courses", new { userId = currentLoggedUser.Id });
             }
 
-            CourseDetailsModel detais = new()
+            CourseDetailsModel details = new()
             {
                 ContentGroups = contentGroups,
                 Course = course,
                 IsEditor = true
             };
 
-            return View(detais);
+            return View(details);
         }
 
         public IActionResult DeleteCourse(int id)

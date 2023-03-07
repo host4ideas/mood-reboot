@@ -29,22 +29,30 @@ namespace MoodReboot.Repositories
             return consulta.ToList();
         }
 
-        public Task CreateContentGroup(string name, int courseId, bool isVisible = false)
+        public Task CreateContentGroupAsync(string name, int courseId, bool isVisible = false)
         {
             string sql = "SP_CREATE_GROUP_CONTENT @NAME, @COURSE_ID, @IS_VISIBLE, @GROUPCONTENTID OUT";
 
+            int bitIsVisible = 0;
+
+            if (isVisible == true)
+            {
+                bitIsVisible = 1;
+            }
+
             SqlParameter paramName = new("@NAME", name);
             SqlParameter paramCourseId = new("@COURSE_ID", courseId);
-            SqlParameter paramIsVisible = new("@IS_VISIBLE", isVisible);
-            SqlParameter paramGroupIdOut = new("@GROUPCONTENTID", null)
+            SqlParameter paramIsVisible = new("@IS_VISIBLE", bitIsVisible);
+            SqlParameter paramGroupIdOut = new("@GROUPCONTENTID", 0)
             {
-                Direction = System.Data.ParameterDirection.Output
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Bit
             };
 
             return this.context.Database.ExecuteSqlRawAsync(sql, paramName, paramCourseId, paramIsVisible, paramGroupIdOut);
         }
 
-        public async Task UpdateContentGroup(int id, string name, Boolean isVisible)
+        public async Task UpdateContentGroupAsync(int id, string name, Boolean isVisible)
         {
             ContentGroup? contentGroup = this.FindContentGroup(id);
             if (contentGroup != null)
@@ -55,7 +63,7 @@ namespace MoodReboot.Repositories
             }
         }
 
-        public async Task DeleteContentGroup(int id)
+        public async Task DeleteContentGroupAsync(int id)
         {
             ContentGroup? group = this.FindContentGroup(id);
             if (group != null)

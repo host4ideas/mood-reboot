@@ -1,7 +1,4 @@
-﻿//  tag, create shortcut to access PDF.js exports.
-using System;
-
-var pdfjsLib = window['pdfjs-dist/build/pdf'];
+﻿var pdfjsLib = window['pdfjs-dist/build/pdf'];
 // The workerSrc property shall be specified.
 pdfjsLib.GlobalWorkerOptions.workerSrc = './js/pdfjs-3.3.122-dist/build/pdf.worker.js';
 
