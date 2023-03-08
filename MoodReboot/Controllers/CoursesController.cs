@@ -24,6 +24,24 @@ namespace MoodReboot.Controllers
             return View(courses);
         }
 
+        public async Task<IActionResult> DeleteCourseUser(int courseId, int userId)
+        {
+            await this.repositoryCourses.RemoveCourseUserAsync(courseId, userId);
+            return RedirectToAction("CourseDetails", new { id = courseId });
+        }
+
+        public async Task<IActionResult> DeleteCourseEditor(int courseId, int userId)
+        {
+            await this.repositoryCourses.RemoveCourseEditorAsync(courseId, userId);
+            return RedirectToAction("CourseDetails", new { id = courseId });
+        }
+
+        public async Task<IActionResult> AddCourseEditor(int courseId, int userId)
+        {
+            await this.repositoryCourses.AddCourseEditorAsync(courseId, userId);
+            return RedirectToAction("CourseDetails", new { id = courseId });
+        }
+
         public IActionResult CenterCourses(int centerId)
         {
             List<CourseListView> courses = this.repositoryCourses.GetCenterCourses(centerId);
@@ -54,10 +72,13 @@ namespace MoodReboot.Controllers
                 return RedirectToAction("Courses", new { userId = currentLoggedUser.Id });
             }
 
+            List<CourseUsersModel> courseUsers = this.repositoryCourses.GetCourseUsers(course.Id);
+
             CourseDetailsModel details = new()
             {
                 ContentGroups = contentGroups,
                 Course = course,
+                CourseUsers = courseUsers,
                 IsEditor = true
             };
 

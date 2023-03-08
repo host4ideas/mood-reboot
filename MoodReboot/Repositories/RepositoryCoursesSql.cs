@@ -15,6 +15,54 @@ namespace MoodReboot.Repositories
             this.context = context;
         }
 
+        public List<CourseUsersModel> GetCourseUsers(int courseId)
+        {
+            var result = from uc in this.context.UserCourses
+                         join u in this.context.Users on uc.UserId equals u.Id
+                         where uc.CourseId == courseId
+                         select new CourseUsersModel
+                         {
+                             Id = u.Id,
+                             UserName = u.UserName,
+                             Image = u.Image,
+                             IsEditor = uc.IsEditor
+                         };
+
+            return result.ToList();
+        }
+
+        public async Task RemoveCourseUserAsync(int courseId, int userId)
+        {
+            UserCourse? userCourse = await this.context.UserCourses.FirstOrDefaultAsync(x => x.UserId == userId && x.CourseId == courseId);
+
+            if (userCourse != null)
+            {
+                this.context.UserCourses.Remove(userCourse);
+            }
+        }
+
+        public async Task RemoveCourseEditorAsync(int courseId, int userId)
+        {
+            UserCourse? userCourse = await this.context.UserCourses.FirstOrDefaultAsync(x => x.UserId == userId && x.CourseId == courseId);
+
+            if (userCourse != null)
+            {
+                userCourse.IsEditor = false;
+                await this.context.SaveChangesAsync();
+            }
+        }
+
+        public async Task AddCourseEditorAsync(int courseId, int userId)
+        {
+            UserCourse? userCourse = await this.context.UserCourses.FirstOrDefaultAsync(x => x.UserId == userId && x.CourseId == courseId);
+
+            if (userCourse != null)
+            {
+                userCourse.IsEditor = true;
+                await this.context.SaveChangesAsync();
+            }
+        }
+
         public Task CreateCourse(string name, string? description, string? image, int? isVisible)
         {
             string sql = "SP_CREATE_COURSE @NAME, @DESCRIPTION, @IMAGE, @IS_VISIBLE";

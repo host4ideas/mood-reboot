@@ -13,18 +13,18 @@ string connectionString = builder.Configuration.GetConnectionString("SqlMoodRebo
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddSignalR();
-// Helpers
-builder.Services.AddSingleton<HelperPath>();
-builder.Services.AddTransient<HelperFile>();
-builder.Services.AddSingleton<HelperJsonSession>();
-builder.Services.AddSingleton<HelperMail>();
+// DB Context
+builder.Services.AddDbContext<MoodRebootContext>(options => options.UseSqlServer(connectionString));
 // Repositories
 builder.Services.AddTransient<IRepositoryCourses, RepositoryCoursesSql>();
 builder.Services.AddTransient<IRepositoryContent, RepositoryContentSql>();
 builder.Services.AddTransient<IRepositoryContentGroups, RepositoryCntGroupsSql>();
 builder.Services.AddTransient<IRepositoryFile, RepositoryFileSql>();
-// DB Context
-builder.Services.AddDbContext<MoodRebootContext>(options => options.UseSqlServer(connectionString));
+// Helpers
+builder.Services.AddSingleton<HelperPath>();
+builder.Services.AddTransient<HelperFile>();
+builder.Services.AddSingleton<HelperJsonSession>();
+builder.Services.AddSingleton<HelperMail>();
 // Sessions
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddDistributedMemoryCache();

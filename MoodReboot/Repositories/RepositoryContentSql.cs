@@ -15,10 +15,9 @@ namespace MoodReboot.Repositories
             this.context = context;
         }
 
-        public Content? FindContent(int id)
+        public Task<Content?> FindContent(int id)
         {
-            var consulta = from datos in this.context.Contents where datos.Id == id select datos;
-            return consulta.ToList().FirstOrDefault();
+            return this.context.Contents.FirstOrDefaultAsync(x=> x.Id == id);
         }
 
         public List<Content> GetContentByGroup(int groupId)
@@ -51,7 +50,7 @@ namespace MoodReboot.Repositories
 
         public async Task DeleteContent(int id)
         {
-            Content? content = this.FindContent(id);
+            Content? content = await this.FindContent(id);
             if (content != null)
             {
                 this.context.Contents.Remove(content);
@@ -61,7 +60,7 @@ namespace MoodReboot.Repositories
 
         public async Task UpdateContent(int id, string? text = null, int? fileId = null)
         {
-            Content? oldContent = this.FindContent(id);
+            Content? oldContent = await this.FindContent(id);
             if (oldContent != null)
             {
                 oldContent.Text = text;
@@ -69,6 +68,5 @@ namespace MoodReboot.Repositories
                 await this.context.SaveChangesAsync();
             }
         }
-
     }
 }
