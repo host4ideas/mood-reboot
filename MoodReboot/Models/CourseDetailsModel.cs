@@ -4,6 +4,8 @@
     {
         public Course Course { get; set; }
         public List<ContentGroup> ContentGroups { get; set; }
-        public Boolean IsEditor { get; set; }
+        public bool IsEditor { get; set; }
+        // Optional: only if it's editor
+        public List<User>? CourseUsers { get; set; }
     }
 }

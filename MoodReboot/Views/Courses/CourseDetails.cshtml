@@ -28,34 +28,7 @@
                         <div>
                             <!-- IsVisible -->
                             <label class="relative inline-flex items-center cursor-pointer">
-                                <input name="isVisible" type="checkbox" value="" class="sr-only peer">
-                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                                <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Ocultar</span>
-                            </label>
-                        </div>
-                        <!-- Submit -->
-                        <button type="submit" class="p-4 text-gray-900 bg-white font-medium rounded border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </form>
-
-            <!-- Update content group form -->
-            <form id="editorContentGroup" class="hidden" method="post" action="@Url.Action("UpdateContentGroup", "ContentGroups")">
-                <div class="mb-4 flex justify-between items-center gap-4 flex-wrap">
-                    <!-- Name -->
-                    <div class="relative grow">
-                        <input name="newName" type="text" id="floating_helper" aria-describedby="floating_helper_text" class="block rounded-t-lg px-2.5 pb-2.5 pt-5 w-full text-sm text-gray-900 bg-gray-50 dark:bg-gray-700 border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " />
-                        <label for="floating_helper" class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] left-2.5 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4">Nuevo nombre</label>
-                    </div>
-                    <div class="flex justify-center items-center gap-4">
-                        <div>
-                            <!-- IsVisible -->
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input name="isVisible" type="checkbox" value="" class="sr-only peer">
+                                <input name="isVisible" type="checkbox" value="" class="sr-only peer" onclick="toggleIsVisible(event)">
                                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                                 <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Ocultar</span>
                             </label>
@@ -76,25 +49,27 @@
             ContentGroup group = Model.ContentGroups[i];
             int index = i + 1;
 
+            string formId = "formNotSubmit" + index;
+            string floatingLabelId = "floating_helper" + group.ContentGroupId;
+
             string headingClass = "";
 
             // Different headers per position
             if (i < 1)
             {
-                headingClass = "flex items-center justify-between w-full p-5 text-lg font-bold text-left text-gray-500 border-2 border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800";
+                headingClass = "flex items-center justify-between w-full p-5 text-lg font-bold text-left text-gray-500 border-2 border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer";
             }
             else if (i > 0 && i < Model.ContentGroups.Count - 1)
             {
-                headingClass = "flex items-center justify-between w-full p-5 text-lg font-bold text-left text-gray-500 border-2 border-b-0 border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800";
-
+                headingClass = "flex items-center justify-between w-full p-5 text-lg font-bold text-left text-gray-500 border-2 border-b-0 border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer";
             }
             else
             {
-                headingClass = "flex items-center justify-between w-full p-5 text-lg font-bold text-left text-gray-500 border-2 border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800";
+                headingClass = "flex items-center justify-between w-full p-5 text-lg font-bold text-left text-gray-500 border-2 border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer";
             }
 
-            <h2 id="accordion-collapse-heading-@index">
-                <button type="button" class="@headingClass" data-accordion-target="#accordion-collapse-body-@index" aria-expanded="false" aria-controls="accordion-collapse-body-@index">
+            <div id="accordion-collapse-heading-@index">
+                <div class="@headingClass" data-accordion-target="#accordion-collapse-body-@index" aria-expanded="false" aria-controls="accordion-collapse-body-@index">
                     @{
                         if (Model.IsEditor == true)
                         {
@@ -105,20 +80,44 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                                     </svg>
                                 </a>
-                                <!-- Update content -->
-                                <span onclick="btnUpdateContentGroup(@group.ContentGroupId)" class="inline-flex my-1 p-3 text-gray-900 bg-white font-medium rounded border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                                    </svg>
-                                </span>
                             </div>
+
+                            <form id="@formId" class="editor-option flex items-center gap-4" method="post" onclick="handlePropagation(event)" action="@Url.Action("UpdateContentGroup", "ContentGroups")">
+                                <input type="hidden" name="id" value="@group.ContentGroupId" />
+                                <input type="hidden" name="courseId" value="@Model.Course.Id" />
+                                <div class="relative">
+                                    <input value="@group.Name" name="name" type="text" id="floating_helper" aria-describedby="floating_helper_text" class="block rounded-t-lg px-2.5 pb-2.5 pt-5 w-full text-sm text-gray-900 bg-gray-50 dark:bg-gray-700 border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " />
+                                    <label for="@floatingLabelId" class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] left-2.5 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4">Nuevo nombre</label>
+                                </div>
+                                <!-- IsVisible -->
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    @{
+                                        if (group.IsVisible == true)
+                                        {
+                                            <input onclick="toggleIsVisible(event)" name="isVisible" type="checkbox" value="1" class="sr-only peer" checked>
+                                        }
+                                        else
+                                        {
+                                            <input onclick="toggleIsVisible(event)" name="isVisible" type="checkbox" value="0" class="sr-only peer">
+                                        }
+                                    }
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                    <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Visible</span>
+                                    <!-- Update content -->
+                                </label>
+                                <button class="my-1 p-3 text-gray-900 bg-white font-medium rounded border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                                    </svg>
+                                </button>
+                            </form>
                         }
                     }
 
-                    <span>@group.Name</span>
+                    <span class="hidden editor-option">@group.Name</span>
                     <svg data-accordion-icon class="w-6 h-6 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                </button>
-            </h2>
+                </div>
+            </div>
 
             // Different bodies per position
             string contentBodyClass = "";
@@ -308,74 +307,88 @@
 
 @section scriptsMenuLayout {
     <script src="~/js/filePreviewContentCourse.js"></script>
-    <script>
-        const converter = new showdown.Converter({ extensions: ['xssfilter'] })
+    <!-- Cargar los scripts solo para editor -->
+    @if (Model.IsEditor == true)
+    {
+        <text>
+            <script>
+                const converter = new showdown.Converter({ extensions: ['xssfilter'] })
 
-        function parseMarkdown() {
-            const text = $("#editor").val();
-            const html = converter.makeHtml(text);
-            $("#markdownPreview").html(html);
-        }
+                function parseMarkdown() {
+                    const text = $("#editor").val();
+                    const html = converter.makeHtml(text);
+                    $("#markdownPreview").html(html);
+                }
 
-        $("#editor").keyup(function (e) {
-            parseMarkdown();
-        });
+                $("#editor").keyup(function (e) {
+                    parseMarkdown();
+                });
 
-        function btnUpdateContentHandler(contentId) {
-            // Get the content's content (article tag)
-            const id = "#" + contentId;
-            let contentHtml = $(id).html().trim();
-            $("#editor").html(contentHtml);
-            // Show the editor
-            $("#editorWindow").toggleClass("hidden");
-            $("#btnEditorSubmit").text("Actualizar")
-            // Set contentId hidden input value
-            $("#contentId").val(contentId);
-            // Update editor's form action
-            document.getElementById("editorForm").action = "/Content/UpdateContent"
-            // Display nicely the content's HTML in the editor preview
-            parseMarkdown();
-        }
+                function btnUpdateContentHandler(contentId) {
+                    // Get the content's content (article tag)
+                    const id = "#" + contentId;
+                    let contentHtml = $(id).html().trim();
+                    $("#editor").html(contentHtml);
+                    // Show the editor
+                    $("#editorWindow").toggleClass("hidden");
+                    $("#btnEditorSubmit").text("Actualizar")
+                    // Set contentId hidden input value
+                    $("#contentId").val(contentId);
+                    // Update editor's form action
+                    document.getElementById("editorForm").action = "/Content/UpdateContent"
+                    // Display nicely the content's HTML in the editor preview
+                    parseMarkdown();
+                }
 
-        function btnNewContentHandler(contentGroupId) {
-            // Show the editor
-            $("#editor").html("");
-            $("#markdownPreview").html("");
-            $("#editorWindow").toggleClass("hidden");
-            $("#btnEditorSubmit").text("Añadir")
-            // Sset groupId hidden input value
-            $("#groupId").val(contentGroupId);
-            // Update editor's form action
-            document.getElementById("editorForm").action = "/Content/AddContent"
-        }
+                function btnNewContentHandler(contentGroupId) {
+                    // Show the editor
+                    $("#editor").html("");
+                    $("#markdownPreview").html("");
+                    $("#editorWindow").toggleClass("hidden");
+                    $("#btnEditorSubmit").text("Añadir")
+                    // Sset groupId hidden input value
+                    $("#groupId").val(contentGroupId);
+                    // Update editor's form action
+                    document.getElementById("editorForm").action = "/Content/AddContent"
+                }
 
-        function handlePropagation(e) {
-            e.stopPropagation();
-        }
+                function handlePropagation(e) {
+                    e.stopPropagation();
+                }
 
-        function btnUpdateContentGroup() {
-            $("#editorContentGroup").toggleClass("hidden");
-        }
+                function btnUpdateContentGroup() {
+                    $("#editorContentGroup").toggleClass("hidden");
+                }
 
-        $(".editor-option").click(handlePropagation);
+                function toggleIsVisible(e) {
+                    if (e.target.value == "0") {
+                        e.target.value = "1";
+                    } else {
+                        e.target.value = "0";
+                    }
+                }
 
-        $("#close-editor").click(function () {
-            $("#editor").html("");
-            $("#editorWindow").toggleClass("hidden");
-        });
+                $(".editor-option").click(handlePropagation);
 
-        $("#toggleEditOptions").click(function () {
-            $(".editor-option").toggle("fast");
+                $("#close-editor").click(function () {
+                    $("#editor").html("");
+                    $("#editorWindow").toggleClass("hidden");
+                });
 
-            // If the editor window is shown, hide it
-            if (!$("#editorWindow").hasClass("hidden")) {
-                $("#editorWindow").toggle("fast");
-            }
-            if (!$("#editorContentGroup").hasClass("hidden")) {
-                $("#editorContentGroup").toggle("fast");
-            }
-        });
-    </script>
+                $("#toggleEditOptions").click(function () {
+                    $(".editor-option").toggle("fast");
+
+                    // If the editor window is shown, hide it
+                    if (!$("#editorWindow").hasClass("hidden")) {
+                        $("#editorWindow").toggle("fast");
+                    }
+                    if (!$("#editorContentGroup").hasClass("hidden")) {
+                        $("#editorContentGroup").toggle("fast");
+                    }
+                });
+            </script>
+        </text>
+    }
 }
 
 <!-- Related courses -->
