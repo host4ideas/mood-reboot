@@ -1,10 +1,18 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MoodReboot.Interfaces;
 using MoodReboot.Models;
 
 namespace MoodReboot.Controllers
 {
     public class CentersController : Controller
     {
+        private readonly IRepositoryCenters repositoryCenters;
+
+        public CentersController(IRepositoryCenters repositoryCenters)
+        {
+            this.repositoryCenters = repositoryCenters;
+        }
+
         public IActionResult Index()
         {
             List<CenterListView> centers = new()
@@ -60,6 +68,8 @@ namespace MoodReboot.Controllers
                     DirectorImage = ""
                 }
             };
+
+            this.repositoryCenters.GetAllCenters();
 
             return View(centers);
         }
