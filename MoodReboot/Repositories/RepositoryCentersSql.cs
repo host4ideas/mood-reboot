@@ -45,9 +45,10 @@ namespace MoodReboot.Repositories
             return this._context.Centers.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public List<Center> GetAllCenters()
+        public List<CenterListView> GetAllCenters()
         {
-            return this._context.Centers.ToList();
+            List<Center> centers = this._context.Centers.ToList();
+
         }
 
         public List<Center> GetUserCenters(int id)

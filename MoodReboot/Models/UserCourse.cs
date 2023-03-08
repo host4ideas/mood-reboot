@@ -7,11 +7,13 @@ namespace MoodReboot.Models
     public class UserCourse
     {
         [Key]
+        [Column("ID")]
+        public int Id { get; set; }
         [Column("USER_ID")]
         public int UserId { get; set; }
         [Column("COURSE_ID")]
         public int CourseId { get; set; }
         [Column("IS_EDITOR")]
-        public Boolean IsEditor { get; set; }
+        public bool IsEditor { get; set; }
     }
 }

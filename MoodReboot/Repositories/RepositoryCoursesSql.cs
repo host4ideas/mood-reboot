@@ -38,6 +38,7 @@ namespace MoodReboot.Repositories
             if (userCourse != null)
             {
                 this.context.UserCourses.Remove(userCourse);
+                await this.context.SaveChangesAsync();
             }
         }
 
