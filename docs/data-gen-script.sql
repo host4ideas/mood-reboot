@@ -40,7 +40,7 @@ EXEC SP_CREATE_CENTER
 EXEC SP_CREATE_COURSE
 @CENTER_ID = @CENTERID,
 @NAME = 'Mi primer curso',
-@DESCRIPTION = '#Normas Este es el primer curso del centro IES Clara del Rey. El curso est� enfocado a inform�tica para los alumnos de FP.',
+@DESCRIPTION = '#Normas Este es el primer curso del centro IES Clara del Rey. El curso está enfocado a informática para los alumnos de FP.',
 @IS_VISIBLE = 1,
 @COURSEID = @COURSEID OUT,
 @GROUPID = @GROUPID OUT;
