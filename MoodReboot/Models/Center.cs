@@ -19,5 +19,7 @@ namespace MoodReboot.Models
         public string? Image { get; set; }
         [Column("TELEPHONE")]
         public string Telephone { get; set; }
+        [Column("DIRECTOR")]
+        public int Director { get; set; }
     }
 }

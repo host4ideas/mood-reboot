@@ -1,0 +1,5 @@
+cache - ultimos productos vistos cache
+cookies - personalizacion (tambien ultimos productos vistos)
+tempdata - info entre controladores
+session - usuario
+memoria distribuida - almacena toda la peticion IActionResult

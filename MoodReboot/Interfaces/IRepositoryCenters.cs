@@ -4,7 +4,7 @@ namespace MoodReboot.Interfaces
 {
     public interface IRepositoryCenters
     {
-        public List<Center> GetAllCenters();
+        public List<CenterListView> GetAllCenters();
         public List<Center> GetUserCenters(int id);
         public Task<Center?> FindCenter(int id);
         public Task CreateCenter(string email, string name, string address, string file, string telephone);

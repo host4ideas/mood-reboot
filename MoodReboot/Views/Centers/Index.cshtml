@@ -20,29 +20,37 @@
     <script>
         const list = @Html.Raw(Json.Serialize(Model));
 
-        function initialList() {
-            let html = '';
-            list.forEach(center => {
-                html += `
-                    <a href='Centers/CenterDetails?id=${center.id}' class="flex flex-col gap-6 justify-between p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 overflow-hidden">
+        function htmlListItem(center, director) {
+            return `
+                <a href='Centers/CenterDetails?id=${center.id}' class="flex flex-col gap-6 justify-between p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 overflow-hidden">
 
                         <div class="flex justify-between flex-wrap items-center text-gray-500 overflow-hidden">
-                            <span class="text-sm">${center.telephone}</span>
-                            <span class="text-sm">${center.email}</span>
+                            <div class="flex flex-col">
+                                <span class="text-sm">👁️ ${center.telephone}</span>
+                                <span class="text-sm">${center.email}</span>
+                            </div>
                         </div>
 
                         <div class="text-gray-500 overflow-hidden">
                             <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">${center.centerName}</h5>
-                            <img class="w-7 h-7 rounded-full" src="" alt="${center.director} avatar" />
                         </div>
 
-                        <div class="flex items-center space-x-4">
-                            <img class="w-7 h-7 rounded-full" src="" alt="${center.director} avatar" />
-                            <span class="font-medium dark:text-white">
-                                ${center.director}
-                            </span>
+                        <div class="flex flex-wrap gap-4 items-center justify-start overflow-y-scroll">
+                            <div class="flex items-center">
+                                <img class="w-7 h-7 rounded-full" src="" alt="${director.image} avatar" />
+                                <span class="font-medium dark:text-white">
+                                    ${director.userName}
+                                </span>
+                            </div>
                         </div>
                     </a>`;
+        }
+
+        function initialList() {
+            let html = '';
+            list.forEach(center => {
+
+                html += htmlListItem(center, center.director);
             });
 
             $("#centers-list").html(html);
@@ -57,10 +65,10 @@
 
         const options = {
             keys: [
+                "telephone",
                 "email",
-                "director",
                 'centerName',
-                'telephone'
+                'director.userName'
             ]
         };
 
@@ -80,26 +88,7 @@
             results.forEach(result => {
                 const center = result.item;
 
-                html += `
-                <a href='Centers/CenterDetails?id=${center.id}' class="flex flex-col gap-6 justify-between p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 overflow-hidden">
-
-                    <div class="flex justify-between flex-wrap items-center text-gray-500 overflow-hidden">
-                        <span class="text-sm">${center.telephone}</span>
-                        <span class="text-sm">${center.email}</span>
-                    </div>
-
-                    <div class="text-gray-500 overflow-hidden">
-                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">${center.centerName}</h5>
-                        <img class="w-7 h-7 rounded-full" src="" alt="${center.director} avatar" />
-                    </div>
-
-                    <div class="flex items-center space-x-4">
-                        <img class="w-7 h-7 rounded-full" src="" alt="${center.director} avatar" />
-                        <span class="font-medium dark:text-white">
-                            ${center.director}
-                        </span>
-                    </div>
-                </a>`;
+                html += htmlListItem(center, center.director);
             });
 
             $("#centers-list").html(html);
@@ -107,13 +96,13 @@
     </script>
 }
 
-<!-- My Centers -->
+<!-- My Courses -->
 <section class="bg-white dark:bg-gray-900">
     <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-8 lg:px-6">
         <div class="mx-auto max-w-screen-sm text-center lg:mb-16 mb-8">
-            <h2 class="mb-4 text-3xl lg:text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Mis centros</h2>
+            <h2 class="mb-4 text-3xl lg:text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Mis cursos</h2>
         </div>
-        <!-- Display all the Centers -->
+        <!-- Display all the courses -->
         <div id="centers-list" class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
         </div>
     </div>

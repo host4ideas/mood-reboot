@@ -9,6 +9,7 @@ namespace MoodReboot.Interfaces
         public List<CourseListView> GetUserCourses(int id);
         public List<CourseListView> GetCenterCourses(int id);
         public List<CourseUsersModel> GetCourseUsers(int courseId);
+        public List<CourseListView> CenterCoursesListView(int centerId);
         public Task RemoveCourseUserAsync(int courseId, int userId);
         public Task RemoveCourseEditorAsync(int courseId, int userId);
         public Task AddCourseEditorAsync(int courseId, int userId);

@@ -17,6 +17,7 @@ builder.Services.AddSignalR();
 builder.Services.AddDbContext<MoodRebootContext>(options => options.UseSqlServer(connectionString));
 // Repositories
 builder.Services.AddTransient<IRepositoryCourses, RepositoryCoursesSql>();
+builder.Services.AddTransient<IRepositoryCenters, RepositoryCentersSql>();
 builder.Services.AddTransient<IRepositoryContent, RepositoryContentSql>();
 builder.Services.AddTransient<IRepositoryContentGroups, RepositoryCntGroupsSql>();
 builder.Services.AddTransient<IRepositoryFile, RepositoryFileSql>();

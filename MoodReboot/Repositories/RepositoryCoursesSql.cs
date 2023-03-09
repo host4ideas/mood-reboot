@@ -98,6 +98,11 @@ namespace MoodReboot.Repositories
             return this.context.Courses.ToList();
         }
 
+        /// <summary>
+        /// Get a user's courses
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public List<CourseListView> GetUserCourses(int userId)
         {
             var result = from c in context.Courses
@@ -124,7 +129,7 @@ namespace MoodReboot.Repositories
                 var result2 = from u in context.Users
                               join uc in context.UserCourses on u.Id equals uc.UserId
                               where uc.IsEditor == true && uc.CourseId == courseView.CourseId
-                              select new Author { UserName = u.UserName, Image = u.Image };
+                              select new Author { UserName = u.UserName, Image = u.Image, Id = u.Id };
 
                 courseView.Authors = result2.ToList();
             }
@@ -132,41 +137,70 @@ namespace MoodReboot.Repositories
             return courseListView;
         }
 
-        public List<CourseListView> GetCenterCourses(int courseId)
+        public List<CourseListView> CenterCoursesListView(int centerId)
         {
-            var result = from c in context.Courses
-                         join uc in context.UserCourses on c.Id equals uc.CourseId
-                         join u in context.Users on uc.UserId equals u.Id
-                         join ct in context.Centers on c.CenterId equals ct.Id
-                         where uc.CourseId == courseId
+
+            //var consulta = from datos in this._context.Empleados
+            //               where ids.Contains(datos.IdEmpleado)
+            //               select datos;
+
+            //return consulta.ToList();
+
+            var courses = this.GetCenterCourses(centerId);
+
+
+            List<int> courseIds = new();
+
+            foreach (var course in courses)
+            {
+                courseIds.Add(course.CourseId);
+
+                //List <CourseUsersModel> users = this.GetCourseUsers(course.CourseId);
+                //foreach (var user in users)
+                //{
+                //    if (user.IsEditor == true)
+                //    {
+                //        course.Authors?.Add(new Author { UserName = user.UserName, Image = user.Image });
+                //    }
+                //}
+            }
+
+            var consulta = from datos in this.context.Courses
+                           where courseIds.Contains(datos.Id)
+                           select datos;
+
+
+
+            return courses;
+        }
+
+        /// <summary>
+        /// Get a center's courses
+        /// </summary>
+        /// <param name="centerId"></param>
+        /// <returns></returns>
+        public List<CourseListView> GetCenterCourses(int centerId)
+        {
+            var result = from cr in this.context.Courses
+                         join ct in this.context.Centers on cr.CenterId equals ct.Id
+                         where ct.Id == centerId
                          select new CourseListView
                          {
-                             CourseId = c.Id,
-                             DatePublished = c.DatePublished,
-                             DateModified = c.DateModified,
-                             Description = c.Description,
-                             Image = c.Image,
-                             CourseName = c.Name,
+                             CourseId = cr.Id,
+                             CourseName = cr.Name,
+                             DatePublished = cr.DatePublished,
+                             DateModified = cr.DateModified,
+                             Description = cr.Description,
+                             Image = cr.Image,
                              CenterName = ct.Name,
-                             IsEditor = uc.IsEditor
+                             Authors = new List<Author>()
                          };
 
-            var courseListView = result.ToList();
-
-            foreach (CourseListView courseView in courseListView)
-            {
-                var result2 = from u in context.Users
-                              join uc in context.UserCourses on u.Id equals uc.UserId
-                              where uc.IsEditor == true && uc.CourseId == courseView.CourseId
-                              select new Author { UserName = u.UserName, Image = u.Image };
-
-                courseView.Authors = result2.ToList();
-            }
-
-            return courseListView;
+            var courses = result.ToList();
+            return courses;
         }
 
-        public async Task UpdateCourse(int id, string description, string image, string name, Boolean isVisible)
+        public async Task UpdateCourse(int id, string description, string image, string name, bool isVisible)
         {
             Course? course = await this.FindCourse(id);
 

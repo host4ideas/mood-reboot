@@ -7,76 +7,32 @@ namespace MoodReboot.Controllers
     public class CentersController : Controller
     {
         private readonly IRepositoryCenters repositoryCenters;
+        private readonly IRepositoryCourses repositoryCourses;
 
-        public CentersController(IRepositoryCenters repositoryCenters)
+        public CentersController(IRepositoryCenters repositoryCenters, IRepositoryCourses repositoryCourses)
         {
             this.repositoryCenters = repositoryCenters;
+            this.repositoryCourses = repositoryCourses;
         }
 
         public IActionResult Index()
         {
-            List<CenterListView> centers = new()
-            {
-                new CenterListView()
-                {
-                    Id= 1,
-                    CenterName = "INSTITUTO NOMBRE MUUUUUUUUUY CORTOOOOOOOOOOOOOOOO",
-                    Director = "John Doe Doe",
-                    Email = "ejemplodeemailmuylargo@ejemplodeemailmuylargo.ejemplodeemailmuylargo",
-                    Image = "/images/logos/logo2.jpeg",
-                    Telephone = "999999999",
-                    DirectorImage = ""
-                },
-                new CenterListView()
-                {
-                    Id= 1,
-                    CenterName = "INSTITUTO FUZZY",
-                    Director = "John Doe Doe",
-                    Email = "ejemplodeemailmuylargo@ejemplodeemailmuylargo.ejemplodeemailmuylargo",
-                    Image = "/images/logos/logo2.jpeg",
-                    Telephone = "888888888",
-                    DirectorImage = ""
-                },
-                new CenterListView()
-                {
-                    Id= 1,
-                    CenterName = "INSTITUTO NOMBRE MUUUUUUUUUY LARGOOOOOOOOOOOOOOOO",
-                    Director = "John Doe Doe",
-                    Email = "ejemplodeemailmuylargo@ejemplodeemailmuylargo.ejemplodeemailmuylargo",
-                    Image = "/images/logos/logo2.jpeg",
-                    Telephone = "777777777777777",
-                    DirectorImage = ""
-                },
-                new CenterListView()
-                {
-                    Id= 1,
-                    CenterName = "INSTITUTO NOMBRE MUUUUUUUUUY LARGOOOOOOOOOOOOOOOO",
-                    Director = "John Doe Doe",
-                    Email = "ejemplodeemailmuylargo@ejemplodeemailmuylargo.ejemplodeemailmuylargo",
-                    Image = "/images/logos/logo2.jpeg",
-                    Telephone = "666666666666666",
-                    DirectorImage = ""
-                },
-                new CenterListView()
-                {
-                    Id= 1,
-                    CenterName = "INSTITUTO NOMBRE MUUUUUUUUUY LARGOOOOOOOOOOOOOOOO",
-                    Director = "John Doe Doe",
-                    Email = "ejemplodeemailmuylargo@ejemplodeemailmuylargo.ejemplodeemailmuylargo",
-                    Image = "/images/logos/logo2.jpeg",
-                    Telephone = "555555555555555",
-                    DirectorImage = ""
-                }
-            };
-
-            this.repositoryCenters.GetAllCenters();
-
+            List<CenterListView> centers = this.repositoryCenters.GetAllCenters();
             return View(centers);
         }
 
-        public IActionResult CenterDetails(int id)
+        public async Task<IActionResult> CenterDetails(int id)
         {
-            return View();
+            Center? center = await this.repositoryCenters.FindCenter(id);
+
+            if (center == null)
+            {
+                return View();
+            }
+
+            List<CourseListView> courses = this.repositoryCourses.CenterCoursesListView(id);
+            ViewData["CENTER"] = center;
+            return View(courses);
         }
     }
 }

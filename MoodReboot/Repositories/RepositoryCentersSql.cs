@@ -40,15 +40,28 @@ namespace MoodReboot.Repositories
             }
         }
 
-        public Task<Center?> FindCenter(int id)
+        public async Task<Center?> FindCenter(int id)
         {
-            return this._context.Centers.FirstOrDefaultAsync(x => x.Id == id);
+            return await this._context.Centers.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public List<CenterListView> GetAllCenters()
         {
             List<Center> centers = this._context.Centers.ToList();
 
+            var result = from c in _context.Centers
+                         join u in _context.Users on c.Director equals u.Id
+                         select new CenterListView
+                         {
+                             CenterName = c.Name,
+                             Director = new Author() { Id = u.Id, Image = u.Image, UserName = u.UserName },
+                             Email = c.Email,
+                             Id = c.Id,
+                             Image = c.Image,
+                             Telephone = c.Telephone
+                         };
+
+            return result.ToList();
         }
 
         public List<Center> GetUserCenters(int id)

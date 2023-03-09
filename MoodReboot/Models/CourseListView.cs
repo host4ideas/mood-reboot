@@ -2,6 +2,7 @@
 {
     public class Author
     {
+        public int Id { get; set; }
         public string? UserName { get; set; }
         public string? Image { get; set; }
     }
@@ -12,7 +13,7 @@
         public DateTime DatePublished { get; set; }
         public DateTime? DateModified { get; set; }
         public string CourseName { get; set; }
-        public Boolean IsEditor { get; set; }
+        public bool IsEditor { get; set; }
         public string CenterName { get; set; }
         public int CourseId { get; set; }
         public string Image { get; set; }
