@@ -44,37 +44,37 @@
 
             course.authors.forEach(author => {
                 authorsHtml += `
-                            <div class="flex items-center">
-                                <img class="w-7 h-7 rounded-full" src="" alt="${author.image} avatar" />
-                                <span class="font-medium dark:text-white">
-                                    ${author.userName}
-                                </span>
-                            </div>`
+                    <div class="flex items-center">
+                        <img class="w-7 h-7 rounded-full" src="" alt="${author.image} avatar" />
+                        <span class="font-medium dark:text-white">
+                            ${author.userName}
+                        </span>
+                    </div>`
             })
 
             return `
-                        <a href='/Courses/CourseDetails?id=${course.courseId}' class="flex flex-col gap-6 justify-between p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 overflow-hidden">
+                <a href='/Courses/CourseDetails?id=${course.courseId}' class="flex flex-col gap-6 justify-between p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 overflow-hidden">
 
-                            <div class="flex justify-between flex-wrap items-center text-gray-500 overflow-hidden">
-                                <span class="text-sm">${course.centerName}</span>
-                                    <div class="flex flex-col">
-                                    <span class="text-sm">👁️ ${published}</span>
-                                    <span class="text-sm">${modified}</span>
-                                </div>
-                            </div>
+                    <div class="flex justify-between flex-wrap items-center text-gray-500 overflow-hidden">
+                        <span class="text-sm">${course.centerName}</span>
+                            <div class="flex flex-col">
+                            <span class="text-sm">👁️ ${published}</span>
+                            <span class="text-sm">${modified}</span>
+                        </div>
+                    </div>
 
-                            <div class="text-gray-500 overflow-hidden">
-                                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">${course.courseName}</h5>
-                                <p class="font-normal text-gray-700 dark:text-gray-400">${description}</p>
-                            </div>
+                    <div class="text-gray-500 overflow-hidden">
+                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">${course.courseName}</h5>
+                        <p class="font-normal text-gray-700 dark:text-gray-400">${description}</p>
+                    </div>
 
-                            <div class="flex flex-wrap gap-4 items-center justify-start overflow-y-scroll">
-                                ${authorsHtml}
-                                <span class="font-medium dark:text-white">
-                                    ${editor}
-                                </span>
-                            </div>
-                        </a>`;
+                    <div class="flex flex-wrap gap-4 items-center justify-start overflow-y-scroll">
+                        ${authorsHtml}
+                        <span class="font-medium dark:text-white">
+                            ${editor}
+                        </span>
+                    </div>
+                </a>`;
         }
 
         function initialList() {

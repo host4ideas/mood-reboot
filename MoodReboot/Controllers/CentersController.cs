@@ -31,6 +31,7 @@ namespace MoodReboot.Controllers
             }
 
             List<CourseListView> courses = this.repositoryCourses.CenterCoursesListView(id);
+
             ViewData["CENTER"] = center;
             return View(courses);
         }

@@ -1,42 +1,51 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MoodReboot.Extensions;
+using MoodReboot.Helpers;
+using MoodReboot.Interfaces;
 using MoodReboot.Models;
+using MvcCoreUtilidades.Helpers;
 
 namespace MoodReboot.Controllers
 {
     public class AuthController : Controller
     {
-        public IActionResult Signup()
+        private readonly HelperFile helperFile;
+        private readonly IRepositoryUsers repositoryUsers;
+
+        public AuthController(HelperFile helperFile, IRepositoryUsers repositoryUsers)
+        {
+            this.helperFile = helperFile;
+            this.repositoryUsers = repositoryUsers;
+        }
+
+        public IActionResult SignUp()
         {
             return View();
         }
 
         [HttpPost]
-        public IActionResult Signup(string email, string username, string firstName, string lastName, string password, string repeatPassword)
+        public async Task<IActionResult> SignUp
+            (string nombre, string email, string password, IFormFile imagen)
         {
+            string maximo = this.repositoryUsers.GetMaximo().ToString();
+
+            string path = await this.helperFile.UploadFileAsync(imagen, Folders.Images);
+
+            await this.repositoryUsers.RegisterUser(nombre, email, password, path);
+            ViewData["MENSAJE"] = "Usuario registrado correctamente";
             return View();
         }
 
         [HttpPost]
-        public Boolean Login(string password, string username = "", string email = "")
+        public async Task<IActionResult> Login(string email, string password)
         {
-            if (password == "admin" && (username == "admin" || email == "admin@admin.com"))
+            User? user = await this.repositoryUsers.LoginUser(email, password);
+            if (user == null)
             {
-                HttpContext.Session.SetObject("user", new SessionUser() { Email = "admin@admin.com", Id = 0, UserName = "admin", Role = "ADMIN" });
-                return true;
+                ViewData["MENSAJE"] = "Credenciales incorrectas";
+                return View();
             }
-            else if (password == "user" && (username == "user" || email == "user@user.com"))
-            {
-                HttpContext.Session.SetObject("user", new SessionUser() { Email = "user@user.com", Id = 1, UserName = "user", Role = "USER" });
-                return true;
-            }
-            return false;
-        }
-
-        [HttpPost]
-        public IActionResult Signout()
-        {
-            return RedirectToAction("Index", "Home");
+            return View(user);
         }
     }
 }

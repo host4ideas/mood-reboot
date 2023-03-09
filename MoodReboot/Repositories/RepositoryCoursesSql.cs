@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using MoodReboot.Data;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
+using System.Collections.Generic;
 
 namespace MoodReboot.Repositories
 {
@@ -99,6 +100,43 @@ namespace MoodReboot.Repositories
         }
 
         /// <summary>
+        /// Adds the authors to a given list of courses
+        /// </summary>
+        /// <param name="courseListView"></param>
+        /// <returns></returns>
+        public List<CourseListView> GetCoursesAuthors(List<CourseListView> courseListView)
+        {
+            List<int> courseIds = new();
+
+            foreach (CourseListView course in courseListView)
+            {
+                courseIds.Add(course.CourseId);
+            }
+
+            var result2 = from u in context.Users
+                          join uc in context.UserCourses on u.Id equals uc.UserId
+                          where courseIds.Contains(uc.CourseId) && uc.IsEditor == true
+                          select new { u.UserName, u.Image, u.Id, uc.CourseId };
+
+            var possibleAuthors = result2.ToList();
+
+            // Filter the authors for each course
+            foreach (CourseListView course in courseListView)
+            {
+                var courseAuthors = possibleAuthors.Where(p => p.CourseId == course.CourseId);
+
+                if (courseAuthors.Any())
+                {
+                    // Convert all anonynous objects of the result to Author Model
+                    List<Author> authors = courseAuthors.ToList().ConvertAll(x => new Author() { Id = x.Id, Image = x.Image, UserName = x.UserName });
+                    course.Authors = authors;
+                }
+            }
+
+            return courseListView;
+        }
+
+        /// <summary>
         /// Get a user's courses
         /// </summary>
         /// <param name="userId"></param>
@@ -122,56 +160,24 @@ namespace MoodReboot.Repositories
                              IsEditor = uc.IsEditor
                          };
 
-            var courseListView = result.ToList();
+            // Courses without authors
+            List<CourseListView> courseListView = result.ToList();
 
-            foreach (CourseListView courseView in courseListView)
-            {
-                var result2 = from u in context.Users
-                              join uc in context.UserCourses on u.Id equals uc.UserId
-                              where uc.IsEditor == true && uc.CourseId == courseView.CourseId
-                              select new Author { UserName = u.UserName, Image = u.Image, Id = u.Id };
+            // Courses with authors
+            List<CourseListView> coursesAuthors = this.GetCoursesAuthors(courseListView);
 
-                courseView.Authors = result2.ToList();
-            }
-
-            return courseListView;
+            return coursesAuthors;
         }
 
         public List<CourseListView> CenterCoursesListView(int centerId)
         {
+            // Courses without authors
+            List<CourseListView> courseListView = this.GetCenterCourses(centerId);
 
-            //var consulta = from datos in this._context.Empleados
-            //               where ids.Contains(datos.IdEmpleado)
-            //               select datos;
+            // Courses with authors
+            List<CourseListView> coursesAuthors = this.GetCoursesAuthors(courseListView);
 
-            //return consulta.ToList();
-
-            var courses = this.GetCenterCourses(centerId);
-
-
-            List<int> courseIds = new();
-
-            foreach (var course in courses)
-            {
-                courseIds.Add(course.CourseId);
-
-                //List <CourseUsersModel> users = this.GetCourseUsers(course.CourseId);
-                //foreach (var user in users)
-                //{
-                //    if (user.IsEditor == true)
-                //    {
-                //        course.Authors?.Add(new Author { UserName = user.UserName, Image = user.Image });
-                //    }
-                //}
-            }
-
-            var consulta = from datos in this.context.Courses
-                           where courseIds.Contains(datos.Id)
-                           select datos;
-
-
-
-            return courses;
+            return coursesAuthors;
         }
 
         /// <summary>

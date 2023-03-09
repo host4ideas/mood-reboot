@@ -13,7 +13,7 @@ namespace MoodReboot.Models
         [Column("EMAIL")]
         public string Email { get; set; }
         [Column("PASSWORD")]
-        public string Password { get; set; }
+        public byte[] Password { get; set; }
         [Column("USERNAME")]
         public string UserName { get; set; }
         [Column("FIRST_NAME")]
