@@ -57,7 +57,9 @@ namespace MoodReboot.Repositories
                              Director = new Author() { Id = u.Id, Image = u.Image, UserName = u.UserName },
                              Email = c.Email,
                              Id = c.Id,
+                             Address = c.Address,
                              Image = c.Image,
+
                              Telephone = c.Telephone
                          };
 

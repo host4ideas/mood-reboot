@@ -25,13 +25,15 @@ namespace MoodReboot.Controllers
 
         [HttpPost]
         public async Task<IActionResult> SignUp
-            (string nombre, string email, string password, IFormFile imagen)
+            (string nombre, string firstName, string lastName, string email, string password, IFormFile imagen)
         {
             string maximo = this.repositoryUsers.GetMaximo().ToString();
 
-            string path = await this.helperFile.UploadFileAsync(imagen, Folders.Images);
+            string fileName = "image_" + maximo;
 
-            await this.repositoryUsers.RegisterUser(nombre, email, password, path);
+            string path = await this.helperFile.UploadFileAsync(imagen, Folders.Images, fileName);
+
+            await this.repositoryUsers.RegisterUser(nombre, firstName, lastName, email, password, path);
             ViewData["MENSAJE"] = "Usuario registrado correctamente";
             return View();
         }

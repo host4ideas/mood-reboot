@@ -13,7 +13,6 @@
 
         public string MapPath(string fileName, Folders folder)
         {
-            // batman.jpg, huploads
             string carpeta = "";
 
             if (folder == Folders.Images)

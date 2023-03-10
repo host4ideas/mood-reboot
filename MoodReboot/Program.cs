@@ -19,6 +19,7 @@ builder.Services.AddDbContext<MoodRebootContext>(options => options.UseSqlServer
 builder.Services.AddTransient<IRepositoryCourses, RepositoryCoursesSql>();
 builder.Services.AddTransient<IRepositoryCenters, RepositoryCentersSql>();
 builder.Services.AddTransient<IRepositoryContent, RepositoryContentSql>();
+builder.Services.AddTransient<IRepositoryUsers, RepositoryUsersSql>();
 builder.Services.AddTransient<IRepositoryContentGroups, RepositoryCntGroupsSql>();
 builder.Services.AddTransient<IRepositoryFile, RepositoryFileSql>();
 // Helpers

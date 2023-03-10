@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace MoodReboot.Models
 {
     [Table("USER")]
-    public class User : IdentityUser
+    public class User
     {
         [Key]
         [Column("USER_ID")]

@@ -1,13 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MoodReboot.Data;
+using MoodReboot.Helpers;
+using MoodReboot.Interfaces;
 using MoodReboot.Models;
 using MvcCryptography.Helpers;
 
 namespace MoodReboot.Repositories
 {
-    public class RepositoryUsersSql
+    public class RepositoryUsersSql : IRepositoryUsers
     {
-        private MoodRebootContext context;
+        private readonly MoodRebootContext context;
 
         public RepositoryUsersSql(MoodRebootContext context)
         {
@@ -26,22 +28,36 @@ namespace MoodReboot.Repositories
             }
         }
 
-        public Task RegisterUser(string nombre, string email, string password, string imagen)
+        public Task<User?> FindUser(int userId)
+        {
+            return this.context.Users.FirstOrDefaultAsync(x => x.Id == userId);
+        }
+
+        public List<User> GetAllUsers()
+        {
+            return this.context.Users.ToList();
+        }
+
+        public async Task RegisterUser(string nombre, string firstName, string lastName, string email, string password, string image)
         {
             string salt = HelperCryptography.GenerateSalt();
 
             User user = new()
             {
-                IdUser = this.GetMaximo(),
-                Nombre = nombre,
+                Id = this.GetMaximo(),
+                UserName = nombre,
+                LastName = lastName,
+                FirstName = firstName,
+                SignedDate = DateTime.UtcNow,
+                Role = "USER",
                 Email = email,
-                Imagen = imagen,
+                Image = image,
                 Salt = salt,
                 Password = HelperCryptography.EncryptPassword(password, salt)
             };
 
             this.context.Users.Add(user);
-            return this.context.SaveChangesAsync();
+            await this.context.SaveChangesAsync();
         }
 
         public async Task<User?> LoginUser(string email, string password)
@@ -59,6 +75,15 @@ namespace MoodReboot.Repositories
                 }
             }
             return default;
+        }
+
+        public async Task DeleteUser(int userId)
+        {
+            User? user = await this.FindUser(userId);
+            if (user != null)
+            {
+                this.context.Users.Remove(user);
+            }
         }
     }
 }

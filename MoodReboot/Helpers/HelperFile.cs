@@ -17,9 +17,13 @@ namespace MoodReboot.Helpers
             throw new NotImplementedException();
         }
 
-        public async Task<string> UploadFileAsync(IFormFile file, Folders folder)
+        public async Task<string> UploadFileAsync(IFormFile file, Folders folder, string? fileName = "")
         {
-            string fileName = file.FileName;
+            if (fileName != "")
+            {
+                fileName = file.FileName;
+            }
+
             string path = this.helperPath.MapPath(fileName, folder);
 
             using (Stream stream = new FileStream(path, FileMode.Create))
@@ -29,7 +33,7 @@ namespace MoodReboot.Helpers
             }
         }
 
-        public async Task<List<string>> UploadFileAsync(List<IFormFile> files, Folders folder)
+        public async Task<List<string>> UploadFilesAsync(List<IFormFile> files, Folders folder)
         {
             List<string> paths = new();
 

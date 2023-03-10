@@ -35,7 +35,7 @@ namespace MoodReboot.Controllers
                 string mimeType = file.ContentType;
                 string fileName = file.FileName;
                 // Upload file                
-                await this.helperFile.UploadFileAsync(file, Folders.Temp);
+                await this.helperFile.UploadFileAsync(file, Folders.Temp, fileName);
                 // Update DB
                 int fileId = await this.repositoryFile.InsertFileAsync(fileName, mimeType, userId);
                 // Update Content

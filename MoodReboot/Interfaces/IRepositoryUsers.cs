@@ -4,13 +4,11 @@ namespace MoodReboot.Interfaces
 {
     public interface IRepositoryUsers
     {
-        public int GetMaximo();
-        public Task RegisterUser(string nombre, string email, string password, string imagen);
-        public Task<User?> LoginUser(string email, string password);
-        public List<User> GetUsers();
-        public User FindUser(int id);
-        public Task UpdateUser(User user);
-        public Task DeleteUser(int id);
-        public Task CreateUser(User user);
+        int GetMaximo();
+        public Task<User?> FindUser(int userId);
+        List<User> GetAllUsers();
+        Task<User?> LoginUser(string email, string password);
+        Task RegisterUser(string nombre, string firstName, string lastName, string email, string password, string image);
+        public Task DeleteUser(int userId);
     }
 }
