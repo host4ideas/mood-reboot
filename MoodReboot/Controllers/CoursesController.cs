@@ -42,6 +42,12 @@ namespace MoodReboot.Controllers
             return RedirectToAction("CourseDetails", new { id = courseId });
         }
 
+        public async Task<IActionResult> UpdateCourse(int userId, int courseId, string description, string image, string name, bool isVisible)
+        {
+            await this.repositoryCourses.UpdateCourse(courseId, description, image, name, isVisible);
+            return RedirectToAction("UserCourses", new { id = userId });
+        }
+
         public IActionResult CenterCourses(int centerId)
         {
             List<CourseListView> courses = this.repositoryCourses.GetCenterCourses(centerId);

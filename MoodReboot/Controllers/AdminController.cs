@@ -52,6 +52,12 @@ namespace MoodReboot.Controllers
             return View(courses);
         }
 
+        public async Task<IActionResult> UpdateCourse(int courseId, string description, string image, string name, bool isVisible)
+        {
+            await this.repositoryCourses.UpdateCourse(courseId, description, image, name, isVisible);
+            return RedirectToAction("Courses");
+        }
+
         public async Task<IActionResult> DeleteCourse(int courseId)
         {
             await this.repositoryCourses.DeleteCourse(courseId);

@@ -54,7 +54,7 @@ namespace MoodReboot.Repositories
                          select new CenterListView
                          {
                              CenterName = c.Name,
-                             Director = new Author() { Id = u.Id, Image = u.Image, UserName = u.UserName },
+                             Director = new Author() { Id = u.Id, Image = u.Image, UserName = u.UserName, Email = u.Email },
                              Email = c.Email,
                              Id = c.Id,
                              Address = c.Address,

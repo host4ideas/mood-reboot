@@ -9,14 +9,14 @@ namespace MoodReboot.Controllers
     public class ContentController : Controller
     {
         private readonly IRepositoryContent repositoryContent;
-        private readonly IRepositoryFile repositoryFile;
+        private readonly IRepositoryUsers repositoryUser;
         private readonly HtmlSanitizer sanitizer;
         private readonly HelperFile helperFile;
 
-        public ContentController(IRepositoryContent repositoryContent, IRepositoryFile repositoryFile, HtmlSanitizer sanitizer, HelperFile helperFile)
+        public ContentController(IRepositoryContent repositoryContent, IRepositoryUsers repositoryUser, HtmlSanitizer sanitizer, HelperFile helperFile)
         {
             this.repositoryContent = repositoryContent;
-            this.repositoryFile = repositoryFile;
+            this.repositoryUser = repositoryUser;
             this.sanitizer = sanitizer;
             this.helperFile = helperFile;
         }
@@ -37,7 +37,7 @@ namespace MoodReboot.Controllers
                 // Upload file                
                 await this.helperFile.UploadFileAsync(file, Folders.Temp, fileName);
                 // Update DB
-                int fileId = await this.repositoryFile.InsertFileAsync(fileName, mimeType, userId);
+                int fileId = await this.repositoryUser.InsertFileAsync(fileName, mimeType, userId);
                 // Update Content
                 await this.repositoryContent.CreateContentFile(contentGroupId: groupId, fileId: fileId);
             }
@@ -63,7 +63,7 @@ namespace MoodReboot.Controllers
                 // Upload file                
                 await this.helperFile.UploadFileAsync(file, Folders.Temp);
                 // Update DB
-                int fileId = await this.repositoryFile.InsertFileAsync(fileName, mimeType, userId);
+                int fileId = await this.repositoryUser.InsertFileAsync(fileName, mimeType, userId);
                 // Update Content
                 await this.repositoryContent.UpdateContent(id: contentId, fileId: fileId);
             }

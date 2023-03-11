@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using MoodReboot.Models;
+using MoodReboot.Helpers;
+using MoodReboot.Extensions;
 
 namespace MoodReboot.Controllers
 {
@@ -16,6 +18,7 @@ namespace MoodReboot.Controllers
 
         public IActionResult Index()
         {
+            HttpContext.Session.SetObject("USER", "1");
             return View();
         }
 

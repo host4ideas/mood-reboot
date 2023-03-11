@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using MoodReboot.Data;
 using MoodReboot.Helpers;
 using MoodReboot.Interfaces;
@@ -16,6 +17,7 @@ namespace MoodReboot.Repositories
             this.context = context;
         }
 
+        #region USERS
         public int GetMaximo()
         {
             if (!context.Users.Any())
@@ -85,5 +87,99 @@ namespace MoodReboot.Repositories
                 this.context.Users.Remove(user);
             }
         }
+
+        #endregion
+
+        #region FILES
+
+        /// <summary>
+        /// Inserts a new File in the File table of the database
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="mimeType"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<int> InsertFileAsync(string name, string mimeType)
+        {
+            string sql = "SP_CREATE_FILE @NAME, @MIME_TYPE, @USER_ID, @FILE_ID OUT";
+
+            SqlParameter paramName = new("@NAME", name);
+            SqlParameter paramMime = new("@MIME_TYPE", mimeType);
+            SqlParameter paramFileIdOut = new("@FILE_ID", null)
+            {
+                Direction = System.Data.ParameterDirection.Output
+            };
+
+            await this.context.Database.ExecuteSqlRawAsync(sql, paramName, paramMime, paramFileIdOut);
+
+            return (int)paramFileIdOut.Value;
+        }
+
+        /// <summary>
+        /// Inserts a new File in the File table of the database
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="mimeType"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<int> InsertFileAsync(string name, string mimeType, int userId)
+        {
+            string sql = "SP_CREATE_FILE @NAME, @MIME_TYPE, @USER_ID, @FILE_ID OUT";
+
+            SqlParameter paramName = new("@NAME", name);
+            SqlParameter paramMime = new("@MIME_TYPE", mimeType);
+            SqlParameter paramUserId = new("@USER_ID", userId);
+            SqlParameter paramFileIdOut = new("@FILE_ID", null)
+            {
+                Direction = System.Data.ParameterDirection.Output
+            };
+
+            await this.context.Database.ExecuteSqlRawAsync(sql, paramName, paramMime, paramUserId, paramFileIdOut);
+
+            return (int)paramFileIdOut.Value;
+        }
+
+        /// <summary>
+        /// Deletes a file from the File table of the database
+        /// </summary>
+        /// <param name="fileId"></param>
+        /// <returns></returns>
+        public async Task DeleteFile(int fileId)
+        {
+            AppFile? file = await this.context.Files.FirstOrDefaultAsync(x => x.Id == fileId);
+
+            if (file != null)
+            {
+                this.context.Files.Remove(file);
+                await this.context.SaveChangesAsync();
+            }
+        }
+
+        #endregion
+
+        #region MESSAGES
+        public Task CreateMessage(Message message)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteMessage(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Message> GetMessagesByGroup()
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<int> GetUserChatGroups(int userId)
+        {
+            var result = from ug in this.context.UserChatGroups
+                         where ug.UserID == userId
+                         select ug.GroupId;
+            return result.ToList();
+        }
+        #endregion
     }
 }

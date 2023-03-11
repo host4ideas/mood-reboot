@@ -4,7 +4,12 @@ namespace MoodReboot.Controllers
 {
     public class MessagesController : Controller
     {
-        public IActionResult Index()
+        public IActionResult Chats()
+        {
+            return View();
+        }
+
+        public IActionResult CourseForum()
         {
             return View();
         }

@@ -21,7 +21,7 @@
         }
     }
 
-    <h2 class="mb-4 text-3xl lg:text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Unidades</h2>
+    <h2 class="mb-4 text-3xl lg:text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Contenidos</h2>
 
     @{
         if (Model.IsEditor == true)
@@ -64,7 +64,7 @@
 
             string headingClass = "";
 
-            // Different headers per position
+            // Different header style per position
             if (i < 1)
             {
                 headingClass = "flex items-center justify-between w-full p-2 sm:p-4 text-lg font-bold text-left text-gray-500 border-2 border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer";
@@ -78,6 +78,7 @@
                 headingClass = "flex items-center justify-between w-full p-2 sm:p-4 text-lg font-bold text-left text-gray-500 border-2 border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer";
             }
 
+            // Header
             <div id="accordion-collapse-heading-@index">
                 <div class="@headingClass" data-accordion-target="#accordion-collapse-body-@index" aria-expanded="false" aria-controls="accordion-collapse-body-@index">
                     @{
@@ -96,7 +97,7 @@
                                 <input type="hidden" name="id" value="@group.ContentGroupId" />
                                 <input type="hidden" name="courseId" value="@Model.Course.Id" />
                                 <div class="relative">
-                                    <input value="@group.Name" name="name" type="text" id="floating_helper" aria-describedby="floating_helper_text" class="block rounded-t-lg px-2.5 pb-2.5 pt-5 w-full text-sm text-gray-900 bg-gray-50 dark:bg-gray-700 border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " />
+                                    <input value="@group.Name" name="name" type="text" id="@floatingLabelId" aria-describedby="floating_helper_text" class="block rounded-t-lg px-2.5 pb-2.5 pt-5 w-full text-sm text-gray-900 bg-gray-50 dark:bg-gray-700 border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " />
                                     <label for="@floatingLabelId" class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] left-2.5 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4">Nuevo nombre</label>
                                 </div>
                                 <!-- IsVisible -->
@@ -129,7 +130,7 @@
                 </div>
             </div>
 
-            // Different bodies per position
+            // Different body style per position
             string contentBodyClass = "";
 
             if (i < 1 || (i > 0 && i < Model.ContentGroups.Count - 1))
@@ -141,6 +142,7 @@
                 contentBodyClass = "p-5 font-light border-2 border-t-0 border-gray-200 dark:border-gray-700";
             }
 
+            // Body
             <div id="accordion-collapse-body-@index" class="hidden" aria-labelledby="accordion-collapse-heading-@index">
                 <div class="@contentBodyClass">
                     <!-- Content -->
@@ -258,30 +260,35 @@
             <div class="flex flex-wrap items-center justify-between px-3 py-2 border-b dark:border-gray-600">
                 <div class="flex flex-wrap items-center divide-gray-200 sm:divide-x dark:divide-gray-600">
                     <div class="flex items-center space-x-1 sm:pr-4">
-                        <button type="button" data-tooltip-target="tooltip-attach-file" class="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
+                        <!-- Upload file -->
+                        <button id="btn-upload-file" type="button" data-tooltip-target="tooltip-attach-file" class="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
                             <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd"></path></svg>
-                            <span class="sr-only">Attach file</span>
+                            <span class="sr-only">Subir archivo</span>
                         </button>
                         <div id="tooltip-attach-file" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-                            Attach file
+                            Subir archivo
                             <div class="tooltip-arrow" data-popper-arrow></div>
                         </div>
-                        <button type="button" data-tooltip-target="tooltip-attach-image" class="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
+                        <input id="input-upload-file" type="file" class="hidden-file-input hidden" />
+                        <!-- Upload image -->
+                        <button id="btn-upload-image" type="button" data-tooltip-target="tooltip-attach-image" class="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
                             <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path></svg>
-                            <span class="sr-only">Upload image</span>
+                            <span class="sr-only">Subir imagen</span>
                         </button>
                         <div id="tooltip-attach-image" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-                            Upload image
+                            Subir imagen
                             <div class="tooltip-arrow" data-popper-arrow></div>
                         </div>
+                        <input id="input-upload-image" type="file" class="hidden-file-input hidden" />
                     </div>
+                    <!-- Add list -->
                     <div class="flex flex-wrap items-center space-x-1 sm:pl-4">
-                        <button type="button" data-tooltip-target="tooltip-add-list" class="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
+                        <button id="btn-add-list" type="button" data-tooltip-target="tooltip-add-list" class="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
                             <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path></svg>
-                            <span class="sr-only">Add list</span>
+                            <span class="sr-only">Añadir lista</span>
                         </button>
                         <div id="tooltip-add-list" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-                            Add list
+                            Añadir lista
                             <div class="tooltip-arrow" data-popper-arrow></div>
                         </div>
                     </div>
@@ -301,7 +308,44 @@
                 <div class="w-1/2 m-5 mb-5 px-4 py-2 bg-white rounded-b-lg dark:bg-gray-800">
                     <label for="editor" class="sr-only">Publish post</label>
                     <!-- Text Area -->
-                    <textarea id="editor" name="unsafeHtml" oninput="resizeTextArea(event)" cols="100" class="block w-full px-0 text-sm text-gray-800 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400 scrollbar-styled" placeholder="Write an article..." required></textarea>
+                    <textarea id="editor" name="unsafeHtml" oninput="resizeTextArea(event)" cols="100" class="block w-full px-0 text-sm text-gray-800 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400 scrollbar-styled" placeholder="Acepta Markdown y HTML..." required>
+                    </textarea>
+
+                    <!-- Excel preview -->
+                    <div id="tableDataPreview" class="hidden relative overflow-x-auto max-w-36 max-h-72"></div>
+
+                    <!-- Image preview -->
+                    <div id="previewImage" class="hidden">
+                    <img class="h-auto max-w-xs" id="imgImagePreview" alt="image description" />
+                    </div>
+
+                    <!-- PDF preview -->
+                    <div id="previewContent" class="hidden">
+                    <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
+                        <!-- Prev button -->
+                    <button id="prev" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
+                    <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                                Previous
+                            </span>
+                        </button>
+                        <!-- Next button -->
+                    <button id="next" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">
+                    <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                                Next
+                            </span>
+                        </button>
+
+                        <!-- Page progress bar -->
+                    <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700" style="max-height:20px">
+                    <div id="pageProgressBar" class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: 0%">
+                    <span id="page_num"></span> / <span id="page_count"></span>
+                            </div>
+                        </div>
+
+                        <!-- Preview pdf content canvas -->
+                    <canvas id="canvasPdfPreview" style="max-width:250px"></canvas>
+                    </div>
+
                 </div>
                 <div class="block w-1/2 m-5 px-4 py-2 bg-white rounded-b-lg dark:bg-gray-800 scrollbar-hide">
                     <!-- Markdown preview -->
@@ -386,6 +430,22 @@
                     }
                 }
 
+                // Upload file button
+                $("#btn-upload-file").click(function () {
+                    $("#input-upload-file").click();
+                });
+                // Upload image button
+                $("#btn-upload-image").click(function () {
+                    $("#input-upload-image").click();
+                });
+                // Add list button
+                $("#btn-add-list").click(function () {
+                    let initialHtml = $("#editor").html();
+                    initialHtml += "\n - item 1\n - item 2\n - item 3";
+                    $("#editor").html(initialHtml);
+                    parseMarkdown();
+                });
+
                 $(".editor-option").click(handlePropagation);
 
                 $("#close-editor").click(function () {
@@ -457,7 +517,7 @@
 @{
     if (Model.IsEditor == true)
     {
-        <!-- drawer component -->
+        <!-- Course's users sidebar -->
         <div id="drawer-backdrop" class="editor-option fixed top-0 left-0 z-50 h-screen p-4 overflow-y-auto transition-transform -translate-x-full bg-white w-80 dark:bg-gray-800" tabindex="-1" aria-labelledby="drawer-backdrop-label">
             <h5 id="drawer-backdrop-label" class="text-base font-semibold text-gray-500 uppercase dark:text-gray-400">Usuarios</h5>
             <button type="button" data-drawer-hide="drawer-backdrop" aria-controls="drawer-backdrop" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 absolute top-2.5 right-2.5 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white">
@@ -520,6 +580,5 @@
                 </ul>
             </div>
         </div>
-
     }
 }
