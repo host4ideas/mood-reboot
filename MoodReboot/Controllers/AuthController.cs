@@ -27,7 +27,7 @@ namespace MoodReboot.Controllers
         public async Task<IActionResult> SignUp
             (string nombre, string firstName, string lastName, string email, string password, IFormFile imagen)
         {
-            string maximo = this.repositoryUsers.GetMaximo().ToString();
+            int maximo = await this.repositoryUsers.GetMaxUser();
 
             string fileName = "image_" + maximo;
 

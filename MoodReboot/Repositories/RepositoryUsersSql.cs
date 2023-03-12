@@ -18,16 +18,14 @@ namespace MoodReboot.Repositories
         }
 
         #region USERS
-        public int GetMaximo()
+        public async Task<int> GetMaxUser()
         {
             if (!context.Users.Any())
             {
                 return 1;
             }
-            else
-            {
-                return this.context.Users.Max(z => z.Id) + 1;
-            }
+
+            return await this.context.Users.MaxAsync(z => z.Id) + 1;
         }
 
         public Task<User?> FindUser(int userId)
@@ -46,7 +44,7 @@ namespace MoodReboot.Repositories
 
             User user = new()
             {
-                Id = this.GetMaximo(),
+                Id = await this.GetMaxUser(),
                 UserName = nombre,
                 LastName = lastName,
                 FirstName = firstName,
@@ -158,27 +156,113 @@ namespace MoodReboot.Repositories
         #endregion
 
         #region MESSAGES
-        public Task CreateMessage(Message message)
+        private async Task<int> GetMaxMessage()
         {
-            throw new NotImplementedException();
+            if (!this.context.Messages.Any())
+            {
+                return 1;
+            }
+
+            int max = await this.context.Messages.MaxAsync(x => x.MessageId) + 1;
+            return max;
         }
 
-        public Task DeleteMessage(int id)
+        public async Task CreateMessage(int userId, int groupChatId, string userName, string? text = null, int? fileId = null, bool seen = false)
         {
-            throw new NotImplementedException();
+            Message message = new()
+            {
+                MessageId = await this.GetMaxMessage(),
+                UserID = userId,
+                GroupId = groupChatId,
+                Text = text,
+                FileId = fileId,
+                DatePosted = DateTime.UtcNow,
+                UserName = userName,
+                Seen = seen
+            };
+
+            this.context.Messages.Add(message);
+            await this.context.SaveChangesAsync();
         }
 
-        public List<Message> GetMessagesByGroup()
+        public async Task DeleteMessage(int messageId)
         {
-            throw new NotImplementedException();
+            Message? message = await this.context.Messages.FirstOrDefaultAsync(x => x.MessageId == messageId);
+
+            if (message != null)
+            {
+                this.context.Messages.Remove(message);
+                await this.context.SaveChangesAsync();
+            }
         }
 
-        public List<int> GetUserChatGroups(int userId)
+        private async Task<int> GetMaxChatGroup()
         {
-            var result = from ug in this.context.UserChatGroups
-                         where ug.UserID == userId
-                         select ug.GroupId;
-            return result.ToList();
+            if (!this.context.ChatGroups.Any())
+            {
+                return 1;
+            }
+
+            int max = await this.context.ChatGroups.MaxAsync(x => x.Id);
+            return max + 1;
+        }
+
+        public async Task CreateChat(string name, string? image)
+        {
+            ChatGroup chatGroup = new()
+            {
+                Id = await this.GetMaxChatGroup(),
+                Name = name,
+                Image = image
+            };
+
+            this.context.ChatGroups.Add(chatGroup);
+            await this.context.SaveChangesAsync();
+        }
+
+        private async Task<int> GetMaxUserChatGroup()
+        {
+            if (!this.context.UserChatGroups.Any())
+            {
+                return 1;
+            }
+
+            int max = await this.context.UserChatGroups.MaxAsync(x => x.Id);
+            return max + 1;
+        }
+
+        public async Task AddUsersToChat(List<int> userIds, int chatGroupId)
+        {
+            List<UserChatGroup> userChatGroups = new();
+
+            int firstIndex = await this.GetMaxUserChatGroup();
+
+            foreach (int userId in userIds)
+            {
+                UserChatGroup userChatGroup = new()
+                {
+                    Id = firstIndex,
+                    UserID = userId,
+                    GroupId = chatGroupId,
+                    JoinDate = DateTime.Now
+                };
+
+                userChatGroups.Add(userChatGroup);
+                firstIndex++;
+            }
+
+            await this.context.UserChatGroups.AddRangeAsync(userChatGroups);
+            await this.context.SaveChangesAsync();
+        }
+
+        public List<Message> GetMessagesByGroup(int chatGroupId)
+        {
+            return this.context.Messages.Where(x => x.GroupId == chatGroupId).ToList();
+        }
+
+        public List<UserChatGroup> GetUserChatGroups(int userId)
+        {
+            return this.context.UserChatGroups.Where(x => x.UserID == userId).ToList();
         }
         #endregion
     }

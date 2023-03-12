@@ -8,7 +8,7 @@ namespace MoodReboot.Models
     {
         [Key]
         [Column("MESSAGE_ID")]
-        public int Id { get; set; }
+        public int MessageId { get; set; }
         [Column("GROUP_ID")]
         public int GroupId { get; set; }
         [Column("TEXT")]
@@ -20,10 +20,8 @@ namespace MoodReboot.Models
         [Column("FILE_ID")]
         public int? FileId { get; set; }
         [Column("SEEN")]
-        public Boolean Seen { get; set; }
+        public bool Seen { get; set; }
         [Column("USERNAME")]
         public string UserName { get; set; }
-        // Extra
-        public AppFile? Attachment { get; set; }
     }
 }

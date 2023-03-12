@@ -7,6 +7,8 @@ namespace MoodReboot.Models
     public class UserChatGroup
     {
         [Key]
+        [Column("ID")]
+        public int Id { get; set; }
         [Column("USER_ID")]
         public int UserID { get; set; }
         [Column("GROUP_ID")]

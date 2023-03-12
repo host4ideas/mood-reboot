@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.SignalR;
 using MoodReboot.Extensions;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
-using System.Text.RegularExpressions;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MoodReboot.Hubs
 {
@@ -16,29 +16,49 @@ namespace MoodReboot.Hubs
             this.repositoryUsers = repositoryUsers;
         }
 
-        public async Task SendMessage(string user, string message)
+        public async Task SendMessage(int userId, int groupChatId, string userName, string text, string fileId, string seen)
         {
-            await Clients.All.SendAsync("ReceiveMessage", user, message);
+            await Clients.All.SendAsync("ReceiveMessage", userName, text);
         }
 
-        public async Task SendMessageToGroup(string groupId, string user, string date, string message)
+        public async Task SendMessageToGroup(string userId, string groupChatId, string userName, string text, string seen)
         {
-            await Clients.Group(groupId).SendAsync("ReceiveMessageGroup", user, groupId, date, message);
+            // Send message to group
+            await Clients.Group(groupChatId.ToString()).SendAsync(
+                "ReceiveMessageGroup",
+                userName,
+                groupChatId,
+                DateTime.Now,
+                text);
+
+            //bool boolSeen = false;
+
+            //if (seen == "1")
+            //{
+            //    boolSeen = true;
+            //}
+
+            //// Store the mesage in the DDBB
+            //await this.repositoryUsers.CreateMessage(
+            //    userId: int.Parse(userId),
+            //    groupChatId: int.Parse(groupChatId),
+            //    userName: userName,
+            //    text: text,
+            //    seen: boolSeen);
         }
 
-        // Cuando un cliente haga click en los chats, añadirlo a los grupos de los cursos donde esta matriculado
-        public async Task AddToGroup(string groupName)
+        public async Task AddToGroup(string groupName, string userName)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
 
-            await Clients.Group(groupName).SendAsync("GroupNotification", $"{Context.ConnectionId} has joined the group {groupName}.");
+            await Clients.Group(groupName).SendAsync("GroupNotification", $"{userName} has joined the group {groupName}.");
         }
 
-        public async Task RemoveFromGroup(string groupName)
+        public async Task RemoveFromGroup(string groupName, string userName)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
 
-            await Clients.Group(groupName).SendAsync("GroupNotification", $"{Context.ConnectionId} has left the group {groupName}.");
+            await Clients.Group(groupName).SendAsync("GroupNotification", $"{userName} has left the group {groupName}.");
         }
 
         public override Task OnConnectedAsync()
@@ -50,23 +70,20 @@ namespace MoodReboot.Hubs
                 // Get the userId param
                 int userId = int.Parse(httpContext.Request.Query["userId"]);
 
-                // Check if the user is logged
                 UserSession? userSession = httpContext.Session.GetObject<UserSession>("USER");
 
+                // Check if the user is logged
                 if (userSession != null && userSession.UserId == userId)
                 {
                     // If the user is logged in add it to its chat groups
-                    List<int> groupsIds = this.repositoryUsers.GetUserChatGroups(userId);
+                    List<UserChatGroup> groups = this.repositoryUsers.GetUserChatGroups(userId);
 
-                    foreach (int groupId in groupsIds)
+                    foreach (UserChatGroup group in groups)
                     {
-                        this.AddToGroup(groupId.ToString()).Wait();
+                        this.AddToGroup(group.GroupId.ToString(), userSession.UserName).Wait();
                     }
                 }
             }
-
-            // Testing
-            //this.AddToGroup("1").Wait();
 
             return base.OnConnectedAsync();
         }
