@@ -24,10 +24,22 @@ namespace MoodReboot.Controllers
             return View();
         }
 
+        public IActionResult ChatErrorPartial(string errorMessage)
+        {
+            ViewData["ERROR"] = errorMessage;
+            return View();
+        }
+
         public IActionResult ChatWindowPartial(int userId)
         {
             List<ChatGroup> groups = this.repositoryUsers.GetUserChatGroups(userId);
             return PartialView("_ChatWindowPartial", groups);
+        }
+
+        public List<Message> GetChatMessages(int chatGroupId)
+        {
+            List<Message> messages = this.repositoryUsers.GetMessagesByGroup(chatGroupId);
+            return messages;
         }
     }
 }

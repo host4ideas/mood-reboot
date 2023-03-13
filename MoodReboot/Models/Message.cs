@@ -19,8 +19,6 @@ namespace MoodReboot.Models
         public DateTime DatePosted { get; set; }
         [Column("FILE_ID")]
         public int? FileId { get; set; }
-        [Column("SEEN")]
-        public bool Seen { get; set; }
         [Column("USERNAME")]
         public string UserName { get; set; }
     }

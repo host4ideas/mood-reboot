@@ -167,7 +167,7 @@ namespace MoodReboot.Repositories
             return max;
         }
 
-        public async Task CreateMessage(int userId, int groupChatId, string userName, string? text = null, int? fileId = null, bool seen = false)
+        public async Task CreateMessage(int userId, int groupChatId, string userName, string? text = null, int? fileId = null)
         {
             Message message = new()
             {
@@ -177,8 +177,7 @@ namespace MoodReboot.Repositories
                 Text = text,
                 FileId = fileId,
                 DatePosted = DateTime.UtcNow,
-                UserName = userName,
-                Seen = seen
+                UserName = userName
             };
 
             this.context.Messages.Add(message);

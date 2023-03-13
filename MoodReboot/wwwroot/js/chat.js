@@ -61,15 +61,9 @@ function initializeConnection(connectionString) {
         var userId = document.getElementById("hidden-userid").value;
         var text = document.getElementById("messageInput").value;
         var fileAttach = document.getElementById("hidden-file").value;
-        var seen = document.getElementById("hidden-seen").value;
         var userName = document.getElementById("hidden-username").value;
 
-        //console.log(userId)
-        //console.log(groupChatId)
-        //console.log(userName)
-        //console.log(text)
-
-        connection.invoke("SendMessageToGroup", userId, groupChatId, userName, text, seen).catch(function (err) {
+        connection.invoke("SendMessageToGroup", userId, groupChatId, userName, text).catch(function (err) {
             return console.error(err.toString());
         });
         event.preventDefault();

@@ -14,12 +14,12 @@ namespace MoodReboot.Hubs
             this.repositoryUsers = repositoryUsers;
         }
 
-        public async Task SendMessage(int userId, int groupChatId, string userName, string text, string fileId, string seen)
+        public async Task SendMessage(int userId, int groupChatId, string userName, string text, string fileId)
         {
             await Clients.All.SendAsync("ReceiveMessage", userName, text);
         }
 
-        public async Task SendMessageToGroup(string userId, string groupChatId, string userName, string text, string seen)
+        public async Task SendMessageToGroup(string userId, string groupChatId, string userName, string text)
         {
             // Send message to group
             await Clients.Group(groupChatId.ToString()).SendAsync(
@@ -29,20 +29,12 @@ namespace MoodReboot.Hubs
                 DateTime.Now,
                 text);
 
-            bool boolSeen = false;
-
-            if (seen == "1")
-            {
-                boolSeen = true;
-            }
-
             // Store the mesage in the DDBB
             await this.repositoryUsers.CreateMessage(
                 userId: int.Parse(userId),
                 groupChatId: int.Parse(groupChatId),
                 userName: userName,
-                text: text,
-                seen: boolSeen);
+                text: text);
         }
 
         public async Task AddToGroup(string groupName, string userName)
