@@ -16,7 +16,7 @@ namespace MoodReboot.Interfaces
         Task<int> InsertFileAsync(string name, string mimeType);
         Task<int> InsertFileAsync(string name, string mimeType, int userId);
         // Messages
-        List<UserChatGroup> GetUserChatGroups(int userId);
+        List<ChatGroup> GetUserChatGroups(int userId);
         List<Message> GetMessagesByGroup(int chatGroupId);
         Task CreateMessage(int userId, int groupChatId, string userName, string? text = null, int? fileId = null, bool seen = false);
         Task DeleteMessage(int id);

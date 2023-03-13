@@ -1,9 +1,7 @@
-﻿using AngleSharp.Common;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
 using MoodReboot.Extensions;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace MoodReboot.Hubs
 {
@@ -31,20 +29,20 @@ namespace MoodReboot.Hubs
                 DateTime.Now,
                 text);
 
-            //bool boolSeen = false;
+            bool boolSeen = false;
 
-            //if (seen == "1")
-            //{
-            //    boolSeen = true;
-            //}
+            if (seen == "1")
+            {
+                boolSeen = true;
+            }
 
-            //// Store the mesage in the DDBB
-            //await this.repositoryUsers.CreateMessage(
-            //    userId: int.Parse(userId),
-            //    groupChatId: int.Parse(groupChatId),
-            //    userName: userName,
-            //    text: text,
-            //    seen: boolSeen);
+            // Store the mesage in the DDBB
+            await this.repositoryUsers.CreateMessage(
+                userId: int.Parse(userId),
+                groupChatId: int.Parse(groupChatId),
+                userName: userName,
+                text: text,
+                seen: boolSeen);
         }
 
         public async Task AddToGroup(string groupName, string userName)
@@ -76,11 +74,11 @@ namespace MoodReboot.Hubs
                 if (userSession != null && userSession.UserId == userId)
                 {
                     // If the user is logged in add it to its chat groups
-                    List<UserChatGroup> groups = this.repositoryUsers.GetUserChatGroups(userId);
+                    List<ChatGroup> groups = this.repositoryUsers.GetUserChatGroups(userId);
 
-                    foreach (UserChatGroup group in groups)
+                    foreach (ChatGroup group in groups)
                     {
-                        this.AddToGroup(group.GroupId.ToString(), userSession.UserName).Wait();
+                        this.AddToGroup(group.Id.ToString(), userSession.UserName).Wait();
                     }
                 }
             }

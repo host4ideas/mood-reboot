@@ -6,6 +6,7 @@ function btnChatToggle() {
 // Resize chat window button
 function resizeChatWindow(size) {
     $("#chatWindow").width(size);
+    $("#chatWindow").height(size*2);
 }
 
 resizeChatWindow(300);

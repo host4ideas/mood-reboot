@@ -336,126 +336,18 @@
     </button>
 
     <!-- Chat button -->
-    <div class="fixed" style="bottom: 20px; right: 20px;">
-        <button onclick="btnChatToggle()" type="button" class="inline-flex items-center px-2.5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-full hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-            <svg width="20px" height="20px" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+    <div id="btnChatToggle" class="fixed" style="bottom: 20px; right: 20px;">
+        <div role="status">
+            <svg aria-hidden="true" class="inline w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-red-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
+                <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
             </svg>
-
-            <span class="inline-flex items-center justify-center w-4 h-4 ml-2 text-xs font-semibold text-blue-800 bg-blue-200 rounded-full">
-                2
-            </span>
-        </button>
+            <span class="sr-only">Loading...</span>
+        </div>
     </div>
 
     <!-- Chat window -->
-    <div id="chatWindow" class="fixed bg-blue-300 rounded p-2 border-2 border-white dark:border-gray-900 dark:bg-gray-700 z-50" style="bottom: 70px; right: 20px; display: none; overflow: auto; resize: both; max-height: 500px; max-width: 700px;">
-
-        <div class="flex justify-center gap-6">
-            <button onclick="resizeChatWindow(300)" class="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-                <img src="~/images/icons/mobile-screen-button-solid.svg" width="20px" />
-            </button>
-            <button onclick="resizeChatWindow(500)" class="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-                <img src="~/images/icons/tablet-screen-button-solid.svg" width="20px" />
-            </button>
-            <button onclick="resizeChatWindow(700)" class="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-                <img src="~/images/icons/laptop-solid.svg" width="30px" />
-            </button>
-        </div>
-
-        <hr class="h-px my-3 bg-gray-200 border-0 dark:bg-gray-600" />
-
-        <!-- Toggle excel preview -->
-        <button id="toggleExcelPreview" class="hidden relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
-            <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                Toggle preview
-            </span>
-        </button>
-
-        <!-- Excel preview -->
-        <div id="tableDataPreview" class="hidden relative overflow-x-auto max-w-36 max-h-72">
-        </div>
-
-        <!-- Toggle preview image -->
-        <button id="toggleImgPreview" class="hidden relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
-            <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                Toggle preview
-            </span>
-        </button>
-
-        <!-- Image preview -->
-        <div id="previewImage" class="hidden">
-            <img class="h-auto max-w-xs" id="imgImagePreview" alt="image description" />
-        </div>
-
-        <!-- Toggle preview PDF -->
-        <button id="togglePdfPreview" class="hidden relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
-            <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                Toogle preview
-            </span>
-        </button>
-
-        <!-- PDF preview -->
-        <div id="previewContent" class="hidden">
-            <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
-
-            <!-- Prev button -->
-            <button id="prev" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
-                <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                    Previous
-                </span>
-            </button>
-            <!-- Next button -->
-            <button id="next" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">
-                <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                    Next
-                </span>
-            </button>
-
-            <!-- Page progress bar -->
-            <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700" style="max-height:20px">
-                <div id="pageProgressBar" class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: 0%"><span id="page_num"></span> / <span id="page_count"></span></div>
-            </div>
-
-            <!-- Preview pdf content canvas -->
-            <canvas id="canvasPdfPreview" style="max-width:250px"></canvas>
-        </div>
-
-        <!-- Messages list -->
-        <div class="row">
-            <input id="hidden-userid" value="1" hidden />
-            <input id="hidden-username" value="Admin 1" hidden />
-            <input id="hiddenGroupId" value="1" hidden />
-            <input id="hidden-seen" value="1" hidden />
-            <div class="row">
-                <div class="col-2 dark:text-gray-200">Message</div>
-                <div class="col-4">
-                    <!-- Input message with file upload -->
-                    @*<form asp-controller="FileUpload" asp-action="Index" enctype="multipart/form-data" method="POST" accept-charset="">*@
-                    <label for="chat" class="sr-only">Your message</label>
-                    <div class="flex items-center px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-800">
-                        <label for="hidden-file" title="Upload image" class="inline-flex justify-center p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
-                            <svg aria-hidden="true" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path></svg>
-                            <span class="sr-only">Upload image</span>
-                        </label>
-                        <input type="file" id="hidden-file" name="file" class="hidden" />
-                        <textarea id="messageInput" rows="1" class="block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Your message..."></textarea>
-                        <button type="submit" id="sendButton" value="Send Message" title="Send message" class="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600">
-                            <svg aria-hidden="true" class="w-6 h-6 rotate-90" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>
-                            <span class="sr-only">Send message</span>
-                        </button>
-                    </div>
-                    @*</form>*@
-                </div>
-                <div class="row">&nbsp;</div>
-            </div>
-            <div class="row">
-                <div class="col-6">
-                    <ul id="messagesList"></ul>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div id="chatWindow" class="fixed bg-gray-900 text-white rounded-lg p-4 border-2 border-white dark:border-gray-900 dark:bg-gray-700 z-50" style="bottom: 70px; right: 20px; display: none; overflow: auto; resize: both; max-height: 500px; max-width: 700px;"></div>
 </body>
 
 <!-- Libraries -->
@@ -472,6 +364,7 @@
 <!-- Custom JS -->
 <script asp-append-version="true" src="~/js/filePreview.js"></script>
 <script asp-append-version="true" src="~/js/site.js"></script>
+<script asp-append-version="true" src="~/js/chat.js"></script>
 @{
     // Testing
     Context.Session.SetObject("USER", new UserSession()
@@ -480,18 +373,41 @@
                 UserId = 1,
                 UserName = "Test",
             });
+    // Use userSession to retrieve the logged user's chat groups
     UserSession? userSession = Context.Session.GetObject<UserSession>("USER");
     if (userSession != null)
     {
+        // Once the session is validated create the connection string
         string connectionString = "/chatHub?userId=" + userSession.UserId.ToString();
         <text>
             <script>
-                var connection = new signalR.HubConnectionBuilder().withUrl("@connectionString").build();
+                $(document).ready(function () {
+                    $("#chatWindow").load('@Url.Action("ChatWindowPartial", "Messages", new { userId = userSession.UserId })', function (responseTxt, statusTxt, xhr) {
+                        // If the chat is loaded change the button
+                        if (statusTxt == "success") {
+                            let html = `
+                                <button onclick="btnChatToggle()" type="button" class="inline-flex items-center px-2.5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-full hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                    <svg width="20px" height="20px" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+                                    </svg>
+
+                                    <span class="inline-flex items-center justify-center w-4 h-4 ml-2 text-xs font-semibold text-blue-800 bg-blue-200 rounded-full">
+                                        2
+                                    </span>
+                                </button>`;
+                            $("#btnChatToggle").html(html);
+                            initializeConnection("@connectionString");
+                        }
+                            
+                        if (statusTxt == "error") {
+                            alert("Error: " + xhr.status + ": " + xhr.statusText);
+                        }
+                    });
+                });
             </script>
         </text>
-        <script asp-append-version="true" src="~/js/chat.js"></script>
     }
 }
 
-@RenderSection("scripts", false)
+@await RenderSectionAsync("scripts", false)
 </html>

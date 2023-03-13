@@ -260,10 +260,20 @@ namespace MoodReboot.Repositories
             return this.context.Messages.Where(x => x.GroupId == chatGroupId).ToList();
         }
 
-        public List<UserChatGroup> GetUserChatGroups(int userId)
+        public List<ChatGroup> GetUserChatGroups(int userId)
         {
-            return this.context.UserChatGroups.Where(x => x.UserID == userId).ToList();
+            var result = from g in context.ChatGroups
+                         join ug in context.UserChatGroups on g.Id equals ug.GroupId
+                         where ug.UserID == userId
+                         select new ChatGroup
+                         {
+                             Id = g.Id,
+                             Image = g.Image,
+                             Name = g.Name
+                         };
+            return result.ToList();
         }
+
         #endregion
     }
 }
