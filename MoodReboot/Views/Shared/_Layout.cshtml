@@ -211,11 +211,12 @@
                         @{
                             string GetActiveLinkClass(string route)
                             {
-                                string CurrentName = ViewContext.RouteData.Values["controller"]!.ToString()!;
+                                string currentAction = ViewContext.RouteData.Values["action"]!.ToString()!;
+                                string currentController = ViewContext.RouteData.Values["controller"]!.ToString()!;
                                 string active = "block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white";
                                 string notActive = "block py-2 pl-3 pr-4 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700";
 
-                                if (CurrentName.Contains(route))
+                                if (currentAction.Contains(route) || currentController.Contains(route))
                                 {
                                     return active;
                                 }
@@ -343,7 +344,8 @@
     UserSession? userSession = Context.Session.GetObject<UserSession>("USER");
     if (userSession != null)
     {
-        string url = @Url.Action("GetChatMessages", "Messages");
+        string requestMessages = @Url.Action("GetChatMessages", "Messages");
+        string requestUpdateLastSeen = @Url.Action("UpdateChatLastSeen", "Messages");
         // Once the session is validated create the connection string
         string connectionString = "/chatHub?userId=" + userSession.UserId.ToString();
 
@@ -361,7 +363,8 @@
                                 </button>`;
                             $("#btnChatToggle").html(html);
 
-                            $("#notifications-window").load('@Url.Action("ChatNotificationsPartial", "Messages")');
+                            // Load notifications
+                            $("#notifications-window").load('@Url.Action("ChatNotificationsPartial", "Messages", new { userId = userSession.UserId })');
 
                             initializeConnection("@connectionString");
                         }
@@ -373,23 +376,30 @@
                 });
             </script>
             <script>
-                function btnLoadChat(chatGroupId) {
+                function loadChatMessages(chatGroupId) {
                     $("#messagesList").html("");
                     $("#hiddenGroupId").val(chatGroupId);
                     // Hide chats sidebar
-                    $("#chatsSidenav").fadeToggle("fast");
+                    $("#chatsSidenav").hide();
                     $("#chatsSidenav").height($("#chatWindow").height() - 50);
                     $("#chatsSidenav").width($("#chatWindow").width() - 5);
+                    $("#chatWindow").show("fast");
 
-                    const request = '@url' + '?chatGroupId=' + chatGroupId;
-                    $.get(request, function (messageList) {
+                    // Load messages of the clicked chat
+                    const requestMessages = '@requestMessages' + '?chatGroupId=' + chatGroupId;
+                    $.get(requestMessages, function (messageList) {
                         messageList.forEach((message) => {
                             var li = document.createElement("li");
                             li.classList.add("dark:text-gray-200");
+                            li.classList.add("my-4");
                             document.getElementById("messagesList").appendChild(li);
                             li.textContent = `in group ${chatGroupId} user ${message.userName} says ${message.text} at ${message.datePosted}`;
                         });
                     });
+
+                    // Save that the user has clicked in the chat
+                    const requestUpdateLastSeen = '@requestUpdateLastSeen' + '?chatGroupId=' + chatGroupId;
+                    $.get(requestUpdateLastSeen);
                 }
             </script>
         </text>

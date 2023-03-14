@@ -273,15 +273,20 @@ namespace MoodReboot.Repositories
         {
             var result = from ug in context.UserChatGroups
                          join m in context.Messages on ug.GroupId equals m.GroupId
-                         where ug.UserID == 0 && ug.LastSeen < m.DatePosted
+                         where ug.UserID == userId && ug.LastSeen < m.DatePosted
                          select m;
 
             return result.ToList();
         }
 
-        public void UpdateChatLastSeen(int chatGroupId)
+        public async Task UpdateChatLastSeen(int chatGroupId, int userId)
         {
-            this.context.UserChatGroups.FirstOrDefaultAsync(x => )
+            UserChatGroup? userChatGroup = await this.context.UserChatGroups.FirstOrDefaultAsync(x => x.UserID == userId && x.GroupId == chatGroupId);
+            if (userChatGroup != null)
+            {
+                userChatGroup.LastSeen = DateTime.Now;
+                await this.context.SaveChangesAsync();
+            }
         }
 
         #endregion

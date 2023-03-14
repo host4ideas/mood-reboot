@@ -23,16 +23,6 @@ namespace MoodReboot.Controllers
         public IActionResult ChatWindowPartial(int userId)
         {
             List<ChatGroup> groups = this.repositoryUsers.GetUserChatGroups(userId);
-
-            UserSession? user = HttpContext.Session.GetObject<UserSession>("USER");
-            if (user != null)
-            {
-                List<Message> messages = this.repositoryUsers.GetUnseenMessages(user.UserId);
-
-                ViewBag.UnseenCount = messages.Count;
-                ViewBag.UnseenMessages = messages;
-            }
-
             return PartialView("_ChatWindowPartial", groups);
         }
 
@@ -48,14 +38,18 @@ namespace MoodReboot.Controllers
             return messages;
         }
 
-        public List<Message> GetMessages(int userId)
+        public List<Message> GetUnseenMessages(int userId)
         {
             return this.repositoryUsers.GetUnseenMessages(userId);
         }
 
-        public void UpdateChatLastSeen(int chatGroupId)
+        public async Task UpdateChatLastSeen(int chatGroupId)
         {
-            
+            UserSession? userSession = HttpContext.Session.GetObject<UserSession>("USER");
+            if (userSession != null)
+            {
+                await this.repositoryUsers.UpdateChatLastSeen(chatGroupId, userSession.UserId);
+            }
         }
     }
 }
