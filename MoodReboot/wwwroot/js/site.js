@@ -11,6 +11,10 @@ function resizeChatWindow(size) {
 
 resizeChatWindow(300);
 
+function toggleNotifications() {
+    $("#notification-dropdown").toggleClass("hidden");
+}
+
 // Resize text area with it's content height'
 // oninput = 'this.style.height = "";this.style.height = this.scrollHeight + "px"'
 function resizeTextArea(e) {
@@ -68,13 +72,3 @@ if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localS
         }
     }
 });
-
-// Leave a message script
-const formWrapper = document.querySelector(".formbold-form-wrapper");
-const crossIcon = document.querySelector(".cross-icon");
-const chatIcon = document.querySelector(".chat-icon");
-function chatboxToogleHandler() {
-    formWrapper.classList.toggle("hidden");
-    crossIcon.classList.toggle("hidden");
-    chatIcon.classList.toggle("hidden");
-}

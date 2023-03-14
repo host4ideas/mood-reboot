@@ -15,5 +15,7 @@ namespace MoodReboot.Models
         public int GroupId { get; set; }
         [Column("JOIN_DATE")]
         public DateTime JoinDate { get; set; }
+        [Column("LAST_SEEN")]
+        public DateTime LastSeen { get; set; }
     }
 }

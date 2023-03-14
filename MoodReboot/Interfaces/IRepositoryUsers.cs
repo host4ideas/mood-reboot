@@ -20,5 +20,6 @@ namespace MoodReboot.Interfaces
         List<Message> GetMessagesByGroup(int chatGroupId);
         Task CreateMessage(int userId, int groupChatId, string userName, string? text = null, int? fileId = null);
         Task DeleteMessage(int id);
+        public List<Message> GetUnseenMessages(int userId);
     }
 }

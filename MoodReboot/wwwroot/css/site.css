@@ -1,6 +1,13 @@
 ﻿/* 
     Scrollbar hiding 
 */
+
+@media (max-width: 1280px) {
+    #notification-dropdown {
+        right: 0.5rem;
+    }
+}
+
 /* For Webkit-based browsers (Chrome, Safari and Opera) */
 .scrollbar-hide::-webkit-scrollbar {
     display: none;

@@ -264,13 +264,24 @@ namespace MoodReboot.Repositories
             var result = from g in context.ChatGroups
                          join ug in context.UserChatGroups on g.Id equals ug.GroupId
                          where ug.UserID == userId
-                         select new ChatGroup
-                         {
-                             Id = g.Id,
-                             Image = g.Image,
-                             Name = g.Name
-                         };
+                         select g;
+
             return result.ToList();
+        }
+
+        public List<Message> GetUnseenMessages(int userId)
+        {
+            var result = from ug in context.UserChatGroups
+                         join m in context.Messages on ug.GroupId equals m.GroupId
+                         where ug.UserID == 0 && ug.LastSeen < m.DatePosted
+                         select m;
+
+            return result.ToList();
+        }
+
+        public void UpdateChatLastSeen(int chatGroupId)
+        {
+            this.context.UserChatGroups.FirstOrDefaultAsync(x => )
         }
 
         #endregion
