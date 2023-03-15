@@ -25,5 +25,7 @@ namespace MoodReboot.Models
         public Boolean IsVisible { get; set; }
         [Column("GROUP_ID")]
         public int? GroupId { get; set; }
+        [Column("PASSWORD")]
+        public string? Password { get; set; }
     }
 }

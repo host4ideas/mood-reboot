@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using MoodReboot.Data;
 using MoodReboot.Interfaces;
@@ -31,9 +32,14 @@ namespace MoodReboot.Repositories
             return result.ToList();
         }
 
+        public Task<UserCourse?> FindUserCourse(int userId, int courseId)
+        {
+            return this.context.UserCourses.FirstOrDefaultAsync(x => x.UserId == userId && x.CourseId == courseId);
+        }
+
         public async Task RemoveCourseUserAsync(int courseId, int userId)
         {
-            UserCourse? userCourse = await this.context.UserCourses.FirstOrDefaultAsync(x => x.UserId == userId && x.CourseId == courseId);
+            UserCourse? userCourse = await this.FindUserCourse(userId, courseId);
 
             if (userCourse != null)
             {
@@ -53,6 +59,16 @@ namespace MoodReboot.Repositories
             }
         }
 
+        public async Task<int> GetMaxUserCourse()
+        {
+            if (!context.UserCourses.Any())
+            {
+                return 1;
+            }
+
+            return await this.context.UserCourses.MaxAsync(z => z.Id) + 1;
+        }
+
         public async Task AddCourseEditorAsync(int courseId, int userId)
         {
             UserCourse? userCourse = await this.context.UserCourses.FirstOrDefaultAsync(x => x.UserId == userId && x.CourseId == courseId);
@@ -62,6 +78,47 @@ namespace MoodReboot.Repositories
                 userCourse.IsEditor = true;
                 await this.context.SaveChangesAsync();
             }
+        }
+
+        public async Task<bool> AddCourseUserAsync(int courseId, int userId, bool isEditor, string? password)
+        {
+            Course? course = await this.FindCourse(courseId);
+
+            if (course != null)
+            {
+                if (course.Password != null)
+                {
+                    if (course.Password == password)
+                    {
+                        UserCourse userCourse = new()
+                        {
+                            Id = await this.GetMaxUserCourse(),
+                            CourseId = courseId,
+                            IsEditor = isEditor,
+                            UserId = userId,
+                        };
+
+                        this.context.UserCourses.Add(userCourse);
+                        await this.context.SaveChangesAsync();
+                        return true;
+                    }
+                }
+                else
+                {
+                    UserCourse userCourse = new()
+                    {
+                        Id = await this.GetMaxUserCourse(),
+                        CourseId = courseId,
+                        IsEditor = isEditor,
+                        UserId = userId,
+                    };
+
+                    this.context.UserCourses.Add(userCourse);
+                    await this.context.SaveChangesAsync();
+                    return true;
+                }
+            }
+            return false;
         }
 
         public Task CreateCourse(string name, string? description, string? image, int? isVisible)

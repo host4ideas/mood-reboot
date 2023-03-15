@@ -16,7 +16,7 @@
     </div>
     <div id="chat-notification-list" class="overflow-y-auto max-h-72">
         @{
-            if (Model != null && Model.Any())
+            if (Model.Any())
             {
                 foreach (Message message in Model)
                 {
@@ -46,3 +46,4 @@
         </div>
     </div>
 </div>
+

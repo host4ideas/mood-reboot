@@ -25,11 +25,15 @@ function initializeConnection(connectionString) {
         var li = document.createElement("li");
         li.classList.add("dark:text-gray-200");
         li.classList.add("my-4");
+        li.classList.add("text-sm");
         document.getElementById("messagesList").appendChild(li);
         // We can assign user-supplied strings to an element's textContent because it
         // is not interpreted as markup. If you're assigning in any other way, you 
         // should be aware of possible script injection concerns.
         li.textContent = `in group ${groupChatId} user ${userName} says ${text} at ${date}`;
+        // Scroll to bottom
+        var d = $('#messagesList');
+        d.scrollTop(d.prop("scrollHeight"));
 
         const htmlNotification = `
                 <div onclick="loadChatMessages(${groupChatId})" class="flex py-3 px-4 cursor-pointer text-gray-900 dark:text-gray-200 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
@@ -82,5 +86,4 @@ function initializeConnection(connectionString) {
         });
         event.preventDefault();
     });
-
 }

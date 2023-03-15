@@ -331,7 +331,6 @@
 <!-- Custom JS -->
 <script asp-append-version="true" src="~/js/filePreview.js"></script>
 <script asp-append-version="true" src="~/js/site.js"></script>
-<script asp-append-version="true" src="~/js/chat.js"></script>
 @{
     // Testing
     Context.Session.SetObject("USER", new UserSession()
@@ -350,6 +349,7 @@
         string connectionString = "/chatHub?userId=" + userSession.UserId.ToString();
 
         <text>
+            <script asp-append-version="true" src="~/js/chat.js"></script>
             <script>
                 $(document).ready(function () {
                     $("#chatWindow").load('@Url.Action("ChatWindowPartial", "Messages", new { userId = userSession.UserId })', function (responseTxt, statusTxt, xhr) {
@@ -384,6 +384,7 @@
                     $("#chatsSidenav").height($("#chatWindow").height() - 50);
                     $("#chatsSidenav").width($("#chatWindow").width() - 5);
                     $("#chatWindow").show("fast");
+                    $("#input-message-container").removeClass(("hidden"));
 
                     // Load messages of the clicked chat
                     const requestMessages = '@requestMessages' + '?chatGroupId=' + chatGroupId;
@@ -392,9 +393,12 @@
                             var li = document.createElement("li");
                             li.classList.add("dark:text-gray-200");
                             li.classList.add("my-4");
+                            li.classList.add("text-sm");
                             document.getElementById("messagesList").appendChild(li);
                             li.textContent = `in group ${chatGroupId} user ${message.userName} says ${message.text} at ${message.datePosted}`;
                         });
+                        // Scroll to bottom
+                        $("#messagesList").animate({ scrollTop: $('#messagesList').prop("scrollHeight") }, 1000);
                     });
 
                     // Save that the user has clicked in the chat

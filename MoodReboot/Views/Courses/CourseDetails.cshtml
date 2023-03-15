@@ -515,7 +515,7 @@
 </aside>
 
 @{
-    if (Model.IsEditor == true)
+    if (Model.IsEditor == true && Model.CourseUsers != null)
     {
         <!-- Course's users sidebar -->
         <div id="drawer-backdrop" class="editor-option fixed top-0 left-0 z-50 h-screen p-4 overflow-y-auto transition-transform -translate-x-full bg-white w-80 dark:bg-gray-800" tabindex="-1" aria-labelledby="drawer-backdrop-label">

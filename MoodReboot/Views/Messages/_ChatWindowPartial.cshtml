@@ -23,100 +23,102 @@
         </ul>
     </div>
 </aside>
-
-<div class="flex justify-center gap-6">
-    <button id="btnChatsSidenav" class="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 5.25h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5" />
-        </svg>
-    </button>
-    <button onclick="resizeChatWindow(300)" class="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
-        </svg>
-    </button>
-    <button onclick="resizeChatWindow(500)" class="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5h3m-6.75 2.25h10.5a2.25 2.25 0 002.25-2.25v-15a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 4.5v15a2.25 2.25 0 002.25 2.25z" />
-        </svg>
-    </button>
-    <button onclick="resizeChatWindow(700)" class="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25" />
-        </svg>
-    </button>
-</div>
-
-<hr class="h-px my-3 border-0 bg-gray-400" />
-
-<!-- Toggle excel preview -->
-<button id="toggleExcelPreview" class="hidden relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
-    <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-        Toggle preview
-    </span>
-</button>
-
-<!-- Excel preview -->
-<div id="tableDataPreview" class="hidden relative overflow-x-auto max-w-36 max-h-72">
-</div>
-
-<!-- Toggle preview image -->
-<button id="toggleImgPreview" class="hidden relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
-    <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-        Toggle preview
-    </span>
-</button>
-
-<!-- Image preview -->
-<div id="previewImage" class="hidden">
-    <img class="h-auto max-w-xs" id="imgImagePreview" alt="image description" />
-</div>
-
-<!-- Toggle preview PDF -->
-<button id="togglePdfPreview" class="hidden relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
-    <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-        Toogle preview
-    </span>
-</button>
-
-<!-- PDF preview -->
-<div id="previewContent" class="hidden">
-    <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
-
-    <!-- Prev button -->
-    <button id="prev" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
-        <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-            Previous
-        </span>
-    </button>
-    <!-- Next button -->
-    <button id="next" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">
-        <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-            Next
-        </span>
-    </button>
-
-    <!-- Page progress bar -->
-    <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700" style="max-height:20px">
-        <div id="pageProgressBar" class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: 0%"><span id="page_num"></span> / <span id="page_count"></span></div>
+<div class="flex flex-col overflow-hidden">
+    <div class="flex justify-center gap-6">
+        <button id="btnChatsSidenav" class="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 5.25h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5" />
+            </svg>
+        </button>
+        <button onclick="resizeChatWindow(300)" class="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
+            </svg>
+        </button>
+        <button onclick="resizeChatWindow(500)" class="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5h3m-6.75 2.25h10.5a2.25 2.25 0 002.25-2.25v-15a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 4.5v15a2.25 2.25 0 002.25 2.25z" />
+            </svg>
+        </button>
+        <button onclick="resizeChatWindow(700)" class="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25" />
+            </svg>
+        </button>
     </div>
 
-    <!-- Preview pdf content canvas -->
-    <canvas id="canvasPdfPreview" style="max-width:250px"></canvas>
-</div>
+    <hr class="h-px my-3 border-0 bg-gray-400" />
 
-<!-- Messages list -->
-<div class="row">
-    <input id="hidden-userid" value="@userSession.UserId" hidden />
-    <input id="hidden-username" value="@userSession.UserName" hidden />
-    <input id="hiddenGroupId" value="" hidden />
-    <div class="row">
-        <div class="col-6">
-            <ul id="messagesList"></ul>
+    <!-- Toggle excel preview -->
+    <button id="toggleExcelPreview" class="hidden relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
+        <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+            Toggle preview
+        </span>
+    </button>
+
+    <!-- Excel preview -->
+    <div id="tableDataPreview" class="hidden relative overflow-x-auto max-w-36 max-h-72">
+    </div>
+
+    <!-- Toggle preview image -->
+    <button id="toggleImgPreview" class="hidden relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
+        <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+            Toggle preview
+        </span>
+    </button>
+
+    <!-- Image preview -->
+    <div id="previewImage" class="hidden">
+        <img class="h-auto max-w-xs" id="imgImagePreview" alt="image description" />
+    </div>
+
+    <!-- Toggle preview PDF -->
+    <button id="togglePdfPreview" class="hidden relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
+        <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+            Toogle preview
+        </span>
+    </button>
+
+    <!-- PDF preview -->
+    <div id="previewContent" class="hidden">
+        <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
+
+        <!-- Prev button -->
+        <button id="prev" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
+            <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                Previous
+            </span>
+        </button>
+        <!-- Next button -->
+        <button id="next" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">
+            <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                Next
+            </span>
+        </button>
+
+        <!-- Page progress bar -->
+        <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700" style="max-height:20px">
+            <div id="pageProgressBar" class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: 0%"><span id="page_num"></span> / <span id="page_count"></span></div>
+        </div>
+
+        <!-- Preview pdf content canvas -->
+        <canvas id="canvasPdfPreview" style="max-width:250px"></canvas>
+    </div>
+
+    <!-- Messages list -->
+    <div id="messages-list-container">
+        <input id="hidden-userid" value="@userSession.UserId" hidden />
+        <input id="hidden-username" value="@userSession.UserName" hidden />
+        <input id="hiddenGroupId" value="" hidden />
+        <div class="row">
+            <div class="col-6">
+                <ul id="messagesList" class="row overflow-y-auto" style="height: 340px;"></ul>
+            </div>
         </div>
     </div>
+
     <!-- Input message with file upload -->
-    <div class="sticky bottom-0">
+    <div id="input-message-container" class="hidden bottom-0">
         @*<form asp-controller="FileUpload" asp-action="Index" enctype="multipart/form-data" method="POST" accept-charset="">*@
         <label for="chat" class="sr-only">Your message</label>
         <div class="flex items-center px-2 py-2 rounded-lg bg-gray-50 dark:bg-gray-800">
