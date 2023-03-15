@@ -13,6 +13,7 @@ resizeChatWindow(300);
 
 function toggleNotifications() {
     $("#notification-dropdown").toggleClass("hidden");
+    $("#btn-open-notifications").removeClass("animate-pulse");
 }
 
 // Resize text area with it's content height'

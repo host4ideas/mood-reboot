@@ -18,5 +18,6 @@ namespace MoodReboot.Data
         public DbSet<UserCourse> UserCourses { get; set; }
         public DbSet<ChatGroup> ChatGroups { get; set; }
         public DbSet<UserChatGroup> UserChatGroups { get; set; }
+        public DbSet<UserCenter> UserCenters { get; set; }
     }
 }

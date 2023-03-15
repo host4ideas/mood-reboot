@@ -35,8 +35,10 @@ function initializeConnection(connectionString) {
         var d = $('#messagesList');
         d.scrollTop(d.prop("scrollHeight"));
 
+        const id = "notification-" + $("#chat-notification-list").children().length + 1;
+
         const htmlNotification = `
-                <div onclick="loadChatMessages(${groupChatId})" class="flex py-3 px-4 cursor-pointer text-gray-900 dark:text-gray-200 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
+                <div id="${id}" onclick="loadChatMessages(${groupChatId},${id})" class="flex py-3 px-4 cursor-pointer text-gray-900 dark:text-gray-200 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
                     <div class="flex-shrink-0">
                         <img class="w-11 h-11 rounded-full" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/bonnie-green.png" alt="${userName} avatar">
                     </div>
@@ -47,6 +49,7 @@ function initializeConnection(connectionString) {
                 </div>`;
 
         $("#chat-notification-list").append(htmlNotification);
+        $("#btn-open-notifications").addClass("animate-pulse");
     });
 
     //connection.on("GroupNotification", function (message) {

@@ -12,6 +12,6 @@ namespace MoodReboot.Models
         [Column("CENTER_ID")]
         public int CenterId { get; set; }
         [Column("IS_EDITOR")]
-        public Boolean IsEditor { get; set; }
+        public bool IsEditor { get; set; }
     }
 }

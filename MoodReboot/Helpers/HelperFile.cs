@@ -1,4 +1,6 @@
-﻿using MoodReboot.Models;
+﻿using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.CodeAnalysis;
+using MoodReboot.Models;
 using MvcCoreUtilidades.Helpers;
 
 namespace MoodReboot.Helpers
@@ -17,11 +19,15 @@ namespace MoodReboot.Helpers
             throw new NotImplementedException();
         }
 
-        public async Task<string> UploadFileAsync(IFormFile file, Folders folder, string? fileName = "")
+        public async Task<string> UploadFileAsync(IFormFile file, Folders folder, string? fileName = null)
         {
-            if (fileName != "")
+            if (fileName == null)
             {
                 fileName = file.FileName;
+            }
+            else
+            {
+                fileName = fileName + Path.GetExtension(file.FileName);
             }
 
             string path = this.helperPath.MapPath(fileName, folder);
@@ -49,6 +55,20 @@ namespace MoodReboot.Helpers
                 }
             }
             return paths;
+        }
+
+        public string GetMimeTypeForFileExtension(string filePath)
+        {
+            const string DefaultContentType = "application/octet-stream";
+
+            var provider = new FileExtensionContentTypeProvider();
+
+            if (!provider.TryGetContentType(filePath, out string contentType))
+            {
+                contentType = DefaultContentType;
+            }
+
+            return contentType;
         }
     }
 }

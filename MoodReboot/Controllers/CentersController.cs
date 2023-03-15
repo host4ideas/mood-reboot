@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MoodReboot.Extensions;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
 
@@ -15,9 +16,9 @@ namespace MoodReboot.Controllers
             this.repositoryCourses = repositoryCourses;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            List<CenterListView> centers = this.repositoryCenters.GetAllCenters();
+            List<CenterListView> centers = await this.repositoryCenters.GetAllCenters();
             return View(centers);
         }
 
@@ -34,6 +35,17 @@ namespace MoodReboot.Controllers
 
             ViewData["CENTER"] = center;
             return View(courses);
+        }
+
+        public async Task<IActionResult> UserCenters()
+        {
+            UserSession? userSession = HttpContext.Session.GetObject<UserSession>("USER");
+            if (userSession != null)
+            {
+                List<CenterListView> centers = await this.repositoryCenters.GetUserCentersAsync(userSession.UserId);
+                return View("Index", centers);
+            }
+            return View("Index");
         }
     }
 }

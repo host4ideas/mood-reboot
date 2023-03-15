@@ -51,5 +51,10 @@ namespace MoodReboot.Controllers
                 await this.repositoryUsers.UpdateChatLastSeen(chatGroupId, userSession.UserId);
             }
         }
+
+        public async Task CreateChatGroup(List<int> userIds)
+        {
+            await this.repositoryUsers.NewChatGroup(userIds);
+        }
     }
 }

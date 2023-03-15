@@ -34,9 +34,9 @@ namespace MoodReboot.Controllers
             return RedirectToAction("Users");
         }
 
-        public IActionResult Centers()
+        public async Task<IActionResult> Centers()
         {
-            List<CenterListView> centers = this.repositoryCenters.GetAllCenters();
+            List<CenterListView> centers = await this.repositoryCenters.GetAllCenters();
             return View(centers);
         }
 

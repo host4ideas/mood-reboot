@@ -8,11 +8,11 @@ namespace MoodReboot.Repositories
 {
     public class RepositoryCentersSql : IRepositoryCenters
     {
-        private readonly MoodRebootContext _context;
+        private readonly MoodRebootContext context;
 
         public RepositoryCentersSql(MoodRebootContext context)
         {
-            this._context = context;
+            this.context = context;
         }
 
         public Task CreateCenter(string email, string name, string address, string telephone, string image)
@@ -28,29 +28,29 @@ namespace MoodReboot.Repositories
                 new SqlParameter("@IMAGE", image),
             };
 
-            return this._context.Database.ExecuteSqlRawAsync(sql, sqlParameters);
+            return this.context.Database.ExecuteSqlRawAsync(sql, sqlParameters);
         }
 
         public async Task DeleteCenter(int id)
         {
-            Center? center = await this._context.Centers.FirstOrDefaultAsync(x => x.Id == id);
+            Center? center = await this.context.Centers.FirstOrDefaultAsync(x => x.Id == id);
             if (center != null)
             {
-                await this._context.SaveChangesAsync();
+                await this.context.SaveChangesAsync();
             }
         }
 
         public async Task<Center?> FindCenter(int id)
         {
-            return await this._context.Centers.FirstOrDefaultAsync(x => x.Id == id);
+            return await this.context.Centers.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public List<CenterListView> GetAllCenters()
+        public Task<List<CenterListView>> GetAllCenters()
         {
-            List<Center> centers = this._context.Centers.ToList();
+            List<Center> centers = this.context.Centers.ToList();
 
-            var result = from c in _context.Centers
-                         join u in _context.Users on c.Director equals u.Id
+            var result = from c in context.Centers
+                         join u in context.Users on c.Director equals u.Id
                          select new CenterListView
                          {
                              CenterName = c.Name,
@@ -59,24 +59,32 @@ namespace MoodReboot.Repositories
                              Id = c.Id,
                              Address = c.Address,
                              Image = c.Image,
-
                              Telephone = c.Telephone
                          };
 
-            return result.ToList();
+            return result.ToListAsync();
         }
 
-        public List<Center> GetUserCenters(int id)
+        public async Task<List<CenterListView>> GetUserCentersAsync(int userId)
         {
-            string sql = "SP_USER_CENTERS @USER_ID";
+            List<Center> centers = await this.context.Centers.ToListAsync();
 
-            SqlParameter[] sqlParameters = new[]
-            {
-                new SqlParameter("@USER_ID", id),
-            };
+            var result = from uc in this.context.UserCenters
+                         join c in this.context.Centers on uc.CenterId equals c.Id
+                         join u in this.context.Users on uc.UserId equals u.Id
+                         where uc.UserId == userId
+                         select new CenterListView
+                         {
+                             CenterName = c.Name,
+                             Director = new Author() { Id = u.Id, Image = u.Image, UserName = u.UserName, Email = u.Email },
+                             Email = c.Email,
+                             Id = c.Id,
+                             Address = c.Address,
+                             Image = c.Image,
+                             Telephone = c.Telephone
+                         };
 
-            List<Center> centers = this._context.Centers.FromSqlRaw(sql, sqlParameters).ToList();
-            return centers;
+            return await result.ToListAsync();
         }
 
         public Task UpdateCenter(Center center)
@@ -93,7 +101,7 @@ namespace MoodReboot.Repositories
                 new SqlParameter("@IMAGE", center.Image),
             };
 
-            return this._context.Database.ExecuteSqlRawAsync(sql, sqlParameters);
+            return this.context.Database.ExecuteSqlRawAsync(sql, sqlParameters);
         }
     }
 }

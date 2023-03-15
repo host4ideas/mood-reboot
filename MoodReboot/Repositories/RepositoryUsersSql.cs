@@ -18,6 +18,15 @@ namespace MoodReboot.Repositories
         }
 
         #region USERS
+
+        public Task<List<Tuple<string, int>>> SearchUsers(string pattern)
+        {
+            var result = from u in this.context.Users
+                         where u.UserName.ToUpper().Contains(pattern.ToUpper()) || u.Email.ToUpper().Contains(pattern.ToUpper())
+                         select new Tuple<string, int>(u.UserName, u.Id);
+            return result.ToListAsync();
+        }
+
         public async Task<int> GetMaxUser()
         {
             if (!context.Users.Any())
@@ -84,6 +93,29 @@ namespace MoodReboot.Repositories
             {
                 this.context.Users.Remove(user);
             }
+        }
+
+        public async Task UpdateUserBasics(int userId, string userName, string firstName, string lastName, string? image = null)
+        {
+            User? user = await this.FindUser(userId);
+            if (user != null)
+            {
+                user.UserName = userName;
+                user.FirstName = firstName;
+                user.LastName = lastName;
+                user.Image = image;
+                await this.context.SaveChangesAsync();
+            }
+        }
+
+        public async Task UpdateUserEmail(int userId, string email)
+        {
+
+        }
+
+        public async Task UpdateUserPassword(int userId, string password)
+        {
+
         }
 
         #endregion
@@ -156,6 +188,38 @@ namespace MoodReboot.Repositories
         #endregion
 
         #region MESSAGES
+
+        public async Task NewChatGroup(List<int> userIds, string chatGroupName = "PRIVATE")
+        {
+            HashSet<int> userIdsNoDups = new(userIds);
+
+            ChatGroup chatGroup = new()
+            {
+                Id = await this.GetMaxChatGroup(),
+                Name = chatGroupName,
+            };
+
+            await this.context.ChatGroups.AddAsync(chatGroup);
+
+
+            foreach (int userId in userIdsNoDups)
+            {
+                UserChatGroup userChatGroup = new()
+                {
+                    Id = await this.GetMaxUserChatGroup(),
+                    GroupId = chatGroup.Id,
+                    JoinDate = DateTime.Now,
+                    LastSeen = DateTime.Now,
+                    UserID = userId,
+                };
+
+                await this.context.UserChatGroups.AddAsync(userChatGroup);
+                await this.context.SaveChangesAsync();
+            }
+
+            await this.context.SaveChangesAsync();
+        }
+
         private async Task<int> GetMaxMessage()
         {
             if (!this.context.Messages.Any())
@@ -176,7 +240,7 @@ namespace MoodReboot.Repositories
                 GroupId = groupChatId,
                 Text = text,
                 FileId = fileId,
-                DatePosted = DateTime.UtcNow,
+                DatePosted = DateTime.Now,
                 UserName = userName
             };
 
@@ -230,13 +294,15 @@ namespace MoodReboot.Repositories
             return max + 1;
         }
 
-        public async Task AddUsersToChat(List<int> userIds, int chatGroupId)
+        public async Task AddUsersToChat(HashSet<int> userIds, int chatGroupId)
         {
             List<UserChatGroup> userChatGroups = new();
 
+            HashSet<int> usersNoDups = userIds;
+
             int firstIndex = await this.GetMaxUserChatGroup();
 
-            foreach (int userId in userIds)
+            foreach (int userId in usersNoDups)
             {
                 UserChatGroup userChatGroup = new()
                 {

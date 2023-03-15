@@ -18,10 +18,16 @@ namespace MoodReboot.Controllers
             this.repositoryContentGroups = repositoryContentGroups;
         }
 
-        public IActionResult UserCourses(int userId)
+        public IActionResult Index()
         {
-            List<CourseListView> courses = this.repositoryCourses.GetUserCourses(userId);
-            return View(courses);
+            return View();
+        }
+
+        public IActionResult UserCourses()
+        {
+            UserSession? userSession = HttpContext.Session.GetObject<UserSession>("USER");
+            List<CourseListView> courses = this.repositoryCourses.GetUserCourses(userSession.UserId);
+            return View("Index", courses);
         }
 
         public async Task<IActionResult> DeleteCourseUser(int courseId, int userId)
@@ -51,13 +57,13 @@ namespace MoodReboot.Controllers
         public IActionResult CenterCourses(int centerId)
         {
             List<CourseListView> courses = this.repositoryCourses.GetCenterCourses(centerId);
-            return RedirectToAction("Index", new { Courses = courses });
+            return View("Index", courses);
         }
 
         public IActionResult GetAllCourses()
         {
             List<Course> courses = this.repositoryCourses.GetAllCourses();
-            return RedirectToAction("Index", new { Courses = courses });
+            return View("Index", courses);
         }
 
         public async Task<IActionResult> CourseEnrollment(int courseId)
@@ -107,7 +113,6 @@ namespace MoodReboot.Controllers
 
             if (userSession != null)
             {
-                // NO FUNCIONA
                 UserCourse? userCourse = await this.repositoryCourses.FindUserCourse(userSession.UserId, courseId);
 
                 if (userCourse != null)
@@ -125,7 +130,7 @@ namespace MoodReboot.Controllers
                     if (course == null || contentGroups == null)
                     {
                         SessionUser currentLoggedUser = HttpContext.Session.GetObject<SessionUser>("user")!;
-                        return RedirectToAction("Courses", new { userId = currentLoggedUser.Id });
+                        return RedirectToAction("UserCourses", new { userId = currentLoggedUser.Id });
                     }
 
                     List<CourseUsersModel> courseUsers = this.repositoryCourses.GetCourseUsers(course.Id);
@@ -161,7 +166,7 @@ namespace MoodReboot.Controllers
         public IActionResult DeleteCourse(int id)
         {
             this.repositoryCourses.DeleteCourse(id);
-            return RedirectToAction("Index");
+            return RedirectToAction("UserCourses");
         }
     }
 }
