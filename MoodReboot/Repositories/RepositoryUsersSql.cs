@@ -69,9 +69,9 @@ namespace MoodReboot.Repositories
             await this.context.SaveChangesAsync();
         }
 
-        public async Task<User?> LoginUser(string email, string password)
+        public async Task<User?> LoginUser(string usernameOrEmail, string password)
         {
-            User? user = await this.context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            User? user = await this.context.Users.FirstOrDefaultAsync(u => u.Email == usernameOrEmail || u.UserName == usernameOrEmail);
             if (user != null)
             {
                 // Recuperamos la password cifrada de la BBDD

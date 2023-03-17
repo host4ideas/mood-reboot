@@ -35,18 +35,6 @@
     <title>Mood Reboot Learning Platform</title>
 </head>
 
-@{
-    // Testing
-    Context.Session.SetObject("USER", new UserSession()
-            {
-                Email = "example@example.com",
-                UserId = 0,
-                UserName = "Test 0",
-            });
-    // Use userSession to retrieve the logged user's chat groups
-    UserSession? userSession = Context.Session.GetObject<UserSession>("USER");
-}
-
 <body class="bg-white dark:bg-gray-900">
     <!-- Login modal -->
     <div id="authentication-modal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
@@ -79,7 +67,7 @@
                         </div>
                         <button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Login to your account</button>
                         <div class="text-sm font-medium text-gray-500 dark:text-gray-300">
-                            Not registered? <a asp-controller="Auth" asp-action="Signup" class="text-blue-700 hover:underline dark:text-blue-500">Create account</a>
+                            Not registered? <a asp-controller="Managed" asp-action="Signup" class="text-blue-700 hover:underline dark:text-blue-500">Create account</a>
                         </div>
                     </form>
                 </div>
@@ -128,6 +116,12 @@
                             <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path></svg>
                         </button>
                     </div>
+                    @{
+                        if(Context.User.Identity.IsAuthenticated == true)
+                        {
+                            <partial name="_MenuLayout" />
+                        }
+                    }
                     <!-- Mobile menu toggle -->
                     <button id="toggleSidebar" aria-expanded="true" aria-controls="sidebar" class="hidden p-2 mr-3 text-gray-600 rounded cursor-pointer lg:inline hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700">
                         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path></svg>
@@ -194,36 +188,7 @@
                             </a>
                         </div>
                     </div>
-                    <button type="button" class="flex mx-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="dropdown">
-                        <span class="sr-only">Open user menu</span>
-                        <img class="w-8 h-8 rounded-full" src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="user photo">
-                    </button>
-                    <!-- Dropdown menu -->
-                    <div class="hidden z-50 my-4 w-56 text-base list-none bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown">
-                        <div class="py-3 px-4">
-                            <span class="block text-sm font-semibold text-gray-900 dark:text-white">Neil sims</span>
-                            <span class="block text-sm font-light text-gray-500 truncate dark:text-gray-400">name@flowbite.com</span>
-                        </div>
-                        <ul class="py-1 font-light text-gray-500 dark:text-gray-400" aria-labelledby="dropdown">
-                            <li>
-                                <a asp-controller="Users" asp-action="Profile" asp-route-userId="@userSession.UserId" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Perfil</a>
-                            </li>
-                            <li>
-                                <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white" asp-controller="Admin" asp-action="Index">Admin panel</a>
-                            </li>
-                        </ul>
-                        <ul class="py-1 font-light text-gray-500 dark:text-gray-400" aria-labelledby="dropdown">
-                            <li>
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign out</a>
-                            </li>
-                            <li>
-                                <!-- Login Modal toggle -->
-                                <span data-modal-target="authentication-modal" data-modal-toggle="authentication-modal" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-pointer" type="button">
-                                    Login
-                                </span>
-                            </li>
-                        </ul>
-                    </div>
+
                 </div>
                 <!-- Center links / Mobile Menu Dropdown -->
                 <div class="items-center justify-between hidden w-full md:flex md:w-auto" id="mobile-menu-2">
@@ -255,6 +220,9 @@
                             <button data-modal-target="authentication-modal" data-modal-toggle="authentication-modal" class="block py-2 pl-3 pr-4 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700" type="button">
                                 Login
                             </button>
+                        </li>
+                        <li class="flex items-center">
+                            <a asp-controller="Managed" asp-action="Login" class="block py-2 pl-3 pr-4 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Login 2</a>
                         </li>
                         <li class="flex items-center">
                             <!-- Dark / Light mode -->
@@ -352,20 +320,21 @@
 <script asp-append-version="true" src="~/js/filePreview.js"></script>
 <script asp-append-version="true" src="~/js/site.js"></script>
 @{
-    if (userSession != null)
+    if (Context.User.Identity.IsAuthenticated == true)
     {
+        string userId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
         string requestMessages = Url.Action("GetChatMessages", "Messages");
         string requestUpdateLastSeen = Url.Action("UpdateChatLastSeen", "Messages");
         string requestSearchUsers = Url.Action("SearchUsers", "Users");
         string requestCreateChat = Url.Action("CreateChatGroup", "Messages");
         // Once the session is validated create the connection string
-        string connectionString = "/chatHub?userId=" + userSession.UserId.ToString();
+        string connectionString = "/chatHub?userId=" + userId.ToString();
 
         <text>
             <script asp-append-version="true" src="~/js/chat.js"></script>
             <script>
                 $(document).ready(function () {
-                    $("#chatWindow").load('@Url.Action("ChatWindowPartial", "Messages", new { userId = userSession.UserId })', function (responseTxt, statusTxt, xhr) {
+                    $("#chatWindow").load('@Url.Action("ChatWindowPartial", "Messages", new { userId = userId })', function (responseTxt, statusTxt, xhr) {
                         // If the chat is loaded change the button
                         if (statusTxt == "success") {
                             let html = `
@@ -377,7 +346,7 @@
                             $("#btnChatToggle").html(html);
 
                             // Load notifications
-                            $("#notifications-window").load('@Url.Action("ChatNotificationsPartial", "Messages", new { userId = userSession.UserId })');
+                            $("#notifications-window").load('@Url.Action("ChatNotificationsPartial", "Messages", new { userId = userId })');
 
                             initializeConnection("@connectionString");
                         }

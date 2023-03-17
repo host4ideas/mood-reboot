@@ -1,4 +1,5 @@
 using Ganss.Xss;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using MoodReboot.Data;
 using MoodReboot.Helpers;
@@ -11,7 +12,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 string connectionString = builder.Configuration.GetConnectionString("SqlMoodReboot");
 
-builder.Services.AddControllersWithViews();
+// Seguridad
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+}).AddCookie();
+
+// Indicamos que queremos utilizar nuestras propias rutas
+builder.Services.AddControllersWithViews(options => options.EnableEndpointRouting = false);
+
 builder.Services.AddSignalR();
 // DB Context
 builder.Services.AddDbContext<MoodRebootContext>(options => options.UseSqlServer(connectionString));
@@ -53,13 +64,19 @@ app.MapHub<ChatHub>("/chatHub");
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseSession();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}"
-    );
+app.UseMvc(routes =>
+{
+    routes.MapRoute(name: "default", template: "{controller=Home}/{action=Index}/{id?}");
+});
+
+//app.MapControllerRoute(
+//    name: "default",
+//    pattern: "{controller=Home}/{action=Index}"
+//    );
 
 app.Run();

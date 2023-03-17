@@ -18,26 +18,6 @@ namespace MoodReboot.Controllers
             this.repositoryUsers = repositoryUsers;
         }
 
-        public IActionResult SignUp()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> SignUp
-            (string nombre, string firstName, string lastName, string email, string password, IFormFile imagen)
-        {
-            int maximo = await this.repositoryUsers.GetMaxUser();
-
-            string fileName = "image_" + maximo;
-
-            string path = await this.helperFile.UploadFileAsync(imagen, Folders.Images, fileName);
-
-            await this.repositoryUsers.RegisterUser(nombre, firstName, lastName, email, password, path);
-            ViewData["MENSAJE"] = "Usuario registrado correctamente";
-            return View();
-        }
-
         [HttpPost]
         public async Task<IActionResult> Login(string email, string password)
         {
@@ -51,3 +31,4 @@ namespace MoodReboot.Controllers
         }
     }
 }
+ 

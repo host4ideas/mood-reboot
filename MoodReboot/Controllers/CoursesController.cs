@@ -73,8 +73,8 @@ namespace MoodReboot.Controllers
             // The course doesn't exist
             if (course == null)
             {
-                SessionUser currentLoggedUser = HttpContext.Session.GetObject<SessionUser>("USER")!;
-                return RedirectToAction("Courses", new { userId = currentLoggedUser.Id });
+                SessionUser user = HttpContext.Session.GetObject<SessionUser>("USER")!;
+                return RedirectToAction("Courses", new { userId = user.Id });
             }
 
             return View(course);
@@ -93,7 +93,7 @@ namespace MoodReboot.Controllers
                 {
                     SessionUser currentLoggedUser = HttpContext.Session.GetObject<SessionUser>("USER")!;
                     await this.repositoryCourses.AddCourseUserAsync(courseId, currentLoggedUser.Id, isEditor, null);
-                    return RedirectToAction("CourseDetails", new { id = courseId });
+                    return RedirectToAction("CourseDetails", new { courseId });
                 }
                 // If the course has password
                 bool added = await this.repositoryCourses.AddCourseUserAsync(courseId, userId, isEditor, password);
@@ -160,7 +160,7 @@ namespace MoodReboot.Controllers
                     return View(details);
                 }
             }
-            return RedirectToAction("CourseEnrollment", courseId);
+            return RedirectToAction("CourseEnrollment", new { courseId });
         }
 
         public IActionResult DeleteCourse(int id)
