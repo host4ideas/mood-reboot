@@ -1,7 +1,8 @@
 ﻿@model List<ChatGroup>
 
 @{
-    UserSession? userSession = Context.Session.GetObject<UserSession>("USER");
+    string userName = Context.User.Identity.Name;
+    string userId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
 }
 
 <aside id="chatsSidenav" class="hidden absolute w-64 overflow-y-auto z-50 border-2-b border-2-t border-2-r rounded-2-r border-gray-700 dark:border-gray-900 bg-gray-300 dark:bg-gray-800" style="left: 0; top: 75px; max-width: 300px;" aria-label="Sidebar">
@@ -127,8 +128,8 @@
 
     <!-- Messages list -->
     <div id="messages-list-container">
-        <input id="hidden-userid" value="@userSession.UserId" hidden />
-        <input id="hidden-username" value="@userSession.UserName" hidden />
+        <input id="hidden-userid" value="@userId" hidden />
+        <input id="hidden-username" value="@userName" hidden />
         <input id="hiddenGroupId" value="" hidden />
         <div class="row">
             <div class="col-6">

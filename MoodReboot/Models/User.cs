@@ -30,5 +30,7 @@ namespace MoodReboot.Models
         public DateTime? LastSeen { get; set; }
         [Column("SALT")]
         public string Salt { get; set; }
+        [Column("PASS_TEST")]
+        public string PassTest { get; set; }
     }
 }

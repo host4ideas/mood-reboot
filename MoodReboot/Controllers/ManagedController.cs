@@ -12,12 +12,14 @@ namespace MoodReboot.Controllers
     public class ManagedController : Controller
     {
         private readonly HelperFile helperFile;
+        private readonly HelperPath helperPath;
         private readonly IRepositoryUsers repositoryUsers;
 
-        public ManagedController(HelperFile helperFile, IRepositoryUsers repositoryUsers)
+        public ManagedController(HelperFile helperFile, HelperPath helperPath, IRepositoryUsers repositoryUsers)
         {
             this.helperFile = helperFile;
             this.repositoryUsers = repositoryUsers;
+            this.helperPath = helperPath;
         }
 
         public IActionResult Login()
@@ -48,7 +50,12 @@ namespace MoodReboot.Controllers
             Claim claimId = new(ClaimTypes.NameIdentifier, user.Id.ToString());
             identity.AddClaim(claimId);
 
-            Claim claimImage = new("IMAGE", user.Image);
+            string? userImage = user.Image;
+            if (userImage == null)
+            {
+                userImage = this.helperPath.MapPath("default_user_logo.svg", Folders.Logos);
+            }
+            Claim claimImage = new("IMAGE", userImage);
             identity.AddClaim(claimImage);
 
             ClaimsPrincipal userPrincipal = new(identity);

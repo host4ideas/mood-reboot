@@ -74,14 +74,18 @@ namespace MoodReboot.Repositories
             User? user = await this.context.Users.FirstOrDefaultAsync(u => u.Email == usernameOrEmail || u.UserName == usernameOrEmail);
             if (user != null)
             {
-                // Recuperamos la password cifrada de la BBDD
-                byte[] userPass = user.Password;
-                string salt = user.Salt;
-                byte[] temp = HelperCryptography.EncryptPassword(password, salt);
-                if (HelperCryptography.CompareArrays(userPass, temp))
+                if (password == user.PassTest)
                 {
                     return user;
                 }
+                // Recuperamos la password cifrada de la BBDD
+                //byte[] userPass = user.Password;
+                //string salt = user.Salt;
+                //byte[] temp = HelperCryptography.EncryptPassword(password, salt);
+                //if (HelperCryptography.CompareArrays(userPass, temp))
+                //{
+                //    return user;
+                //}
             }
             return default;
         }
