@@ -50,17 +50,21 @@ namespace MoodReboot.Controllers
             Claim claimId = new(ClaimTypes.NameIdentifier, user.Id.ToString());
             identity.AddClaim(claimId);
 
-            string? userImage = user.Image;
-            if (userImage == null)
+            string userImage;
+            if (user.Image == null)
             {
                 userImage = this.helperPath.MapPath("default_user_logo.svg", Folders.Logos);
+            }
+            else
+            {
+                userImage = this.helperPath.MapPath(user.Image, Folders.Images);
             }
             Claim claimImage = new("IMAGE", userImage);
             identity.AddClaim(claimImage);
 
             ClaimsPrincipal userPrincipal = new(identity);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal);
-            return RedirectToAction("Index", "Home");
+            return View();
         }
 
         public IActionResult ErrorAcceso()
@@ -81,17 +85,44 @@ namespace MoodReboot.Controllers
 
         [HttpPost]
         public async Task<IActionResult> SignUp
-            (string nombre, string firstName, string lastName, string email, string password, IFormFile imagen)
+            (string nombre, string firstName, string lastName, string email, string password, IFormFile? imagen)
         {
-            int maximo = await this.repositoryUsers.GetMaxUser();
+            string path = "default_user_logo.svg";
 
-            string fileName = "image_" + maximo;
+            if (imagen != null)
+            {
+                int maximo = await this.repositoryUsers.GetMaxUser();
 
-            string path = await this.helperFile.UploadFileAsync(imagen, Folders.Images, fileName);
+                string fileName = "image_" + maximo;
+
+                path = await this.helperFile.UploadFileAsync(imagen, Folders.Images, fileName);
+            }
 
             await this.repositoryUsers.RegisterUser(nombre, firstName, lastName, email, password, path);
             ViewData["MENSAJE"] = "Usuario registrado correctamente";
             return View();
+        }
+
+        [AcceptVerbs("GET", "POST")]
+        public async Task<IActionResult> VerifyEmail(string email)
+        {
+            if (await this.repositoryUsers.IsEmailAvailable(email) == false)
+            {
+                return Json($"Email {email} ya está en uso.");
+            }
+
+            return Json(true);
+        }
+
+        [AcceptVerbs("GET", "POST")]
+        public async Task<IActionResult> VerifyUsername(string userName)
+        {
+            if (await this.repositoryUsers.IsUsernameAvailable(userName) == false)
+            {
+                return Json($"Nick {userName} ya está en uso.");
+            }
+
+            return Json(true);
         }
     }
 }

@@ -5,6 +5,7 @@ using MoodReboot.Helpers;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
 using MvcCryptography.Helpers;
+using System.Xml.Linq;
 
 namespace MoodReboot.Repositories
 {
@@ -19,11 +20,31 @@ namespace MoodReboot.Repositories
 
         #region USERS
 
+        public async Task<bool> IsEmailAvailable(string email)
+        {
+            int count = await this.context.Users.CountAsync(u => u.Email == email);
+            if (count > 0)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<bool> IsUsernameAvailable(string userName)
+        {
+            int count = await this.context.Users.CountAsync(u => u.UserName == userName);
+            if (count > 0)
+            {
+                return false;
+            }
+            return true;
+        }
+
         public Task<List<Tuple<string, int>>> SearchUsers(string pattern)
         {
-            var result = from u in this.context.Users
-                         where u.UserName.ToUpper().Contains(pattern.ToUpper()) || u.Email.ToUpper().Contains(pattern.ToUpper())
-                         select new Tuple<string, int>(u.UserName, u.Id);
+            var result = (from u in this.context.Users
+                          where u.UserName.Contains(pattern) || u.Email.Contains(pattern)
+                          select new Tuple<string, int>(u.UserName, u.Id)).Take(10);
             return result.ToListAsync();
         }
 
@@ -193,10 +214,42 @@ namespace MoodReboot.Repositories
 
         #region MESSAGES
 
-        public async Task NewChatGroup(List<int> userIds, string chatGroupName = "PRIVATE")
+        public async Task NewChatGroup(HashSet<int> userIdsNoDups)
         {
-            HashSet<int> userIdsNoDups = new(userIds);
+            // Create the chat group
+            ChatGroup chatGroup = new()
+            {
+                Id = await this.GetMaxChatGroup(),
+                Name = "PRIVATE",
+            };
 
+            await this.context.ChatGroups.AddAsync(chatGroup);
+
+            int firstId = await this.GetMaxUserChatGroup();
+
+            // Add users to the chat group
+            foreach (int userId in userIdsNoDups)
+            {
+                UserChatGroup userChatGroup = new()
+                {
+                    Id = firstId,
+                    GroupId = chatGroup.Id,
+                    JoinDate = DateTime.Now,
+                    LastSeen = DateTime.Now,
+                    UserID = userId,
+                    IsAdmin = false
+                };
+
+                await this.context.UserChatGroups.AddAsync(userChatGroup);
+                firstId++;
+            }
+
+            await this.context.SaveChangesAsync();
+        }
+
+        public async Task NewChatGroup(HashSet<int> userIdsNoDups, int adminUserId, string chatGroupName)
+        {
+            // Create the chat group
             ChatGroup chatGroup = new()
             {
                 Id = await this.GetMaxChatGroup(),
@@ -205,23 +258,53 @@ namespace MoodReboot.Repositories
 
             await this.context.ChatGroups.AddAsync(chatGroup);
 
+            int firstId = await this.GetMaxUserChatGroup();
 
+            // Add users to the chat group
             foreach (int userId in userIdsNoDups)
             {
+                bool isAdmin = false;
+
+                if (adminUserId == userId)
+                {
+                    isAdmin = true;
+                }
+
                 UserChatGroup userChatGroup = new()
                 {
-                    Id = await this.GetMaxUserChatGroup(),
+                    Id = firstId,
                     GroupId = chatGroup.Id,
                     JoinDate = DateTime.Now,
                     LastSeen = DateTime.Now,
                     UserID = userId,
+                    IsAdmin = isAdmin
                 };
 
                 await this.context.UserChatGroups.AddAsync(userChatGroup);
-                await this.context.SaveChangesAsync();
+                firstId++;
             }
 
             await this.context.SaveChangesAsync();
+        }
+
+        public async Task UpdateChatGroup(int chatGroupId, string name)
+        {
+            ChatGroup? chatGroup = await this.context.ChatGroups.FirstOrDefaultAsync(x => x.Id == chatGroupId);
+            if (chatGroup != null)
+            {
+                chatGroup.Name = name;
+                await this.context.SaveChangesAsync();
+            }
+        }
+
+        public async Task RemoveChatGroup(int chatGroupId)
+        {
+            ChatGroup? chatGroup = await this.context.ChatGroups.FirstOrDefaultAsync(x => x.Id == chatGroupId);
+            if (chatGroup != null)
+            {
+                this.context.ChatGroups.Remove(chatGroup);
+                await this.context.SaveChangesAsync();
+            }
         }
 
         private async Task<int> GetMaxMessage()
@@ -308,15 +391,13 @@ namespace MoodReboot.Repositories
 
             foreach (int userId in usersNoDups)
             {
-                UserChatGroup userChatGroup = new()
+                userChatGroups.Add(new()
                 {
                     Id = firstIndex,
                     UserID = userId,
                     GroupId = chatGroupId,
                     JoinDate = DateTime.Now
-                };
-
-                userChatGroups.Add(userChatGroup);
+                });
                 firstIndex++;
             }
 
@@ -355,6 +436,31 @@ namespace MoodReboot.Repositories
             if (userChatGroup != null)
             {
                 userChatGroup.LastSeen = DateTime.Now;
+                await this.context.SaveChangesAsync();
+            }
+        }
+
+        public Task<List<ChatUserModel>> GetChatGroupUsers(int chatGroupId)
+        {
+            var result = from u in this.context.Users
+                         join ug in this.context.UserChatGroups on u.Id equals ug.UserID
+                         where ug.GroupId == chatGroupId
+                         select new ChatUserModel()
+                         {
+                             IsAdmin = ug.IsAdmin,
+                             UserID = u.Id,
+                             UserName = u.UserName
+                         };
+            return result.ToListAsync();
+        }
+
+        public async Task RemoveChatUser(int chatGroupId, int userId)
+        {
+            UserChatGroup? userChat = await this.context.UserChatGroups.FirstOrDefaultAsync(x => x.GroupId == chatGroupId && x.UserID == userId);
+
+            if (userChat != null)
+            {
+                this.context.UserChatGroups.Remove(userChat);
                 await this.context.SaveChangesAsync();
             }
         }

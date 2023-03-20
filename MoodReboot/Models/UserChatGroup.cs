@@ -17,5 +17,7 @@ namespace MoodReboot.Models
         public DateTime JoinDate { get; set; }
         [Column("LAST_SEEN")]
         public DateTime LastSeen { get; set; }
+        [Column("IS_ADMIN")]
+        public bool IsAdmin { get; set; }
     }
 }

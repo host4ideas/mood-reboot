@@ -99,6 +99,27 @@ namespace MoodReboot.Repositories
                         };
 
                         this.context.UserCourses.Add(userCourse);
+
+                        // Add user to the course's discussion chat group if the group exist
+                        if (course.GroupId.HasValue)
+                        {
+                            // In case is the first group to be created
+                            int newId = 1;
+                            if (this.context.ChatGroups.Any())
+                            {
+                                newId = await this.context.UserChatGroups.MaxAsync(x => x.Id);
+                            }
+
+                            this.context.UserChatGroups.Add(new UserChatGroup()
+                            {
+                                Id = newId,
+                                GroupId = course.GroupId.Value,
+                                JoinDate = DateTime.Now,
+                                LastSeen = DateTime.Now,
+                                UserID = userId
+                            });
+                        }
+
                         await this.context.SaveChangesAsync();
                         return true;
                     }
@@ -112,6 +133,26 @@ namespace MoodReboot.Repositories
                         IsEditor = isEditor,
                         UserId = userId,
                     };
+
+                    // Add user to the course's discussion chat group if the group exist
+                    if (course.GroupId.HasValue)
+                    {
+                        // In case is the first group to be created
+                        int newId = 1;
+                        if (this.context.ChatGroups.Any())
+                        {
+                            newId = await this.context.UserChatGroups.MaxAsync(x => x.Id);
+                        }
+
+                        this.context.UserChatGroups.Add(new UserChatGroup()
+                        {
+                            Id = newId,
+                            GroupId = course.GroupId.Value,
+                            JoinDate = DateTime.Now,
+                            LastSeen = DateTime.Now,
+                            UserID = userId
+                        });
+                    }
 
                     this.context.UserCourses.Add(userCourse);
                     await this.context.SaveChangesAsync();

@@ -18,9 +18,12 @@
         @{
             if (Model.Any())
             {
+                int id = 0;
+
                 foreach (Message message in Model)
                 {
-                    <div onclick="loadChatMessages(@message.GroupId)" class="flex py-3 px-4 cursor-pointer text-gray-900 dark:text-gray-200 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
+                    string notificationId = "notification_" + id;
+                    <div id="@notificationId" onclick="loadChatMessages(@message.GroupId, '@notificationId')" class="flex py-3 px-4 cursor-pointer text-gray-900 dark:text-gray-200 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
                         <div class="flex-shrink-0">
                             <img class="w-11 h-11 rounded-full" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/bonnie-green.png" alt="@message.UserName avatar">
                         </div>
@@ -29,6 +32,7 @@
                             <div class="text-xs font-medium text-primary-700 dark:text-gray-200">@message.DatePosted</div>
                         </div>
                     </div>
+                    id++;
                 }
             }
             else

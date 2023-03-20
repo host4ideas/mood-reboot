@@ -2,6 +2,7 @@
 using MoodReboot.Extensions;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
+using System.Security.Claims;
 
 namespace MoodReboot.Hubs
 {
@@ -53,25 +54,18 @@ namespace MoodReboot.Hubs
 
         public override Task OnConnectedAsync()
         {
-            var httpContext = Context.GetHttpContext();
-
-            if (httpContext != null)
+            // Check if the user is logged
+            if (Context.User.Identity.IsAuthenticated == true)
             {
-                // Get the userId param
-                int userId = int.Parse(httpContext.Request.Query["userId"]);
+                int userId = int.Parse(Context.User.FindFirstValue(ClaimTypes.NameIdentifier));
+                string userName = Context.User.FindFirstValue(ClaimTypes.Name);
 
-                UserSession? userSession = httpContext.Session.GetObject<UserSession>("USER");
+                // If the user is logged in add it to its chat groups
+                List<ChatGroup> groups = this.repositoryUsers.GetUserChatGroups(userId);
 
-                // Check if the user is logged
-                if (userSession != null && userSession.UserId == userId)
+                foreach (ChatGroup group in groups)
                 {
-                    // If the user is logged in add it to its chat groups
-                    List<ChatGroup> groups = this.repositoryUsers.GetUserChatGroups(userId);
-
-                    foreach (ChatGroup group in groups)
-                    {
-                        this.AddToGroup(group.Id.ToString(), userSession.UserName).Wait();
-                    }
+                    this.AddToGroup(group.Id.ToString(), userName).Wait();
                 }
             }
 

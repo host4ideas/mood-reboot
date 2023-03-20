@@ -2,6 +2,7 @@
 using MoodReboot.Extensions;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
+using System.Security.Claims;
 
 namespace MoodReboot.Controllers
 {
@@ -25,8 +26,8 @@ namespace MoodReboot.Controllers
 
         public IActionResult UserCourses()
         {
-            UserSession? userSession = HttpContext.Session.GetObject<UserSession>("USER");
-            List<CourseListView> courses = this.repositoryCourses.GetUserCourses(userSession.UserId);
+            int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+            List<CourseListView> courses = this.repositoryCourses.GetUserCourses(userId);
             return View("Index", courses);
         }
 
@@ -91,8 +92,7 @@ namespace MoodReboot.Controllers
                 // If the course doesn't have password, enroll the user in the course
                 if (course.Password == null)
                 {
-                    SessionUser currentLoggedUser = HttpContext.Session.GetObject<SessionUser>("USER")!;
-                    await this.repositoryCourses.AddCourseUserAsync(courseId, currentLoggedUser.Id, isEditor, null);
+                    await this.repositoryCourses.AddCourseUserAsync(courseId, userId, isEditor, null);
                     return RedirectToAction("CourseDetails", new { courseId });
                 }
                 // If the course has password
@@ -109,56 +109,53 @@ namespace MoodReboot.Controllers
 
         public async Task<IActionResult> CourseDetails(int courseId)
         {
-            UserSession? userSession = HttpContext.Session.GetObject<UserSession>("USER");
+            int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-            if (userSession != null)
+            UserCourse? userCourse = await this.repositoryCourses.FindUserCourse(userId, courseId);
+
+            if (userCourse != null)
             {
-                UserCourse? userCourse = await this.repositoryCourses.FindUserCourse(userSession.UserId, courseId);
+                List<ContentGroup> contentGroups = this.repositoryContentGroups.GetCourseContentGroups(courseId);
 
-                if (userCourse != null)
+                foreach (ContentGroup group in contentGroups)
                 {
-                    List<ContentGroup> contentGroups = this.repositoryContentGroups.GetCourseContentGroups(courseId);
-
-                    foreach (ContentGroup group in contentGroups)
-                    {
-                        List<Content> content = this.repositoryContent.GetContentByGroup(group.ContentGroupId);
-                        group.Contents = content;
-                    }
-
-                    Course? course = await this.repositoryCourses.FindCourse(courseId);
-
-                    if (course == null || contentGroups == null)
-                    {
-                        SessionUser currentLoggedUser = HttpContext.Session.GetObject<SessionUser>("user")!;
-                        return RedirectToAction("UserCourses", new { userId = currentLoggedUser.Id });
-                    }
-
-                    List<CourseUsersModel> courseUsers = this.repositoryCourses.GetCourseUsers(course.Id);
-
-                    CourseDetailsModel details;
-
-                    if (userCourse.IsEditor)
-                    {
-                        details = new()
-                        {
-                            ContentGroups = contentGroups,
-                            Course = course,
-                            CourseUsers = courseUsers,
-                            IsEditor = true
-                        };
-                    }
-                    else
-                    {
-                        details = new()
-                        {
-                            ContentGroups = contentGroups,
-                            Course = course,
-                            IsEditor = false
-                        };
-                    }
-
-                    return View(details);
+                    List<Content> content = this.repositoryContent.GetContentByGroup(group.ContentGroupId);
+                    group.Contents = content;
                 }
+
+                Course? course = await this.repositoryCourses.FindCourse(courseId);
+
+                if (course == null || contentGroups == null)
+                {
+                    SessionUser currentLoggedUser = HttpContext.Session.GetObject<SessionUser>("user")!;
+                    return RedirectToAction("UserCourses", new { userId = currentLoggedUser.Id });
+                }
+
+                List<CourseUsersModel> courseUsers = this.repositoryCourses.GetCourseUsers(course.Id);
+
+                CourseDetailsModel details;
+
+                if (userCourse.IsEditor)
+                {
+                    details = new()
+                    {
+                        ContentGroups = contentGroups,
+                        Course = course,
+                        CourseUsers = courseUsers,
+                        IsEditor = true
+                    };
+                }
+                else
+                {
+                    details = new()
+                    {
+                        ContentGroups = contentGroups,
+                        Course = course,
+                        IsEditor = false
+                    };
+                }
+
+                return View(details);
             }
             return RedirectToAction("CourseEnrollment", new { courseId });
         }

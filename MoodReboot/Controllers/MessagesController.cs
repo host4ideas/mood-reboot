@@ -2,6 +2,7 @@
 using MoodReboot.Extensions;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
+using System.Security.Claims;
 
 namespace MoodReboot.Controllers
 {
@@ -45,16 +46,37 @@ namespace MoodReboot.Controllers
 
         public async Task UpdateChatLastSeen(int chatGroupId)
         {
-            UserSession? userSession = HttpContext.Session.GetObject<UserSession>("USER");
-            if (userSession != null)
+            int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+            await this.repositoryUsers.UpdateChatLastSeen(chatGroupId, userId);
+        }
+
+        public async Task CreateChatGroup(List<int> userIds, string? groupName)
+        {
+            // Add current user to the list of users
+            int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+            userIds.Add(userId);
+
+            // List without duplicates
+            HashSet<int> userIdsNoDups = new(userIds);
+
+            if (userIds.Count == 2)
             {
-                await this.repositoryUsers.UpdateChatLastSeen(chatGroupId, userSession.UserId);
+                await this.repositoryUsers.NewChatGroup(userIdsNoDups);
+            }
+            else if (userIds.Count > 2 && groupName != null)
+            {
+                await this.repositoryUsers.NewChatGroup(userIdsNoDups, userId, groupName);
             }
         }
 
-        public async Task CreateChatGroup(List<int> userIds)
+        public Task UpdateChatGroup(ChatGroup chatGroup)
         {
-            await this.repositoryUsers.NewChatGroup(userIds);
+            return this.repositoryUsers.UpdateChatGroup(chatGroup.Id, chatGroup.Name);
+        }
+
+        public Task RemoveUserFromChat(int userId)
+        {
+            return this.repositoryUsers.RemoveChatGroup(userId);
         }
     }
 }

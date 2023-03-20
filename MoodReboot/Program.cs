@@ -60,7 +60,6 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.MapHub<ChatHub>("/chatHub");
 
 app.UseRouting();
 
@@ -73,6 +72,8 @@ app.UseMvc(routes =>
 {
     routes.MapRoute(name: "default", template: "{controller=Home}/{action=Index}/{id?}");
 });
+
+app.MapHub<ChatHub>("/chatHub");
 
 //app.MapControllerRoute(
 //    name: "default",

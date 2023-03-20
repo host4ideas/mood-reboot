@@ -2,6 +2,7 @@
 using MoodReboot.Extensions;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
+using System.Security.Claims;
 
 namespace MoodReboot.Controllers
 {
@@ -39,13 +40,9 @@ namespace MoodReboot.Controllers
 
         public async Task<IActionResult> UserCenters()
         {
-            UserSession? userSession = HttpContext.Session.GetObject<UserSession>("USER");
-            if (userSession != null)
-            {
-                List<CenterListView> centers = await this.repositoryCenters.GetUserCentersAsync(userSession.UserId);
-                return View("Index", centers);
-            }
-            return View("Index");
+            int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+            List<CenterListView> centers = await this.repositoryCenters.GetUserCentersAsync(userId);
+            return View("Index", centers);
         }
     }
 }

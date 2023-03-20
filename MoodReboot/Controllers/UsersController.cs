@@ -20,7 +20,7 @@ namespace MoodReboot.Controllers
 
         public async Task<IActionResult> Profile(int userId)
         {
-            User user = await this.repositoryUsers.FindUser(userId);
+            User? user = await this.repositoryUsers.FindUser(userId);
             return View(user);
         }
 

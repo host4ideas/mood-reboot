@@ -6,6 +6,8 @@ namespace MoodReboot.Interfaces
     {
         // Users
         Task<User?> FindUser(int userId);
+        public Task<bool> IsEmailAvailable(string email);
+        public Task<bool> IsUsernameAvailable(string userName);
         Task<List<Tuple<string, int>>> SearchUsers(string pattern);
         Task<int> GetMaxUser();
         List<User> GetAllUsers();
@@ -26,6 +28,10 @@ namespace MoodReboot.Interfaces
         Task DeleteMessage(int id);
         List<Message> GetUnseenMessages(int userId);
         Task UpdateChatLastSeen(int chatGroupId, int userId);
-        Task NewChatGroup(List<int> userIds, string chatGroupName = "PRIVATE");
+        public Task NewChatGroup(HashSet<int> userIdsNoDups);
+        public Task NewChatGroup(HashSet<int> userIdsNoDups, int adminUserId, string chatGroupName);
+        public Task RemoveChatGroup(int chatGroupId);
+        public Task UpdateChatGroup(int chatGroupId, string name);
+        public Task<List<ChatUserModel>> GetChatGroupUsers(int chatGroupId);
     }
 }
