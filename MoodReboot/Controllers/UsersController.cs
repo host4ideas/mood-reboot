@@ -3,7 +3,8 @@ using MoodReboot.Extensions;
 using MoodReboot.Helpers;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
-using MvcCoreUtilidades.Helpers;
+using MvcCoreSeguridadEmpleados.Filters;
+using System.Security.Claims;
 
 namespace MoodReboot.Controllers
 {
@@ -18,8 +19,10 @@ namespace MoodReboot.Controllers
             this.helperFile = helperFile;
         }
 
-        public async Task<IActionResult> Profile(int userId)
+        [AuthorizeUsers]
+        public async Task<IActionResult> Profile()
         {
+            int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
             User? user = await this.repositoryUsers.FindUser(userId);
             return View(user);
         }

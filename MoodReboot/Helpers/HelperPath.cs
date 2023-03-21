@@ -1,4 +1,4 @@
-﻿namespace MvcCoreUtilidades.Helpers
+﻿namespace MoodReboot.Helpers
 {
     public enum Folders { Images = 0, Files = 1, Temp = 2, Icons = 3, Logos = 4 }
 

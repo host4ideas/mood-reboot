@@ -4,8 +4,6 @@ using MoodReboot.Data;
 using MoodReboot.Helpers;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
-using MvcCryptography.Helpers;
-using System.Xml.Linq;
 
 namespace MoodReboot.Repositories
 {

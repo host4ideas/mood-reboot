@@ -6,11 +6,14 @@ using MoodReboot.Helpers;
 using MoodReboot.Hubs;
 using MoodReboot.Interfaces;
 using MoodReboot.Repositories;
-using MvcCoreUtilidades.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-string connectionString = builder.Configuration.GetConnectionString("SqlMoodReboot");
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IOTimeout = TimeSpan.FromMinutes(120);
+});
 
 // Seguridad
 builder.Services.AddAuthentication(options =>
@@ -20,10 +23,14 @@ builder.Services.AddAuthentication(options =>
     options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 }).AddCookie();
 
-// Indicamos que queremos utilizar nuestras propias rutas
-builder.Services.AddControllersWithViews(options => options.EnableEndpointRouting = false);
+// Sessions
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+// SignalR
 builder.Services.AddSignalR();
+
+string connectionString = builder.Configuration.GetConnectionString("SqlMoodReboot");
+
 // DB Context
 builder.Services.AddDbContext<MoodRebootContext>(options => options.UseSqlServer(connectionString));
 // Repositories
@@ -34,18 +41,16 @@ builder.Services.AddTransient<IRepositoryUsers, RepositoryUsersSql>();
 builder.Services.AddTransient<IRepositoryContentGroups, RepositoryCntGroupsSql>();
 // Helpers
 builder.Services.AddSingleton<HelperPath>();
-builder.Services.AddTransient<HelperFile>();
 builder.Services.AddSingleton<HelperJsonSession>();
 builder.Services.AddSingleton<HelperMail>();
-// Sessions
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSession(options =>
-{
-    options.IOTimeout = TimeSpan.FromMinutes(10);
-});
+builder.Services.AddTransient<HelperFile>();
 // Custom
 builder.Services.AddSingleton<HtmlSanitizer>();
+
+// Indicamos que queremos utilizar nuestras propias rutas
+builder.Services.AddControllersWithViews(
+    options => options.EnableEndpointRouting = false
+).AddSessionStateTempDataProvider();
 
 var app = builder.Build();
 
@@ -60,12 +65,10 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-
 app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.UseSession();
 
 app.UseMvc(routes =>
@@ -74,10 +77,5 @@ app.UseMvc(routes =>
 });
 
 app.MapHub<ChatHub>("/chatHub");
-
-//app.MapControllerRoute(
-//    name: "default",
-//    pattern: "{controller=Home}/{action=Index}"
-//    );
 
 app.Run();

@@ -1,12 +1,12 @@
 ﻿@model MoodReboot.Models.User
 
 @{
-    ViewData["Title"] = "Test";
+    ViewData["Title"] = "Registro";
 }
 
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Test">
+        <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="mb-6">
                 <label asp-for="Email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>

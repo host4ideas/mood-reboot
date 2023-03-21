@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using MoodReboot.Helpers;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
-using MvcCoreUtilidades.Helpers;
 using System.Security.Claims;
 
 namespace MoodReboot.Controllers
@@ -50,6 +49,9 @@ namespace MoodReboot.Controllers
             Claim claimId = new(ClaimTypes.NameIdentifier, user.Id.ToString());
             identity.AddClaim(claimId);
 
+            Claim claimRole = new(ClaimTypes.Role, user.Role);
+            identity.AddClaim(claimRole);
+
             string userImage;
             if (user.Image == null)
             {
@@ -64,7 +66,11 @@ namespace MoodReboot.Controllers
 
             ClaimsPrincipal userPrincipal = new(identity);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal);
-            return View();
+
+            string controller = TempData["controller"].ToString();
+            string action = TempData["action"].ToString();
+
+            return RedirectToAction(action, controller);
         }
 
         public IActionResult ErrorAcceso()

@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace MvcCryptography.Helpers
+namespace MoodReboot.Helpers
 {
     public class HelperCryptography
     {
