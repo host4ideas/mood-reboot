@@ -21,5 +21,7 @@ namespace MoodReboot.Models
         public string Telephone { get; set; }
         [Column("DIRECTOR")]
         public int Director { get; set; }
+        [Column("APPROVED")]
+        public bool Approved { get; set; }
     }
 }

@@ -2,10 +2,12 @@
 using MoodReboot.Extensions;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
+using MvcCoreSeguridadEmpleados.Filters;
 using System.Security.Claims;
 
 namespace MoodReboot.Controllers
 {
+    [AuthorizeUsers]
     public class CoursesController : Controller
     {
         private readonly IRepositoryCourses repositoryCourses;

@@ -5,8 +5,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MoodReboot.Models
 {
-    public enum Roles { User, Admin }
-
     [Table("USER")]
     public class User
     {
@@ -62,5 +60,7 @@ namespace MoodReboot.Models
         public string Salt { get; set; }
         [Column("PASS_TEST")]
         public string PassTest { get; set; }
+        [Column("APPROVED")]
+        public bool Approved { get; set; }
     }
 }

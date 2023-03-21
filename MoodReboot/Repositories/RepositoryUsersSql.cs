@@ -18,6 +18,22 @@ namespace MoodReboot.Repositories
 
         #region USERS
 
+        public async Task ApproveUser(int userId)
+        {
+            User? user = await this.FindUser(userId);
+
+            if (user != null)
+            {
+                user.Approved = true;
+                await this.context.SaveChangesAsync();
+            }
+        }
+
+        public Task<List<User>> GetPendingUsers()
+        {
+            return this.context.Users.Where(x => x.Approved == false).ToListAsync();
+        }
+
         public async Task<bool> IsEmailAvailable(string email)
         {
             int count = await this.context.Users.CountAsync(u => u.Email == email);

@@ -12,9 +12,9 @@
     </div>
 </div>
 <!-- Profile button -->
-<button type="button" class="flex mx-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="dropdown">
+<button type="button" class="flex p-1 mx-3 text-sm bg-gray-400 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="dropdown">
     <span class="sr-only">Open user menu</span>
-    <img class="w-8 h-8 rounded-full" src="@userImage" alt="user photo">
+    <img class="w-6 h-6 rounded-full" src="~/uploads/profile_images/@userImage" alt="user photo">
 </button>
 <!-- Dropdown menu -->
 <div class="hidden z-50 my-4 w-56 text-base list-none bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown">
@@ -26,15 +26,16 @@
         <li>
             <a asp-controller="Users" asp-action="Profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Perfil</a>
         </li>
-        <li>
-            <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white" asp-controller="Admin" asp-action="Index">Admin panel</a>
-        </li>
+        @{
+            if (Context.User.IsInRole("ADMIN"))
+            {
+                <li>
+                    <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white" asp-controller="Admin" asp-action="Index">Admin panel</a>
+                </li>
+            }
+        }
     </ul>
     <ul class="py-1 font-light text-gray-500 dark:text-gray-400" aria-labelledby="dropdown">
-        <li>
-            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign out</a>
-        </li>
-
         @{
             if (Context.User.Identity.IsAuthenticated == false)
             {
@@ -47,7 +48,7 @@
             {
                 <li>
                     <a asp-controller="Managed" asp-action="Logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-pointer">
-                        Logout @Context.User.Identity.Name
+                        Logout
                     </a>
                 </li>
             }

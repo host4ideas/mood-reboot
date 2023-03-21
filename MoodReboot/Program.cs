@@ -16,12 +16,23 @@ builder.Services.AddSession(options =>
 });
 
 // Seguridad
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ADMIN_ONLY", policy => policy.RequireRole("ADMIN"));
+});
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-}).AddCookie();
+}).AddCookie(
+        CookieAuthenticationDefaults.AuthenticationScheme,
+        config =>
+        {
+            config.AccessDeniedPath = "/Managed/AccessError";
+        }
+);
 
 // Sessions
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -61,6 +72,16 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+app.Use(async (context, next) =>
+{
+    await next();
+    if (context.Response.StatusCode == 404)
+    {
+        context.Request.Path = "/Managed/AccessError";
+        await next();
+    }
+});
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

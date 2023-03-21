@@ -35,7 +35,7 @@ namespace MoodReboot.Helpers
             using (Stream stream = new FileStream(path, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
-                return path;
+                return fileName;
             }
         }
 

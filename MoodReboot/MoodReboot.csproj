@@ -39,4 +39,9 @@
     <None Include="wwwroot\lib\jquery-validation\LICENSE.md" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\uploads\center_images\" />
+    <Folder Include="wwwroot\uploads\course_images\" />
+  </ItemGroup>
+
 </Project>

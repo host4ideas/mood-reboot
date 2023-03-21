@@ -49,7 +49,7 @@ function initializeConnection(connectionString) {
                         <div class="text-xs font-medium text-primary-700 dark:text-gray-200">${date}</div>
                     </div>
                 </div>`;
-
+        $("#no-notifications-text").hide();
         $("#chat-notification-list").append(htmlNotification);
         $("#btn-open-notifications").addClass("animate-pulse");
     });

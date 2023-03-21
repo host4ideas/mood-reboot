@@ -1,6 +1,6 @@
 ﻿namespace MoodReboot.Helpers
 {
-    public enum Folders { Images = 0, Files = 1, Temp = 2, Icons = 3, Logos = 4 }
+    public enum Folders { Images = 0, CenterImages = 1, CourseImages = 2, ProfileImages = 3, Files = 4, Temp = 5, Icons = 6, Logos = 7 }
 
     public class HelperPath
     {
@@ -18,6 +18,18 @@
             if (folder == Folders.Images)
             {
                 carpeta = Path.Combine("uploads", "images");
+            }
+            if (folder == Folders.CourseImages)
+            {
+                carpeta = Path.Combine("uploads", "course_images");
+            }
+            if (folder == Folders.CenterImages)
+            {
+                carpeta = Path.Combine("uploads", "center_images");
+            }
+            if (folder == Folders.ProfileImages)
+            {
+                carpeta = Path.Combine("uploads", "profile_images");
             }
             else if (folder == Folders.Files)
             {

@@ -15,20 +15,40 @@ namespace MoodReboot.Repositories
             this.context = context;
         }
 
-        public Task CreateCenter(string email, string name, string address, string telephone, string image)
+        public Task<List<Center>> GetPendingCenters()
         {
-            string sql = "SP_CREATE_CENTER @EMAIL, @NAME, @ADDRESS, @TELEPHONE, @IMAGE";
+            return this.context.Centers.Where(x => x.Approved == false).ToListAsync();
+        }
 
-            SqlParameter[] sqlParameters = new[]
+        public async Task ApproveCenter(int centerId)
+        {
+            Center? center = await this.FindCenter(centerId);
+            if (center != null)
             {
-                new SqlParameter("@EMAIL", email),
-                new SqlParameter("@NAME", name),
-                new SqlParameter("@ADDRESS", address),
-                new SqlParameter("@TELEPHONE", telephone),
-                new SqlParameter("@IMAGE", image),
-            };
+                center.Approved = true;
+                await this.context.SaveChangesAsync();
+            }
+        }
 
-            return this.context.Database.ExecuteSqlRawAsync(sql, sqlParameters);
+        private async Task<int> GetMaxCenter()
+        {
+            return await this.context.Centers.MaxAsync(x => x.Id) + 1;
+        }
+
+        public async Task CreateCenter(string email, string name, string address, string telephone, string image, int director, bool approved)
+        {
+            this.context.Centers.Add(new()
+            {
+                Id = await this.GetMaxCenter(),
+                Name = name,
+                Address = address,
+                Telephone = telephone,
+                Image = image,
+                Director = director,
+                Email = email,
+                Approved = approved
+            });
+            await this.context.SaveChangesAsync();
         }
 
         public async Task DeleteCenter(int id)

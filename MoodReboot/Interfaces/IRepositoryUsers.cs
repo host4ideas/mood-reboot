@@ -6,6 +6,8 @@ namespace MoodReboot.Interfaces
     {
         // Users
         Task<User?> FindUser(int userId);
+        public Task ApproveUser(int userId);
+        public Task<List<User>> GetPendingUsers();
         public Task<bool> IsEmailAvailable(string email);
         public Task<bool> IsUsernameAvailable(string userName);
         Task<List<Tuple<string, int>>> SearchUsers(string pattern);

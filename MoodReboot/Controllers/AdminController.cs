@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
+using MvcCoreSeguridadEmpleados.Filters;
 
 namespace MoodReboot.Controllers
 {
+    [AuthorizeUsers(Policy = "ADMIN_ONLY")]
     public class AdminController : Controller
     {
         private readonly IRepositoryCenters repositoryCenters;
@@ -20,6 +22,35 @@ namespace MoodReboot.Controllers
         public IActionResult Index()
         {
             return View();
+        }
+
+        public IActionResult Requests()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> CenterRequests()
+        {
+            List<Center> centers = await this.repositoryCenters.GetPendingCenters();
+            return PartialView("_PendingCentersPartial", centers);
+        }
+
+        public async Task<IActionResult> UserRequests()
+        {
+            List<User> users = await this.repositoryUsers.GetPendingUsers();
+            return PartialView("_PendingUsersPartial", users);
+        }
+
+        public async Task<IActionResult> ApproveCenter(int centerId)
+        {
+            await this.repositoryCenters.ApproveCenter(centerId);
+            return RedirectToAction("Requests");
+        }
+
+        public async Task<IActionResult> ApproveUser(int userId)
+        {
+            await this.repositoryUsers.ApproveUser(userId);
+            return RedirectToAction("Requests");
         }
 
         public IActionResult Users()
@@ -62,16 +93,6 @@ namespace MoodReboot.Controllers
         {
             await this.repositoryCourses.DeleteCourse(courseId);
             return RedirectToAction("Courses");
-        }
-
-        public async Task ActivateUser(int userid)
-        {
-            User? user = await this.repositoryUsers.FindUser(userid);
-
-            if (user != null)
-            {
-
-            }
         }
     }
 }

@@ -30,15 +30,15 @@ namespace MoodReboot.Controllers
         [HttpPost]
         public async Task<IActionResult> Profile(int userId, string userName, string firstName, string lastName, IFormFile image)
         {
-            if (image != null)
-            {
-                string fileName = "image_" + userId;
-                await this.helperFile.UploadFileAsync(image, Folders.Images, fileName);
-                await this.repositoryUsers.UpdateUserBasics(userId, userName, firstName, lastName, fileName);
-                return RedirectToAction("Profile", new { userId });
-            }
+            //if (image != null)
+            //{
+            //    string fileName = "image_" + userId;
+            //    await this.helperFile.UploadFileAsync(image, Folders.Images, fileName);
+            //    await this.repositoryUsers.UpdateUserBasics(userId, userName, firstName, lastName, fileName);
+            //    return RedirectToAction("Profile", new { userId });
+            //}
 
-            await this.repositoryUsers.UpdateUserBasics(userId, userName, firstName, lastName);
+            //await this.repositoryUsers.UpdateUserBasics(userId, userName, firstName, lastName);
             return RedirectToAction("Profile", new { userId });
         }
 

@@ -26,6 +26,11 @@ namespace MoodReboot.Controllers
             return View();
         }
 
+        public IActionResult AccessError()
+        {
+            return View();
+        }
+
         [HttpPost]
         public async Task<IActionResult> Login(string usernameOrEmail, string password)
         {
@@ -52,16 +57,7 @@ namespace MoodReboot.Controllers
             Claim claimRole = new(ClaimTypes.Role, user.Role);
             identity.AddClaim(claimRole);
 
-            string userImage;
-            if (user.Image == null)
-            {
-                userImage = this.helperPath.MapPath("default_user_logo.svg", Folders.Logos);
-            }
-            else
-            {
-                userImage = this.helperPath.MapPath(user.Image, Folders.Images);
-            }
-            Claim claimImage = new("IMAGE", userImage);
+            Claim claimImage = new("IMAGE", user.Image);
             identity.AddClaim(claimImage);
 
             ClaimsPrincipal userPrincipal = new(identity);

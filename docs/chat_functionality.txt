@@ -1,2 +1,0 @@
-enviar archivo: subir archivo -> subir archivo y generar fileId, mandar mensaje con el fileId, guardar en BBDD con fileId
-enviar mensaje: mandar mensaje, guardar en BBDD

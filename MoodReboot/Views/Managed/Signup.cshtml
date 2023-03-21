@@ -7,41 +7,35 @@
 <div class="row">
     <div class="col-md-4">
         <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div asp-validation-summary="ModelOnly" class="font-medium animate-pulse text-red-600"></div>
             <div class="mb-6">
                 <label asp-for="Email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
                 <input asp-for="Email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-                <div class="p-4 my-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
-                    <span asp-validation-for="Email" class="font-medium animate-bounce"></span>
-                </div>
+                <span asp-validation-for="Email" class="font-medium animate-pulse text-red-600"></span>
             </div>
             <div class="mb-6">
                 <label asp-for="Password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
                 <input asp-for="Password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-                <div class="p-4 my-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
-                    <span asp-validation-for="Password" class="font-medium animate-bounce"></span>
-                </div>
+
+                <span asp-validation-for="Password" class="font-medium animate-pulse text-red-600"></span>
             </div>
             <div class="mb-6">
                 <label asp-for="UserName" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
                 <input asp-for="UserName" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-                <div class="p-4 my-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
-                    <span asp-validation-for="UserName" class="font-medium animate-bounce"></span>
-                </div>
+
+                <span asp-validation-for="UserName" class="font-medium animate-pulse text-red-600"></span>
             </div>
             <div class="mb-6">
                 <label asp-for="FirstName" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
                 <input asp-for="FirstName" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-                <div class="p-4 my-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
-                    <span asp-validation-for="FirstName" class="font-medium animate-bounce"></span>
-                </div>
+
+                <span asp-validation-for="FirstName" class="font-medium animate-pulse text-red-600"></span>
             </div>
             <div class="mb-6">
                 <label asp-for="LastName" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
                 <input asp-for="LastName" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-                <div class="p-4 my-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
-                    <span asp-validation-for="LastName" class="font-medium animate-bounce"></span>
-                </div>
+
+                <span asp-validation-for="LastName" class="font-medium animate-pulse text-red-600"></span>
             </div>
             <div class="mb-6">
                 <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="file_input">Upload file</label>
@@ -59,7 +53,7 @@
     if (message != null)
     {
         <div class="p-4 my-6 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
-            <span class="font-medium animate-bounce">Error: </span> @message
+            <span class="font-medium animate-pulse text-red-600">Error: </span> @message
         </div>
     }
 }
