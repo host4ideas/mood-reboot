@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MoodReboot.Helpers;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
 using MvcCoreSeguridadEmpleados.Filters;
@@ -11,12 +12,14 @@ namespace MoodReboot.Controllers
         private readonly IRepositoryCenters repositoryCenters;
         private readonly IRepositoryCourses repositoryCourses;
         private readonly IRepositoryUsers repositoryUsers;
+        private readonly HelperMail helperMail;
 
-        public AdminController(IRepositoryCenters repositoryCenters, IRepositoryCourses repositoryCourses, IRepositoryUsers repositoryUsers)
+        public AdminController(IRepositoryCenters repositoryCenters, IRepositoryCourses repositoryCourses, IRepositoryUsers repositoryUsers, HelperMail helperMail)
         {
             this.repositoryCenters = repositoryCenters;
             this.repositoryCourses = repositoryCourses;
             this.repositoryUsers = repositoryUsers;
+            this.helperMail = helperMail;
         }
 
         public IActionResult Index()
@@ -43,13 +46,23 @@ namespace MoodReboot.Controllers
 
         public async Task<IActionResult> ApproveCenter(int centerId)
         {
-            await this.repositoryCenters.ApproveCenter(centerId);
+            Center? center = await this.repositoryCenters.FindCenter(centerId);
+            if (center != null)
+            {
+                await this.repositoryCenters.ApproveCenter(center);
+                await this.helperMail.SendMailAsync(center.Email, "Centro aprobado", "Tu centro ha sido aprobado en la plataforma MoodReboot, puedes iniciar sesión en tu perfil y empezar a administrarlo");
+            }
             return RedirectToAction("Requests");
         }
 
         public async Task<IActionResult> ApproveUser(int userId)
         {
-            await this.repositoryUsers.ApproveUser(userId);
+            User? user = await this.repositoryUsers.FindUser(userId);
+            if (user != null)
+            {
+                await this.repositoryUsers.ApproveUser(user);
+                await this.helperMail.SendMailAsync(user.Email, "Usuario aprobado", "Tu cuenta en MoodReboot ha sido activada, por favor, inicia sesión con tu cuenta para empezar a utilizar nuestra plataforma.");
+            }
             return RedirectToAction("Requests");
         }
 

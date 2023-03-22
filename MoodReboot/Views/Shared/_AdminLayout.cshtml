@@ -39,3 +39,7 @@
 <div class="p-4">
     @RenderBody()
 </div>
+
+@section scripts {
+    @await RenderSectionAsync("scripts", false)
+}

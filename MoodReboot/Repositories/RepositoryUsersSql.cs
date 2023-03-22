@@ -18,15 +18,10 @@ namespace MoodReboot.Repositories
 
         #region USERS
 
-        public async Task ApproveUser(int userId)
+        public async Task ApproveUser(User user)
         {
-            User? user = await this.FindUser(userId);
-
-            if (user != null)
-            {
-                user.Approved = true;
-                await this.context.SaveChangesAsync();
-            }
+            user.Approved = true;
+            await this.context.SaveChangesAsync();
         }
 
         public Task<List<User>> GetPendingUsers()
@@ -97,7 +92,8 @@ namespace MoodReboot.Repositories
                 Email = email,
                 Image = image,
                 Salt = salt,
-                Password = HelperCryptography.EncryptPassword(password, salt)
+                Password = HelperCryptography.EncryptPassword(password, salt),
+                Approved = false
             };
 
             this.context.Users.Add(user);

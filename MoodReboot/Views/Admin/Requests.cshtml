@@ -1,6 +1,10 @@
-﻿<div class="flex flex-wrap justify-between items-center h-full" style="gap: 4rem;">
+﻿@{
+    Layout = "_AdminLayout";
+}
+
+<div class="flex flex-wrap justify-between items-center h-full" style="gap: 4rem;">
     <!-- Pending center requests -->
-    <div id="center-requests" class="max-h-72 mx-auto">
+    <div id="center-requests" class="mx-auto">
         <div role="status" class="animate-pulse">
             <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
             <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[460px] mb-2.5"></div>
@@ -30,7 +34,7 @@
         </div>
     </div>
     <!-- Pending user requests -->
-    <div id="user-requests" class="max-h-72 mx-auto">
+    <div id="user-requests" class="mx-auto">
         <div role="status" class="animate-pulse">
             <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
             <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[460px] mb-2.5"></div>
@@ -63,7 +67,7 @@
 
 @section scripts {
     <script>
-        //$("#center-requests").load('@Url.Action("CenterRequests", "Admin")');
-        //$("#user-requests").load('@Url.Action("UserRequests", "Admin")');
+        $("#center-requests").load('@Url.Action("CenterRequests", "Admin")');
+        $("#user-requests").load('@Url.Action("UserRequests", "Admin")');
     </script>
 }

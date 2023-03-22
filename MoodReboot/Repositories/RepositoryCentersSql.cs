@@ -20,14 +20,10 @@ namespace MoodReboot.Repositories
             return this.context.Centers.Where(x => x.Approved == false).ToListAsync();
         }
 
-        public async Task ApproveCenter(int centerId)
+        public async Task ApproveCenter(Center center)
         {
-            Center? center = await this.FindCenter(centerId);
-            if (center != null)
-            {
-                center.Approved = true;
-                await this.context.SaveChangesAsync();
-            }
+            center.Approved = true;
+            await this.context.SaveChangesAsync();
         }
 
         private async Task<int> GetMaxCenter()

@@ -46,5 +46,10 @@ namespace MoodReboot.Controllers
         {
             return await this.repositoryUsers.SearchUsers(pattern);
         }
+
+        public Task ApproveUserEmail(int userId, string token)
+        {
+
+        }
     }
 }
