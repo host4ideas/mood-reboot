@@ -1,4 +1,4 @@
-﻿@model MoodReboot.Models.User
+﻿@model MoodReboot.Models.UserRegisterModel
 
 @{
     ViewData["Title"] = "Registro";
@@ -14,10 +14,22 @@
                 <span asp-validation-for="Email" class="font-medium animate-pulse text-red-600"></span>
             </div>
             <div class="mb-6">
+                <label asp-for="ConfirmEmail" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
+                <input asp-for="ConfirmEmail" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+
+                <span asp-validation-for="ConfirmEmail" class="font-medium animate-pulse text-red-600"></span>
+            </div>
+            <div class="mb-6">
                 <label asp-for="Password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
-                <input asp-for="Password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                <input asp-for="Password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" type="password" />
 
                 <span asp-validation-for="Password" class="font-medium animate-pulse text-red-600"></span>
+            </div>
+            <div class="mb-6">
+                <label asp-for="ConfirmPassword" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
+                <input asp-for="ConfirmPassword" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" type="password" />
+
+                <span asp-validation-for="ConfirmPassword" class="font-medium animate-pulse text-red-600"></span>
             </div>
             <div class="mb-6">
                 <label asp-for="UserName" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
@@ -55,11 +67,5 @@
         <div class="p-4 my-6 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
             <span class="font-medium animate-pulse text-red-600">Error: </span> @message
         </div>
-    }
-}
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }

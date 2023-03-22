@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using MoodReboot.Models;
 
 namespace MoodReboot.Data
@@ -19,5 +17,6 @@ namespace MoodReboot.Data
         public DbSet<ChatGroup> ChatGroups { get; set; }
         public DbSet<UserChatGroup> UserChatGroups { get; set; }
         public DbSet<UserCenter> UserCenters { get; set; }
+        public DbSet<UserAction> UserActions { get; set; }
     }
 }

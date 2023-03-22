@@ -1,11 +1,12 @@
-﻿@{
+﻿@model List<CourseListView>
+
+@{
     Layout = "_MenuLayout";
 }
 
-@model List<CourseListView>
-
 @{
     Center center = (Center)ViewData["CENTER"]!;
+    int userId = int.Parse(Context.User.FindFirstValue(ClaimTypes.NameIdentifier));
 }
 
 <section class="bg-white dark:bg-gray-900">
@@ -16,6 +17,22 @@
             </h1>
             <p class="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">@center.Address</p>
             <p class="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">@center.Email</p>
+            @{
+                if (Context.User.Identity.IsAuthenticated == true)
+                {
+                    bool isEditor = (bool)ViewData["IS_EDITOR"];
+
+                    if (userId == center.Director)
+                    {
+                        <a asp-controller="Centers" asp-action="EditorView" class="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">Editar contenidos</a>
+                        <a asp-controller="Centers" asp-action="DirectorView" class="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">Administrar centro</a>
+                    }
+                    else if (isEditor == true)
+                    {
+                        <a asp-controller="Centers" asp-action="EditorView" class="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">Editar contenidos</a>
+                    }
+                }
+            }
         </div>
         <div class="flex justify-center md:w-full lg:col-span-5 m-5">
             <img class="max-w-sm" src="@center.Image" alt="@center.Name Image">
@@ -50,36 +67,36 @@
 
             course.authors.forEach(author => {
                 authorsHtml += `
-                            <div class="flex items-center">
-                                <img class="w-7 h-7 rounded-full" src="" alt="${author.image} avatar" />
-                                <span class="font-medium dark:text-white">
-                                    ${author.userName}
-                                </span>
-                            </div>`
+                                                    <div class="flex items-center">
+                                                        <img class="w-7 h-7 rounded-full" src="" alt="${author.image} avatar" />
+                                                        <span class="font-medium dark:text-white">
+                                                            ${author.userName}
+                                                        </span>
+                                                    </div>`
             })
 
             return `
-                        <a href='/Courses/CourseDetails?courseId=${course.courseId}' class="flex flex-col gap-6 justify-between p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 overflow-hidden">
-                            <div class="flex justify-between flex-wrap items-center text-gray-500 overflow-hidden">
-                                <span class="text-sm">${course.centerName}</span>
-                                    <div class="flex flex-col">
-                                    <span class="text-sm">👁️ ${published}</span>
-                                    <span class="text-sm">${modified}</span>
-                                </div>
-                            </div>
+                                                <a href='/Courses/CourseDetails?courseId=${course.courseId}' class="flex flex-col gap-6 justify-between p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 overflow-hidden">
+                                                    <div class="flex justify-between flex-wrap items-center text-gray-500 overflow-hidden">
+                                                        <span class="text-sm">${course.centerName}</span>
+                                                            <div class="flex flex-col">
+                                                            <span class="text-sm">👁️ ${published}</span>
+                                                            <span class="text-sm">${modified}</span>
+                                                        </div>
+                                                    </div>
 
-                            <div class="text-gray-500 overflow-hidden">
-                                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">${course.courseName}</h5>
-                                <p class="font-normal text-gray-700 dark:text-gray-400">${description}</p>
-                            </div>
+                                                    <div class="text-gray-500 overflow-hidden">
+                                                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">${course.courseName}</h5>
+                                                        <p class="font-normal text-gray-700 dark:text-gray-400">${description}</p>
+                                                    </div>
 
-                            <div class="flex flex-wrap gap-4 items-center justify-start overflow-y-scroll">
-                                ${authorsHtml}
-                                <span class="font-medium dark:text-white">
-                                    ${editor}
-                                </span>
-                            </div>
-                        </a>`;
+                                                    <div class="flex flex-wrap gap-4 items-center justify-start overflow-y-scroll">
+                                                        ${authorsHtml}
+                                                        <span class="font-medium dark:text-white">
+                                                            ${editor}
+                                                        </span>
+                                                    </div>
+                                                </a>`;
         }
 
         function initialList() {

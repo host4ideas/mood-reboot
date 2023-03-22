@@ -8,6 +8,7 @@
         public string Telephone { get; set; }
         public string Image { get; set; }
         public string Address { get; set; }
+        public bool IsEditor { get; set; }
         public Author Director { get; set; }
     }
 }

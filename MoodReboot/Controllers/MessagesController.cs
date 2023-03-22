@@ -2,10 +2,12 @@
 using MoodReboot.Extensions;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
+using MvcCoreSeguridadEmpleados.Filters;
 using System.Security.Claims;
 
 namespace MoodReboot.Controllers
 {
+    [AuthorizeUsers]
     public class MessagesController : Controller
     {
         private readonly IRepositoryUsers repositoryUsers;
@@ -69,14 +71,25 @@ namespace MoodReboot.Controllers
             }
         }
 
+        [HttpPost]
+        public Task AddUsersToChat(int chatGroupId, List<int> userIds)
+        {
+            return this.repositoryUsers.AddUsersToChat(chatGroupId, userIds);
+        }
+
         public Task UpdateChatGroup(ChatGroup chatGroup)
         {
             return this.repositoryUsers.UpdateChatGroup(chatGroup.Id, chatGroup.Name);
         }
 
-        public Task RemoveUserFromChat(int userId)
+        public Task DeleteChatGroup(int userId)
         {
             return this.repositoryUsers.RemoveChatGroup(userId);
+        }
+
+        public Task RemoveUserFromChat(int userId, int chatGroupId)
+        {
+            return this.repositoryUsers.RemoveChatUser(userId, chatGroupId);
         }
     }
 }

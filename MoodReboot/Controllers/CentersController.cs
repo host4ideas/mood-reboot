@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MoodReboot.Extensions;
 using MoodReboot.Helpers;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
@@ -29,15 +28,34 @@ namespace MoodReboot.Controllers
             return View(centers);
         }
 
-        [HttpPost]
-        public IActionResult Test()
+        public IActionResult EditorView()
         {
-            return View("CenterRequest");
+            return View();
+        }
+
+        public IActionResult DirectorView()
+        {
+            return View();
         }
 
         public async Task<IActionResult> CenterDetails(int id)
         {
             Center? center = await this.repositoryCenters.FindCenter(id);
+            bool isEditor = false;
+
+            if (HttpContext.User.Identity.IsAuthenticated == true)
+            {
+                int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+                List<User> users = await this.repositoryCenters.GetCenterEditorsAsync(id);
+
+                foreach (User user in users)
+                {
+                    if (user.Id == userId)
+                    {
+                        isEditor = true;
+                    }
+                }
+            }
 
             if (center == null)
             {
@@ -46,6 +64,7 @@ namespace MoodReboot.Controllers
 
             List<CourseListView> courses = this.repositoryCourses.CenterCoursesListView(id);
 
+            ViewData["IS_EDITOR"] = isEditor;
             ViewData["CENTER"] = center;
             return View(courses);
         }

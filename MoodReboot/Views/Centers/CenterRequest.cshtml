@@ -20,9 +20,9 @@
                 <span asp-validation-for="CenterEmail" class="font-medium animate-pulse text-red-600"></span>
             </div>
             <div class="mb-6">
-                <label asp-for="ContactEmail" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
-                <input asp-for="ContactEmail" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-                <span asp-validation-for="ContactEmail" class="font-medium animate-pulse text-red-600"></span>
+                <label asp-for="Email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
+                <input asp-for="Email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                <span asp-validation-for="Email" class="font-medium animate-pulse text-red-600"></span>
             </div>
             <div class="mb-6">
                 <label asp-for="CenterName" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
@@ -45,16 +45,11 @@
                 <span asp-validation-for="CenterImage" class="font-medium animate-pulse text-red-600"></span>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">SVG, PNG, JPG or GIF (MAX. 800x400px).</p>
             </div>
-            <button type="submit" value="Create" class="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900">
+
+            <button type="submit" value="Create" class="inline-flex items-center justify-center px-5 py-3 text-base font-medium rounded-lg text-center text-white text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">
                 Apuntarme
                 <svg class="w-5 h-5 ml-2 -mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
             </button>
         </form>
     </div>
 </div>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}

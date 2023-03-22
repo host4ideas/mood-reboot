@@ -162,15 +162,25 @@ namespace MoodReboot.Repositories
             return false;
         }
 
-        public Task CreateCourse(string name, string? description, string? image, int? isVisible)
+        public Task CreateCourse(int centerId, string name, bool isVisible, string? description = null, string? image = null, string? password = null)
         {
-            string sql = "SP_CREATE_COURSE @NAME, @DESCRIPTION, @IMAGE, @IS_VISIBLE";
+            string sql = "SP_CREATE_COURSE @CENTER_ID, @NAME, @DESCRIPTION, @IMAGE, @IS_VISIBLE, @PASSWORD, @COURSEID OUT, @GROUPID OUT";
 
             SqlParameter[] sqlParameters = new[] {
+                new SqlParameter("@CENTER_ID", centerId),
                 new SqlParameter("@NAME", name),
                 new SqlParameter("@DESCRIPTION", description),
                 new SqlParameter("@IMAGE", image),
                 new SqlParameter("@IS_VISIBLE", isVisible),
+                new SqlParameter("@PASSWORD", password),
+                new SqlParameter("@COURSEID", -1)
+                {
+                    Direction = System.Data.ParameterDirection.Output
+                },
+                new SqlParameter("@GROUPID", -1)
+                {
+                    Direction = System.Data.ParameterDirection.Output
+                },
             };
 
             return this.context.Database.ExecuteSqlRawAsync(sql, sqlParameters);

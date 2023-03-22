@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using MoodReboot.Helpers;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
+using Newtonsoft.Json.Linq;
+using NuGet.Common;
 using System.Security.Claims;
 
 namespace MoodReboot.Controllers
@@ -12,13 +14,15 @@ namespace MoodReboot.Controllers
     {
         private readonly HelperFile helperFile;
         private readonly HelperPath helperPath;
+        private readonly HelperMail helperMail;
         private readonly IRepositoryUsers repositoryUsers;
 
-        public ManagedController(HelperFile helperFile, HelperPath helperPath, IRepositoryUsers repositoryUsers)
+        public ManagedController(HelperFile helperFile, HelperPath helperPath, HelperMail helperMail, IRepositoryUsers repositoryUsers)
         {
             this.helperFile = helperFile;
             this.repositoryUsers = repositoryUsers;
             this.helperPath = helperPath;
+            this.helperMail = helperMail;
         }
 
         public IActionResult Login()
@@ -89,6 +93,7 @@ namespace MoodReboot.Controllers
         public async Task<IActionResult> SignUp
             (string nombre, string firstName, string lastName, string email, string password, IFormFile? imagen)
         {
+            // BBDD
             string path = "default_user_logo.svg";
 
             if (imagen != null)
@@ -100,9 +105,34 @@ namespace MoodReboot.Controllers
                 path = await this.helperFile.UploadFileAsync(imagen, Folders.Images, fileName);
             }
 
-            await this.repositoryUsers.RegisterUser(nombre, firstName, lastName, email, password, path);
-            ViewData["MENSAJE"] = "Usuario registrado correctamente";
+            int userId = await this.repositoryUsers.RegisterUser(nombre, firstName, lastName, email, password, path);
+            string token = await this.repositoryUsers.CreateUserAction(userId);
+
+            // Confirmation mail
+            string url = Url.Action("ApproveUserEmail", "Users", new { userId, token })!;
+
+            List<MailLink> links = new()
+            {
+                new MailLink()
+                {
+                    LinkText = "Confirmar cuenta",
+                    Link = url
+                }
+            };
+            await this.helperMail.SendMailAsync(email, "Confirmación de cuenta", "Se ha solicitado una petición para crear una cuenta en MoodReboot con este correo electrónico. Pulsa el siguiente enlace para confirmarla. Si no has sido tu el solicitante no te procupes, la petición será cancelada en un período de 24hrs.", links);
+
+            ViewData["MENSAJE"] = "Revisa tu correo electrónico";
             return View();
+        }
+
+        [AcceptVerbs("GET", "POST")]
+        public async Task<IActionResult> EmailExists(string email)
+        {
+            if (await this.repositoryUsers.IsEmailAvailable(email) == false)
+            {
+                return Json(true);
+            }
+            return Json($"Email {email} no pertenece a ningún usuario de la plataforma.");
         }
 
         [AcceptVerbs("GET", "POST")]

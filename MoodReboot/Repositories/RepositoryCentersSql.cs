@@ -81,6 +81,15 @@ namespace MoodReboot.Repositories
             return result.ToListAsync();
         }
 
+        public Task<List<User>> GetCenterEditorsAsync(int centerId)
+        {
+            var result = from uc in this.context.UserCenters
+                         join u in this.context.Users on uc.UserId equals u.Id
+                         where uc.CenterId == centerId && uc.IsEditor == true
+                         select u;
+            return result.ToListAsync();
+        }
+
         public async Task<List<CenterListView>> GetUserCentersAsync(int userId)
         {
             List<Center> centers = await this.context.Centers.ToListAsync();
@@ -97,27 +106,26 @@ namespace MoodReboot.Repositories
                              Id = c.Id,
                              Address = c.Address,
                              Image = c.Image,
-                             Telephone = c.Telephone
+                             Telephone = c.Telephone,
+                             IsEditor = uc.IsEditor
                          };
 
             return await result.ToListAsync();
         }
 
-        public Task UpdateCenter(Center center)
+        public async Task UpdateCenter(int centerId, string email, string name, string address, string telephone, string image)
         {
-            string sql = "SP_UPDATE_CENTER @CENTER_ID, @EMAIL, @NAME, @ADDRESS, @TELEPHONE, @IMAGE";
-
-            SqlParameter[] sqlParameters = new[]
+            Center? center = await this.FindCenter(centerId);
+            if (center != null)
             {
-                new SqlParameter("@CENTER_ID", center.Id),
-                new SqlParameter("@EMAIL", center.Id),
-                new SqlParameter("@NAME", center.Name),
-                new SqlParameter("@ADDRESS", center.Address),
-                new SqlParameter("@TELEPHONE", center.Telephone),
-                new SqlParameter("@IMAGE", center.Image),
-            };
+                center.Name = name;
+                center.Address = address;
+                center.Telephone = telephone;
+                center.Image = image;
+                center.Email = email;
 
-            return this.context.Database.ExecuteSqlRawAsync(sql, sqlParameters);
+                await this.context.SaveChangesAsync();
+            }
         }
     }
 }

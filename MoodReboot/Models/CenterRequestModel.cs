@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MoodReboot.Helpers;
 using System.ComponentModel.DataAnnotations;
 
 namespace MoodReboot.Models
@@ -10,10 +9,11 @@ namespace MoodReboot.Models
         [Required(ErrorMessage = "Email requerido")]
         [EmailAddress(ErrorMessage = "Email inválido")]
         public string CenterEmail { get; set; }
-        [Display(Name = "Email de contacto")]
+        [Display(Name = "Email del director")]
         [Required(ErrorMessage = "Email requerido")]
         [EmailAddress(ErrorMessage = "Email inválido")]
-        public string ContactEmail { get; set; }
+        [Remote(action: "EmailExists", controller: "Managed")]
+        public string Email { get; set; }
         [Display(Name = "Nombre del centro")]
         [Required(ErrorMessage = "Nombre del centro requerido")]
         [StringLength(50, ErrorMessage = "{0} debe de estar entre {2} y {1}.", MinimumLength = 10)]

@@ -18,10 +18,51 @@ namespace MoodReboot.Repositories
 
         #region USERS
 
+        private Task<int> GetMaxUserAction()
+        {
+            return this.context.UserActions.MaxAsync(x => x.Id);
+        }
+
+        public async Task<string> CreateUserAction(int userId)
+        {
+            UserAction userAction = new()
+            {
+                Id = await this.GetMaxUserAction(),
+                Token = Guid.NewGuid().ToString(),
+                UserId = userId
+            };
+
+            await this.context.UserActions.AddAsync(userAction);
+            await this.context.SaveChangesAsync();
+
+            return userAction.Token;
+        }
+
+        public Task<UserAction?> FindUserAction(int userId, string token)
+        {
+            return this.context.UserActions.FirstOrDefaultAsync(x => x.UserId == userId && x.Token == token);
+        }
+
+        public async Task RemoveUserAction(UserAction userAction)
+        {
+            this.context.UserActions.Remove(userAction);
+            await this.context.SaveChangesAsync();
+        }
+
         public async Task ApproveUser(User user)
         {
             user.Approved = true;
             await this.context.SaveChangesAsync();
+        }
+
+        public async Task ApproveUser(int userId)
+        {
+            User? user = await this.FindUser(userId);
+            if (user != null)
+            {
+                user.Approved = true;
+                await this.context.SaveChangesAsync();
+            }
         }
 
         public Task<List<User>> GetPendingUsers()
@@ -67,9 +108,9 @@ namespace MoodReboot.Repositories
             return await this.context.Users.MaxAsync(z => z.Id) + 1;
         }
 
-        public Task<User?> FindUser(int userId)
+        public async Task<User?> FindUser(int userId)
         {
-            return this.context.Users.FirstOrDefaultAsync(x => x.Id == userId);
+            return await this.context.Users.FindAsync(userId);
         }
 
         public List<User> GetAllUsers()
@@ -77,13 +118,15 @@ namespace MoodReboot.Repositories
             return this.context.Users.ToList();
         }
 
-        public async Task RegisterUser(string nombre, string firstName, string lastName, string email, string password, string image)
+        public async Task<int> RegisterUser(string nombre, string firstName, string lastName, string email, string password, string image)
         {
             string salt = HelperCryptography.GenerateSalt();
 
+            int userId = await this.GetMaxUser();
+
             User user = new()
             {
-                Id = await this.GetMaxUser(),
+                Id = userId,
                 UserName = nombre,
                 LastName = lastName,
                 FirstName = firstName,
@@ -98,6 +141,8 @@ namespace MoodReboot.Repositories
 
             this.context.Users.Add(user);
             await this.context.SaveChangesAsync();
+
+            return userId;
         }
 
         public async Task<User?> LoginUser(string usernameOrEmail, string password)
@@ -145,7 +190,12 @@ namespace MoodReboot.Repositories
 
         public async Task UpdateUserEmail(int userId, string email)
         {
-
+            User? user = await this.FindUser(userId);
+            if (user != null)
+            {
+                user.Email = email;
+                await this.context.SaveChangesAsync();
+            }
         }
 
         public async Task UpdateUserPassword(int userId, string password)
@@ -224,6 +274,50 @@ namespace MoodReboot.Repositories
 
         #region MESSAGES
 
+        public async Task AddUsersToChat(int chatGroupId, List<int> userIds)
+        {
+            // Create the chat group
+            ChatGroup? chatGroup = await this.context.ChatGroups.FirstOrDefaultAsync(x => x.Id == chatGroupId);
+
+            if (chatGroup != null)
+            {
+                List<ChatUserModel> users = await this.GetChatGroupUsers(chatGroupId);
+                List<int> alreadyUserIds = users.ConvertAll(x => x.UserID).ToList();
+
+                var consulta = from u in this.context.Users
+                               join uc in this.context.UserChatGroups on u.Id equals uc.UserID
+                               where userIds.Contains(u.Id)
+                               select u.Id;
+
+                List<int> newUserIds = await consulta.ToListAsync();
+
+                alreadyUserIds.AddRange(newUserIds);
+
+                HashSet<int> userIdsNoDups = new(alreadyUserIds);
+
+                int firstId = await this.GetMaxUserChatGroup();
+
+                // Add users to the chat group
+                foreach (int userId in userIdsNoDups)
+                {
+                    UserChatGroup userChatGroup = new()
+                    {
+                        Id = firstId,
+                        GroupId = chatGroup.Id,
+                        JoinDate = DateTime.Now,
+                        LastSeen = DateTime.Now,
+                        UserID = userId,
+                        IsAdmin = false
+                    };
+
+                    await this.context.UserChatGroups.AddAsync(userChatGroup);
+                    firstId += 1;
+                }
+
+                await this.context.SaveChangesAsync();
+            }
+        }
+
         public async Task NewChatGroup(HashSet<int> userIdsNoDups)
         {
             // Create the chat group
@@ -251,7 +345,7 @@ namespace MoodReboot.Repositories
                 };
 
                 await this.context.UserChatGroups.AddAsync(userChatGroup);
-                firstId++;
+                firstId += 1;
             }
 
             await this.context.SaveChangesAsync();
@@ -464,7 +558,7 @@ namespace MoodReboot.Repositories
             return result.ToListAsync();
         }
 
-        public async Task RemoveChatUser(int chatGroupId, int userId)
+        public async Task RemoveChatUser(int userId, int chatGroupId)
         {
             UserChatGroup? userChat = await this.context.UserChatGroups.FirstOrDefaultAsync(x => x.GroupId == chatGroupId && x.UserID == userId);
 

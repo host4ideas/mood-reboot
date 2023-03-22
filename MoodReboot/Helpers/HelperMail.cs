@@ -3,6 +3,12 @@ using System.Net.Mail;
 
 namespace MoodReboot.Helpers
 {
+    public class MailLink
+    {
+        public string Link { get; set; }
+        public string LinkText { get; set; }
+    }
+
     public class HelperMail
     {
         private readonly IConfiguration configuration;
@@ -115,24 +121,15 @@ namespace MoodReboot.Helpers
                                             >
                                                 %BODY%
                                             </p>
-                                            <p
+                                            <div
                                                 style=""
-                                                    margin: 0;
-                                                    font-size: 16px;
-                                                    line-height: 24px;
-                                                    font-family: Arial,
-                                                        sans-serif;
+                                                    display: flex;
+                                                    justify-content: center;
+                                                    gap: 10px;
                                                 ""
                                             >
-                                                <a
-                                                    href=""http://www.example.com""
-                                                    style=""
-                                                        color: #ee4c50;
-                                                        text-decoration: underline;
-                                                    ""
-                                                    >%LINK%</a
-                                                >
-                                            </p>
+                                                %LINKS%
+                                            </div>
                                         </td>
                                     </tr>
                                 </table>
@@ -274,14 +271,56 @@ namespace MoodReboot.Helpers
             return smtpClient;
         }
 
-        public Task SendMailAsync(string para, string asunto, string mensaje)
+        private string BuildMailTemplate(string asunto, string mensaje, List<MailLink>? links = null)
         {
             string nuevoEmail = this.MRBaseMail;
-            nuevoEmail = nuevoEmail.Replace("%BODY%", mensaje);
             nuevoEmail = nuevoEmail.Replace("%SUBJECT%", asunto);
+            nuevoEmail = nuevoEmail.Replace("%BODY%", mensaje);
             nuevoEmail = nuevoEmail.Replace("%MOODREBOOTLINK%", "http://localhost:7192");
-            nuevoEmail = nuevoEmail.Replace("%LINK%", "");
 
+            string linksHtml = "";
+
+            if (links != null)
+            {
+                foreach (MailLink link in links)
+                {
+                    linksHtml += $@"                                                
+                            <p
+                                style=""
+                                    margin: 0;
+                                    font-size: 16px;
+                                    line-height: 24px;
+                                    font-family: Arial,
+                                        sans-serif;
+                                ""
+                            >
+                                <a
+                                    href=""{link.Link}""
+                                    style=""
+                                        color: #ee4c50;
+                                        text-decoration: underline;
+                                    ""
+                                    >{link.LinkText}</a
+                                >
+                            </p>";
+                }
+            }
+
+            nuevoEmail = nuevoEmail.Replace("%LINKS%", linksHtml);
+            return nuevoEmail;
+        }
+
+        public Task SendMailAsync(string para, string asunto, string mensaje)
+        {
+            string nuevoEmail = this.BuildMailTemplate(asunto, mensaje);
+            MailMessage mail = this.ConfigureMailMessage(para, asunto, nuevoEmail);
+            SmtpClient client = this.CofigureSmtpClient();
+            return client.SendMailAsync(mail);
+        }
+
+        public Task SendMailAsync(string para, string asunto, string mensaje, List<MailLink> links)
+        {
+            string nuevoEmail = this.BuildMailTemplate(asunto, mensaje, links);
             MailMessage mail = this.ConfigureMailMessage(para, asunto, nuevoEmail);
             SmtpClient client = this.CofigureSmtpClient();
             return client.SendMailAsync(mail);

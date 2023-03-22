@@ -115,7 +115,9 @@
         string requestSearchUsers = Url.Action("SearchUsers", "Users");
         string requestCreateChat = Url.Action("CreateChatGroup", "Messages");
         string requestUpdateChat = Url.Action("UpdateChatGroup", "Messages");
-        string requestDeleteChat = Url.Action("UpdateChatGroup", "Messages");
+        string requestDeleteChat = Url.Action("DeleteChatGroup", "Messages");
+        string requestRemoveUserChat = Url.Action("RemoveUserFromChat", "Messages");
+        string requestAddUsersChat = Url.Action("AddUsersToChat", "Messages");
         // Once the session is validated create the connection string
         string connectionString = "/chatHub?userId=" + userId.ToString();
 
@@ -128,11 +130,11 @@
                         // If the chat is loaded change the button
                         if (statusTxt == "success") {
                             let html = `
-                                                                                                                                                                                                                                                                                                                                                                                                <button onclick="btnChatToggle()" type="button" class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-full hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                                                                                                                                                                                                                                                                                                                                                                                    <svg width="20px" height="20px" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                                                                                                                                                                                                                                                                                                                                                                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
-                                                                                                                                                                                                                                                                                                                                                                                                    </svg>
-                                                                                                                                                                                                                                                                                                                                                                                                </button>`;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <button onclick="btnChatToggle()" type="button" class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-full hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <svg width="20px" height="20px" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    </svg>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </button>`;
                             $("#btnChatToggle").html(html);
 
                             // Load notifications
@@ -177,12 +179,11 @@
                             li.textContent = `in group ${chatGroupId} user ${message.userName} says ${message.text} at ${message.datePosted}`;
                         });
                         // Scroll to bottom
-                        $("#messagesList").animate({ scrollTop: $('#messagesList').prop("scrollHeight") }, 1000);
+                        $("#messagesList").animate({ scrollTop: $('#messagesList').prop("scrollHeight") });
                     });
 
                     // Save that the user has clicked in the chat
-                    const requestUpdateLastSeen = '@requestUpdateLastSeen' + '?chatGroupId=' + chatGroupId;
-                    $.get(requestUpdateLastSeen);
+                    $.get('@requestUpdateLastSeen', { chatGroupId: chatGroupId });
                 }
 
                 function newChatGroup() {
@@ -193,14 +194,22 @@
                     $.post('@requestCreateChat', { userIds: usersToAdd, groupName: "TEST_GROUP" });
                 }
 
-                function editChatGroup(action, chatGroupId, newChatName) {
+                function editChatGroup(action, chatGroupId, inputId) {
                     if (action === "update") {
-                        $.post('@requestUpdateChat', { Id: chatGroupId, Name: newChatName });
+                        $.get('@requestUpdateChat', { Id: chatGroupId, Name: newChatName });
                     } else if (action === "delete") {
-
+                        $.get('@requestDeleteChat', { chatGroupId: chatGroupId });
                     } else if (action === "out") {
-
+                        $.get('@requestRemoveUserChat', { userId: @userId, chatGroupId: chatGroupId });
                     }
+                }
+
+                function addUsersToChat(chatGroupId) {
+                    const usersToAdd = [];
+                    $("#selected-users-add-chat").children().each(function () {
+                        usersToAdd.push(this.value);
+                    });
+                    $.post('@requestAddUsersChat', { chatGroupId: chatGroupId, userIds: usersToAdd});
                 }
 
                 function searchUsers(e) {
@@ -251,7 +260,8 @@
             </script>
         </text>
     }
-}
 
-@await RenderSectionAsync("scripts", false)
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    await RenderSectionAsync("scripts", false);
+}
 </html>

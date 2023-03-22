@@ -1,6 +1,6 @@
 USE [master]
 GO
-/****** Object:  Database [MOODREBOOT]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  Database [MOODREBOOT]    Script Date: 22/03/2023 22:27:09 ******/
 CREATE DATABASE [MOODREBOOT]
  CONTAINMENT = NONE
  ON  PRIMARY 
@@ -84,17 +84,7 @@ ALTER DATABASE [MOODREBOOT] SET QUERY_STORE (OPERATION_MODE = READ_WRITE, CLEANU
 GO
 USE [MOODREBOOT]
 GO
-/****** Object:  Table [dbo].[ACTION]    Script Date: 22/03/2023 14:24:31 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[ACTION](
-	[USER_ID] [int] NOT NULL,
-	[TOKEN] [nvarchar](max) NOT NULL
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[CENTER]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  Table [dbo].[CENTER]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -114,7 +104,7 @@ CREATE TABLE [dbo].[CENTER](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[CONTENT]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  Table [dbo].[CONTENT]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -130,7 +120,7 @@ CREATE TABLE [dbo].[CONTENT](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[CONTENT_COURSE]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  Table [dbo].[CONTENT_COURSE]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -146,7 +136,7 @@ CREATE TABLE [dbo].[CONTENT_COURSE](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[COURSE]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  Table [dbo].[COURSE]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -168,7 +158,7 @@ CREATE TABLE [dbo].[COURSE](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[FILE]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  Table [dbo].[FILE]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -184,7 +174,7 @@ CREATE TABLE [dbo].[FILE](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[GROUP]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  Table [dbo].[GROUP]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -199,7 +189,7 @@ CREATE TABLE [dbo].[GROUP](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[MESSAGE]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  Table [dbo].[MESSAGE]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -218,7 +208,7 @@ CREATE TABLE [dbo].[MESSAGE](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[USER]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  Table [dbo].[USER]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -259,17 +249,23 @@ CREATE TABLE [dbo].[USER](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[USER_ACTION]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  Table [dbo].[USER_ACTION]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[USER_ACTION](
+	[ID] [int] NOT NULL,
 	[USER_ID] [int] NOT NULL,
-	[TOKEN] [nvarchar](max) NOT NULL
+	[TOKEN] [nvarchar](max) NOT NULL,
+	[REQUEST_DATE] [datetime] NOT NULL,
+ CONSTRAINT [PK_USER_ACTION] PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[USER_CENTER]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  Table [dbo].[USER_CENTER]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -280,7 +276,7 @@ CREATE TABLE [dbo].[USER_CENTER](
 	[IS_EDITOR] [bit] NOT NULL
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[USER_COURSE]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  Table [dbo].[USER_COURSE]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -292,7 +288,7 @@ CREATE TABLE [dbo].[USER_COURSE](
 	[IS_EDITOR] [bit] NOT NULL
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[USER_GROUP]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  Table [dbo].[USER_GROUP]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -305,12 +301,6 @@ CREATE TABLE [dbo].[USER_GROUP](
 	[LAST_SEEN] [datetime] NOT NULL,
 	[IS_ADMIN] [bit] NOT NULL
 ) ON [PRIMARY]
-GO
-ALTER TABLE [dbo].[ACTION]  WITH CHECK ADD  CONSTRAINT [FK_ACTION_USER] FOREIGN KEY([USER_ID])
-REFERENCES [dbo].[USER] ([USER_ID])
-ON DELETE CASCADE
-GO
-ALTER TABLE [dbo].[ACTION] CHECK CONSTRAINT [FK_ACTION_USER]
 GO
 ALTER TABLE [dbo].[CENTER]  WITH CHECK ADD  CONSTRAINT [FK_CENTER_USER] FOREIGN KEY([DIRECTOR])
 REFERENCES [dbo].[USER] ([USER_ID])
@@ -415,7 +405,7 @@ ALTER TABLE [dbo].[USER]  WITH CHECK ADD  CONSTRAINT [CK__USER__ROLE] CHECK  (([
 GO
 ALTER TABLE [dbo].[USER] CHECK CONSTRAINT [CK__USER__ROLE]
 GO
-/****** Object:  StoredProcedure [dbo].[SP_CENTER_COURSES]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  StoredProcedure [dbo].[SP_CENTER_COURSES]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -430,7 +420,7 @@ AS
 	ON UC.COURSE_ID = C.COURSE_ID
 	WHERE C.CENTER_ID = @CENTER_ID;
 GO
-/****** Object:  StoredProcedure [dbo].[SP_COURSE_CONTENT]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  StoredProcedure [dbo].[SP_COURSE_CONTENT]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -445,7 +435,7 @@ AS
 	ON CT.GROUP_CONTENT_ID = CC.GROUP_CONTENT_ID
 	WHERE CC.COURSE_ID = @COURSE_ID;
 GO
-/****** Object:  StoredProcedure [dbo].[SP_CREATE_CENTER]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  StoredProcedure [dbo].[SP_CREATE_CENTER]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -466,7 +456,7 @@ AS
 
 	SET @CENTERID = @NEWID;
 GO
-/****** Object:  StoredProcedure [dbo].[SP_CREATE_CONTENT]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  StoredProcedure [dbo].[SP_CREATE_CONTENT]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -484,13 +474,13 @@ AS
 
 	INSERT INTO CONTENT VALUES (@NEWID, @TEXT, @GROUPCONTENT, @FILEID);
 GO
-/****** Object:  StoredProcedure [dbo].[SP_CREATE_COURSE]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  StoredProcedure [dbo].[SP_CREATE_COURSE]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE   PROCEDURE [dbo].[SP_CREATE_COURSE]
-(@CENTER_ID INT, @NAME NVARCHAR(30), @DESCRIPTION NVARCHAR(350) = NULL, @IMAGE NVARCHAR(MAX) = NULL, @IS_VISIBLE BIT = 0, @COURSEID INT OUTPUT, @GROUPID INT OUTPUT, @PASSWORD NVARCHAR(12) = NULL)
+(@CENTER_ID INT, @NAME NVARCHAR(30), @DESCRIPTION NVARCHAR(350) = NULL, @IMAGE NVARCHAR(MAX) = NULL, @IS_VISIBLE BIT = 0, @PASSWORD NVARCHAR(12) = NULL, @COURSEID INT OUTPUT, @GROUPID INT OUTPUT)
 AS
 	-- Create a group for discussion
 	DECLARE @GROUP_ID INT;
@@ -515,7 +505,7 @@ AS
 	SET @COURSEID = @COURSE_ID;
 	SET @GROUPID = @GROUP_ID;
 GO
-/****** Object:  StoredProcedure [dbo].[SP_CREATE_FILE]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  StoredProcedure [dbo].[SP_CREATE_FILE]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -534,7 +524,7 @@ AS
 	
 	SET @FILE_ID = @FILEID;
 GO
-/****** Object:  StoredProcedure [dbo].[SP_CREATE_GROUP]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  StoredProcedure [dbo].[SP_CREATE_GROUP]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -553,7 +543,7 @@ AS
 
 	SET @GROUPID = @GROUP_ID;
 GO
-/****** Object:  StoredProcedure [dbo].[SP_CREATE_GROUP_CONTENT]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  StoredProcedure [dbo].[SP_CREATE_GROUP_CONTENT]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -572,7 +562,7 @@ AS
 
 	SET @GROUPCONTENTID = @NEW_ID;
 GO
-/****** Object:  StoredProcedure [dbo].[SP_CREATE_MESSAGE]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  StoredProcedure [dbo].[SP_CREATE_MESSAGE]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -601,7 +591,7 @@ AS
 	--Insert the message
 	INSERT INTO [MESSAGE] VALUES (@MESSAGE_ID, @GROUP_ID, @CONTENT, @USER_ID, GETDATE(), @FILE_ID, @USERNAME);
 GO
-/****** Object:  StoredProcedure [dbo].[SP_CREATE_USER]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  StoredProcedure [dbo].[SP_CREATE_USER]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -657,7 +647,7 @@ AS
 		SET @RESPONSE_MESSAGE=ERROR_MESSAGE() 
 	END CATCH
 GO
-/****** Object:  StoredProcedure [dbo].[SP_CREATE_USER_COURSE]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  StoredProcedure [dbo].[SP_CREATE_USER_COURSE]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -674,7 +664,7 @@ AS
 
 	INSERT INTO [USER_COURSE] VALUES (@NEWID, @USER_ID, @COURSE_ID, @IS_EDITOR);
 GO
-/****** Object:  StoredProcedure [dbo].[SP_DELETE_CENTER]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  StoredProcedure [dbo].[SP_DELETE_CENTER]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -685,7 +675,7 @@ CREATE   PROCEDURE [dbo].[SP_DELETE_CENTER]
 AS
 	DELETE FROM CENTER WHERE CENTER_ID = @CENTER_ID;
 GO
-/****** Object:  StoredProcedure [dbo].[SP_DELETE_CONTENT]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  StoredProcedure [dbo].[SP_DELETE_CONTENT]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -696,7 +686,7 @@ CREATE   PROCEDURE [dbo].[SP_DELETE_CONTENT]
 AS
 	DELETE FROM CONTENT WHERE CONTENT_ID = @CONTENTID;
 GO
-/****** Object:  StoredProcedure [dbo].[SP_DELETE_COURSE]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  StoredProcedure [dbo].[SP_DELETE_COURSE]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -709,7 +699,7 @@ AS
 	DELETE FROM [GROUP] WHERE GROUP_ID = @GROUP_ID;
 	DELETE FROM COURSE WHERE COURSE_ID = @COURSE_ID;
 GO
-/****** Object:  StoredProcedure [dbo].[SP_DELETE_FILE]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  StoredProcedure [dbo].[SP_DELETE_FILE]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -720,7 +710,7 @@ CREATE   PROCEDURE [dbo].[SP_DELETE_FILE]
 AS
 	DELETE FROM [FILE] WHERE [FILE_ID] = @FILEID;
 GO
-/****** Object:  StoredProcedure [dbo].[SP_DELETE_GROUP]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  StoredProcedure [dbo].[SP_DELETE_GROUP]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -731,7 +721,7 @@ CREATE   PROCEDURE [dbo].[SP_DELETE_GROUP]
 AS
 	DELETE FROM [GROUP] WHERE GROUP_ID = @GROUP_ID;
 GO
-/****** Object:  StoredProcedure [dbo].[SP_DELETE_GROUP_CONTENT]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  StoredProcedure [dbo].[SP_DELETE_GROUP_CONTENT]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -742,7 +732,7 @@ CREATE   PROCEDURE [dbo].[SP_DELETE_GROUP_CONTENT]
 AS
 	DELETE FROM CONTENT_COURSE WHERE GROUP_CONTENT_ID = @GROUP_CONTENT_ID;
 GO
-/****** Object:  StoredProcedure [dbo].[SP_DELETE_USER]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  StoredProcedure [dbo].[SP_DELETE_USER]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -753,7 +743,7 @@ CREATE   PROCEDURE [dbo].[SP_DELETE_USER]
 AS
 	DELETE FROM [USER] WHERE USER_ID = @USER_ID;
 GO
-/****** Object:  StoredProcedure [dbo].[SP_GROUP_CONTENT]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  StoredProcedure [dbo].[SP_GROUP_CONTENT]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -768,7 +758,7 @@ AS
 	ON C.GROUP_CONTENT_ID = GC.GROUP_CONTENT_ID
 	WHERE GC.GROUP_CONTENT_ID = @GROUP_CONTENT_ID;
 GO
-/****** Object:  StoredProcedure [dbo].[SP_UPDATE_CENTER]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  StoredProcedure [dbo].[SP_UPDATE_CENTER]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -780,7 +770,7 @@ AS
 	UPDATE CENTER SET EMAIL = @EMAIL, NAME = @NAME, ADDRESS = @ADDRESS, IMAGE = @IMAGE, TELEPHONE = @TELEPHONE
 	WHERE CENTER_ID = @CENTER_ID;
 GO
-/****** Object:  StoredProcedure [dbo].[SP_UPDATE_CONTENT]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  StoredProcedure [dbo].[SP_UPDATE_CONTENT]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -792,7 +782,7 @@ AS
 	UPDATE CONTENT SET [TEXT] = @CONTENT
 	WHERE CONTENT_ID = @CONTENTID;
 GO
-/****** Object:  StoredProcedure [dbo].[SP_UPDATE_COURSE]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  StoredProcedure [dbo].[SP_UPDATE_COURSE]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -804,7 +794,7 @@ AS
 	UPDATE [COURSE] SET [NAME] = @NAME, [IMAGE] = @IMAGE, [DESCRIPTION] = @DESCRIPTION
 	WHERE [COURSE].COURSE_ID = @COURSE_ID;
 GO
-/****** Object:  StoredProcedure [dbo].[SP_UPDATE_GROUP]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  StoredProcedure [dbo].[SP_UPDATE_GROUP]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -815,7 +805,7 @@ CREATE   PROCEDURE [dbo].[SP_UPDATE_GROUP]
 AS
 	UPDATE [GROUP] SET NAME = @NAME, IMAGE = @IMAGE;
 GO
-/****** Object:  StoredProcedure [dbo].[SP_UPDATE_GROUP_CONTENT]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  StoredProcedure [dbo].[SP_UPDATE_GROUP_CONTENT]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -826,7 +816,7 @@ CREATE   PROCEDURE [dbo].[SP_UPDATE_GROUP_CONTENT]
 AS
 	UPDATE CONTENT_COURSE SET [NAME] = @NAME, IS_VISIBLE = @IS_VISIBLE WHERE GROUP_CONTENT_ID = @GROUP_CONTENT_ID;
 GO
-/****** Object:  StoredProcedure [dbo].[SP_USER_CENTERS]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  StoredProcedure [dbo].[SP_USER_CENTERS]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -840,7 +830,7 @@ AS
 	ON C.CENTER_ID = UC.CENTER_ID
 	WHERE UC.USER_ID = @USER_ID;
 GO
-/****** Object:  StoredProcedure [dbo].[SP_USER_COURSES]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  StoredProcedure [dbo].[SP_USER_COURSES]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -857,7 +847,7 @@ AS
 	ON CT.CENTER_ID = C.CENTER_ID
 	WHERE UC.[USER_ID] = @USER_ID;
 GO
-/****** Object:  StoredProcedure [dbo].[SP_USER_GROUPS]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  StoredProcedure [dbo].[SP_USER_GROUPS]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -871,7 +861,7 @@ AS
 	ON G.GROUP_ID = UG.GROUP_ID
 	WHERE UG.[USER_ID] = @USER_ID;
 GO
-/****** Object:  StoredProcedure [dbo].[SP_USER_LOGIN]    Script Date: 22/03/2023 14:24:31 ******/
+/****** Object:  StoredProcedure [dbo].[SP_USER_LOGIN]    Script Date: 22/03/2023 22:27:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
