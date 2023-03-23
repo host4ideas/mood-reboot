@@ -1,30 +1,22 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MoodReboot.Models
 {
-    [Table("USER")]
-    public class User
+    [Table("APP_USER")]
+    public class AppUser
     {
         [Key]
         [Column("USER_ID")]
         public int Id { get; set; }
-        // Linq
         [Column("EMAIL")]
         public string Email { get; set; }
-        // Linq
         [Column("PASSWORD")]
         public byte[] Password { get; set; }
-        // Linq
         [Column("USERNAME")]
         public string UserName { get; set; }
-        // Linq
         [Column("FIRST_NAME")]
         public string FirstName { get; set; }
-        // Linq
         [Column("LAST_NAME")]
         public string LastName { get; set; }
         [Column("SIGN_DATE")]

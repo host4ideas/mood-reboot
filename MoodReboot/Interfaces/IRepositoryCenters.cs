@@ -8,7 +8,7 @@ namespace MoodReboot.Interfaces
         public Task<List<Center>> GetPendingCenters();
         public Task ApproveCenter(Center center);
         public Task<List<CenterListView>> GetUserCentersAsync(int userId);
-        public Task<List<User>> GetCenterEditorsAsync(int centerId);
+        public Task<List<AppUser>> GetCenterEditorsAsync(int centerId);
         public Task<Center?> FindCenter(int id);
         public Task CreateCenter(string email, string name, string address, string telephone, string image, int director, bool approved);
         public Task UpdateCenter(int centerId, string email, string name, string address, string telephone, string image);

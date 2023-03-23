@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MoodReboot.Models
 {
-    [Table("GROUP")]
+    [Table("CHAT_GROUP")]
     public class ChatGroup
     {
         [Key]

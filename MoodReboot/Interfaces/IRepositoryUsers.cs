@@ -5,16 +5,16 @@ namespace MoodReboot.Interfaces
     public interface IRepositoryUsers
     {
         // Users
-        Task<User?> FindUser(int userId);
-        public Task ApproveUser(User user);
+        Task<AppUser?> FindUser(int userId);
+        public Task ApproveUser(AppUser user);
         public Task ApproveUser(int userId);
-        public Task<List<User>> GetPendingUsers();
+        public Task<List<AppUser>> GetPendingUsers();
         public Task<bool> IsEmailAvailable(string email);
         public Task<bool> IsUsernameAvailable(string userName);
         Task<List<Tuple<string, int>>> SearchUsers(string pattern);
         Task<int> GetMaxUser();
-        List<User> GetAllUsers();
-        Task<User?> LoginUser(string email, string password);
+        List<AppUser> GetAllUsers();
+        Task<AppUser?> LoginUser(string email, string password);
         Task<int> RegisterUser(string nombre, string firstName, string lastName, string email, string password, string image);
         Task DeleteUser(int userId);
         public Task UpdateUserBasics(int userId, string userName, string firstName, string lastName, string? image = null);

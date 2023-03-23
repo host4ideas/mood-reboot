@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using MoodReboot.Helpers;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
-using Newtonsoft.Json.Linq;
-using NuGet.Common;
 using System.Security.Claims;
 
 namespace MoodReboot.Controllers
@@ -39,7 +37,7 @@ namespace MoodReboot.Controllers
         public async Task<IActionResult> Login(string usernameOrEmail, string password)
         {
             // Pass to findUser the userId
-            User? user = await this.repositoryUsers.LoginUser(usernameOrEmail, password);
+            AppUser? user = await this.repositoryUsers.LoginUser(usernameOrEmail, password);
 
             if (user == null)
             {
@@ -91,25 +89,26 @@ namespace MoodReboot.Controllers
 
         [HttpPost]
         public async Task<IActionResult> SignUp
-            (string nombre, string firstName, string lastName, string email, string password, IFormFile? imagen)
+            (string userName, string firstName, string lastName, string email, string password, IFormFile? image)
         {
             // BBDD
             string path = "default_user_logo.svg";
 
-            if (imagen != null)
+            if (image != null)
             {
                 int maximo = await this.repositoryUsers.GetMaxUser();
 
                 string fileName = "image_" + maximo;
 
-                path = await this.helperFile.UploadFileAsync(imagen, Folders.Images, fileName);
+                path = await this.helperFile.UploadFileAsync(image, Folders.Images, fileName);
             }
 
-            int userId = await this.repositoryUsers.RegisterUser(nombre, firstName, lastName, email, password, path);
+            int userId = await this.repositoryUsers.RegisterUser(userName, firstName, lastName, email, password, path);
             string token = await this.repositoryUsers.CreateUserAction(userId);
 
             // Confirmation mail
-            string url = Url.Action("ApproveUserEmail", "Users", new { userId, token })!;
+            string protocol = HttpContext.Request.IsHttps ? "https" : "http";
+            string url = Url.Action("ApproveUserEmail", "Users", new { userId, token }, protocol)!;
 
             List<MailLink> links = new()
             {

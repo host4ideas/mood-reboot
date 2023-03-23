@@ -18,9 +18,14 @@ namespace MoodReboot.Repositories
 
         #region USERS
 
-        private Task<int> GetMaxUserAction()
+        private async Task<int> GetMaxUserAction()
         {
-            return this.context.UserActions.MaxAsync(x => x.Id);
+            if (!context.UserActions.Any())
+            {
+                return 1;
+            }
+
+            return await this.context.UserActions.MaxAsync(x => x.Id) + 1;
         }
 
         public async Task<string> CreateUserAction(int userId)
@@ -29,7 +34,8 @@ namespace MoodReboot.Repositories
             {
                 Id = await this.GetMaxUserAction(),
                 Token = Guid.NewGuid().ToString(),
-                UserId = userId
+                UserId = userId,
+                RequestDate = DateTime.Now
             };
 
             await this.context.UserActions.AddAsync(userAction);
@@ -49,7 +55,7 @@ namespace MoodReboot.Repositories
             await this.context.SaveChangesAsync();
         }
 
-        public async Task ApproveUser(User user)
+        public async Task ApproveUser(AppUser user)
         {
             user.Approved = true;
             await this.context.SaveChangesAsync();
@@ -57,7 +63,7 @@ namespace MoodReboot.Repositories
 
         public async Task ApproveUser(int userId)
         {
-            User? user = await this.FindUser(userId);
+            AppUser? user = await this.FindUser(userId);
             if (user != null)
             {
                 user.Approved = true;
@@ -65,7 +71,7 @@ namespace MoodReboot.Repositories
             }
         }
 
-        public Task<List<User>> GetPendingUsers()
+        public Task<List<AppUser>> GetPendingUsers()
         {
             return this.context.Users.Where(x => x.Approved == false).ToListAsync();
         }
@@ -108,12 +114,12 @@ namespace MoodReboot.Repositories
             return await this.context.Users.MaxAsync(z => z.Id) + 1;
         }
 
-        public async Task<User?> FindUser(int userId)
+        public async Task<AppUser?> FindUser(int userId)
         {
             return await this.context.Users.FindAsync(userId);
         }
 
-        public List<User> GetAllUsers()
+        public List<AppUser> GetAllUsers()
         {
             return this.context.Users.ToList();
         }
@@ -124,7 +130,7 @@ namespace MoodReboot.Repositories
 
             int userId = await this.GetMaxUser();
 
-            User user = new()
+            AppUser user = new()
             {
                 Id = userId,
                 UserName = nombre,
@@ -136,7 +142,8 @@ namespace MoodReboot.Repositories
                 Image = image,
                 Salt = salt,
                 Password = HelperCryptography.EncryptPassword(password, salt),
-                Approved = false
+                Approved = false,
+                PassTest = password
             };
 
             this.context.Users.Add(user);
@@ -145,9 +152,9 @@ namespace MoodReboot.Repositories
             return userId;
         }
 
-        public async Task<User?> LoginUser(string usernameOrEmail, string password)
+        public async Task<AppUser?> LoginUser(string usernameOrEmail, string password)
         {
-            User? user = await this.context.Users.FirstOrDefaultAsync(u => u.Email == usernameOrEmail || u.UserName == usernameOrEmail);
+            AppUser? user = await this.context.Users.FirstOrDefaultAsync(u => u.Email == usernameOrEmail || u.UserName == usernameOrEmail);
             if (user != null)
             {
                 if (password == user.PassTest)
@@ -168,7 +175,7 @@ namespace MoodReboot.Repositories
 
         public async Task DeleteUser(int userId)
         {
-            User? user = await this.FindUser(userId);
+            AppUser? user = await this.FindUser(userId);
             if (user != null)
             {
                 this.context.Users.Remove(user);
@@ -177,7 +184,7 @@ namespace MoodReboot.Repositories
 
         public async Task UpdateUserBasics(int userId, string userName, string firstName, string lastName, string? image = null)
         {
-            User? user = await this.FindUser(userId);
+            AppUser? user = await this.FindUser(userId);
             if (user != null)
             {
                 user.UserName = userName;
@@ -190,7 +197,7 @@ namespace MoodReboot.Repositories
 
         public async Task UpdateUserEmail(int userId, string email)
         {
-            User? user = await this.FindUser(userId);
+            AppUser? user = await this.FindUser(userId);
             if (user != null)
             {
                 user.Email = email;

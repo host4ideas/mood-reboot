@@ -81,7 +81,7 @@ namespace MoodReboot.Repositories
             return result.ToListAsync();
         }
 
-        public Task<List<User>> GetCenterEditorsAsync(int centerId)
+        public Task<List<AppUser>> GetCenterEditorsAsync(int centerId)
         {
             var result = from uc in this.context.UserCenters
                          join u in this.context.Users on uc.UserId equals u.Id

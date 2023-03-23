@@ -7,7 +7,7 @@ namespace MoodReboot.Data
     {
         public MoodRebootContext(DbContextOptions<MoodRebootContext> options) : base(options) { }
         public DbSet<Message> Messages { get; set; }
-        public DbSet<User> Users { get; set; }
+        public DbSet<AppUser> Users { get; set; }
         public DbSet<Center> Centers { get; set; }
         public DbSet<Course> Courses { get; set; }
         public DbSet<ContentGroup> ContentGroups { get; set; }

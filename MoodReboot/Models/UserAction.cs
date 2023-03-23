@@ -11,7 +11,7 @@ namespace MoodReboot.Models
         public int Id { get; set; }
         [Column("USER_ID")]
         public int UserId { get; set; }
-        [Column("TOLEN")]
+        [Column("TOKEN")]
         public string Token { get; set; }
         [Column("REQUEST_DATE")]
         public DateTime RequestDate { get; set; }

@@ -6,7 +6,6 @@
 
 @{
     Center center = (Center)ViewData["CENTER"]!;
-    int userId = int.Parse(Context.User.FindFirstValue(ClaimTypes.NameIdentifier));
 }
 
 <section class="bg-white dark:bg-gray-900">
@@ -20,6 +19,7 @@
             @{
                 if (Context.User.Identity.IsAuthenticated == true)
                 {
+                    int userId = int.Parse(Context.User.FindFirstValue(ClaimTypes.NameIdentifier));
                     bool isEditor = (bool)ViewData["IS_EDITOR"];
 
                     if (userId == center.Director)

@@ -46,9 +46,9 @@ namespace MoodReboot.Controllers
             if (HttpContext.User.Identity.IsAuthenticated == true)
             {
                 int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-                List<User> users = await this.repositoryCenters.GetCenterEditorsAsync(id);
+                List<AppUser> users = await this.repositoryCenters.GetCenterEditorsAsync(id);
 
-                foreach (User user in users)
+                foreach (AppUser user in users)
                 {
                     if (user.Id == userId)
                     {

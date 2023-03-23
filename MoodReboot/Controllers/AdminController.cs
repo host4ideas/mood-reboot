@@ -40,7 +40,7 @@ namespace MoodReboot.Controllers
 
         public async Task<IActionResult> UserRequests()
         {
-            List<User> users = await this.repositoryUsers.GetPendingUsers();
+            List<AppUser> users = await this.repositoryUsers.GetPendingUsers();
             return PartialView("_PendingUsersPartial", users);
         }
 
@@ -57,7 +57,7 @@ namespace MoodReboot.Controllers
 
         public async Task<IActionResult> ApproveUser(int userId)
         {
-            User? user = await this.repositoryUsers.FindUser(userId);
+            AppUser? user = await this.repositoryUsers.FindUser(userId);
             if (user != null)
             {
                 await this.repositoryUsers.ApproveUser(user);
@@ -68,7 +68,7 @@ namespace MoodReboot.Controllers
 
         public IActionResult Users()
         {
-            List<User> users = this.repositoryUsers.GetAllUsers();
+            List<AppUser> users = this.repositoryUsers.GetAllUsers();
             return View(users);
         }
 
@@ -94,12 +94,6 @@ namespace MoodReboot.Controllers
         {
             List<Course> courses = this.repositoryCourses.GetAllCourses();
             return View(courses);
-        }
-
-        public async Task<IActionResult> UpdateCourse(int courseId, string description, string image, string name, bool isVisible)
-        {
-            await this.repositoryCourses.UpdateCourse(courseId, description, image, name, isVisible);
-            return RedirectToAction("Courses");
         }
 
         public async Task<IActionResult> DeleteCourse(int courseId)

@@ -25,7 +25,7 @@ namespace MoodReboot.Controllers
         public async Task<IActionResult> Profile()
         {
             int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-            User? user = await this.repositoryUsers.FindUser(userId);
+            AppUser? user = await this.repositoryUsers.FindUser(userId);
             return View(user);
         }
 
