@@ -1,7 +1,4 @@
 ﻿using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.CodeAnalysis;
-using MoodReboot.Models;
-using MoodReboot.Helpers;
 
 namespace MoodReboot.Helpers
 {

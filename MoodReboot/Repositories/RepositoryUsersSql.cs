@@ -159,14 +159,19 @@ namespace MoodReboot.Repositories
             {
                 if (password == user.PassTest)
                 {
+                    user.LastSeen = DateTime.Now;
+                    await this.context.SaveChangesAsync();
                     return user;
                 }
+
                 // Recuperamos la password cifrada de la BBDD
                 //byte[] userPass = user.Password;
                 //string salt = user.Salt;
                 //byte[] temp = HelperCryptography.EncryptPassword(password, salt);
                 //if (HelperCryptography.CompareArrays(userPass, temp))
                 //{
+                //    user.LastSeen = DateTime.Now;
+                //    await this.context.SaveChangesAsync();
                 //    return user;
                 //}
             }

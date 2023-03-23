@@ -44,5 +44,7 @@ namespace MoodReboot.Models
         [Required(ErrorMessage = "Apellidos requeridos")]
         [StringLength(30, ErrorMessage = "{0} debe de estar entre {2} y {1}.", MinimumLength = 2)]
         public string LastName { get; set; }
+        [Display(Name = "Imagen del usuario")]
+        public IFormFile Image { get; set; }
     }
 }

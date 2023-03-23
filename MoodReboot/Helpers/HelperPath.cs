@@ -1,6 +1,6 @@
 ﻿namespace MoodReboot.Helpers
 {
-    public enum Folders { Images = 0, CenterImages = 1, CourseImages = 2, ProfileImages = 3, Files = 4, Temp = 5, Icons = 6, Logos = 7 }
+    public enum Folders { Assets, Images, CenterImages, CourseImages, ProfileImages, Files, Temp, Icons, Logos }
 
     public class HelperPath
     {
@@ -11,7 +11,7 @@
             this.hostEnvironment = hostEnvironment;
         }
 
-        public string MapPath(string fileName, Folders folder)
+        public string MapFolderPath(Folders folder)
         {
             string carpeta = "";
 
@@ -19,15 +19,19 @@
             {
                 carpeta = Path.Combine("uploads", "images");
             }
-            if (folder == Folders.CourseImages)
+            else if (folder == Folders.CourseImages)
             {
                 carpeta = Path.Combine("uploads", "course_images");
             }
-            if (folder == Folders.CenterImages)
+            else if (folder == Folders.Assets)
+            {
+                carpeta = Path.Combine("assets");
+            }
+            else if (folder == Folders.CenterImages)
             {
                 carpeta = Path.Combine("uploads", "center_images");
             }
-            if (folder == Folders.ProfileImages)
+            else if (folder == Folders.ProfileImages)
             {
                 carpeta = Path.Combine("uploads", "profile_images");
             }
@@ -47,9 +51,22 @@
             {
                 carpeta = Path.Combine("assets", "logos");
             }
+            return carpeta;
+        }
+
+        public string MapPath(string fileName, Folders folder)
+        {
+            string carpeta = MapFolderPath(folder);
 
             string rootPath = this.hostEnvironment.WebRootPath;
             string path = Path.Combine(rootPath, carpeta, fileName);
+            return path;
+        }
+
+        public string MapPublicPath(string fileName, Folders folder, string baseUrl)
+        {
+            string carpeta = MapFolderPath(folder);
+            string path = Path.Combine(baseUrl, carpeta, fileName);
             return path;
         }
     }

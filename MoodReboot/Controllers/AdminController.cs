@@ -3,6 +3,7 @@ using MoodReboot.Helpers;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
 using MvcCoreSeguridadEmpleados.Filters;
+using NuGet.Common;
 
 namespace MoodReboot.Controllers
 {
@@ -50,7 +51,11 @@ namespace MoodReboot.Controllers
             if (center != null)
             {
                 await this.repositoryCenters.ApproveCenter(center);
-                await this.helperMail.SendMailAsync(center.Email, "Centro aprobado", "Tu centro ha sido aprobado en la plataforma MoodReboot, puedes iniciar sesión en tu perfil y empezar a administrarlo");
+
+                string protocol = HttpContext.Request.IsHttps ? "https" : "http";
+                string domainName = HttpContext.Request.Host.Value.ToString();
+                string baseUrl = protocol + domainName;
+                await this.helperMail.SendMailAsync(center.Email, "Centro aprobado", "Tu centro ha sido aprobado en la plataforma MoodReboot, puedes iniciar sesión en tu perfil y empezar a administrarlo", baseUrl);
             }
             return RedirectToAction("Requests");
         }
@@ -61,7 +66,10 @@ namespace MoodReboot.Controllers
             if (user != null)
             {
                 await this.repositoryUsers.ApproveUser(user);
-                await this.helperMail.SendMailAsync(user.Email, "Usuario aprobado", "Tu cuenta en MoodReboot ha sido activada, por favor, inicia sesión con tu cuenta para empezar a utilizar nuestra plataforma.");
+                string protocol = HttpContext.Request.IsHttps ? "https" : "http";
+                string domainName = HttpContext.Request.Host.Value.ToString();
+                string baseUrl = protocol + domainName;
+                await this.helperMail.SendMailAsync(user.Email, "Usuario aprobado", "Tu cuenta en MoodReboot ha sido activada, por favor, inicia sesión con tu cuenta para empezar a utilizar nuestra plataforma.", baseUrl);
             }
             return RedirectToAction("Requests");
         }

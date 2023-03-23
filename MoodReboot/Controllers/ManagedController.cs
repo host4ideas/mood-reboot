@@ -11,16 +11,19 @@ namespace MoodReboot.Controllers
     public class ManagedController : Controller
     {
         private readonly HelperFile helperFile;
-        private readonly HelperPath helperPath;
         private readonly HelperMail helperMail;
         private readonly IRepositoryUsers repositoryUsers;
 
-        public ManagedController(HelperFile helperFile, HelperPath helperPath, HelperMail helperMail, IRepositoryUsers repositoryUsers)
+        public ManagedController(HelperFile helperFile, HelperMail helperMail, IRepositoryUsers repositoryUsers)
         {
             this.helperFile = helperFile;
             this.repositoryUsers = repositoryUsers;
-            this.helperPath = helperPath;
             this.helperMail = helperMail;
+        }
+
+        public IActionResult AccessError()
+        {
+            return View();
         }
 
         public IActionResult Login()
@@ -28,9 +31,33 @@ namespace MoodReboot.Controllers
             return View();
         }
 
-        public IActionResult AccessError()
+        public async Task<IActionResult> ResendConfirmationEmail(int userId, string token)
         {
-            return View();
+            AppUser? user = await this.repositoryUsers.FindUser(userId);
+
+            if (user != null)
+            {
+                // Confirmation mail
+                string protocol = HttpContext.Request.IsHttps ? "https" : "http";
+                string domainName = HttpContext.Request.Host.Value.ToString();
+                string baseUrl = protocol + domainName;
+                string url = Url.Action("ApproveUserEmail", "Users", new { userId, token }, protocol)!;
+
+                List<MailLink> links = new()
+            {
+                new MailLink()
+                {
+                    LinkText = "Confirmar cuenta",
+                    Link = url
+                }
+            };
+                await this.helperMail.SendMailAsync(user.Email, "Confirmación de cuenta", "Se ha solicitado una petición para crear una cuenta en MoodReboot con este correo electrónico. Pulsa el siguiente enlace para confirmarla. Si no has sido tu el solicitante no te procupes, la petición será cancelada en un período de 24hrs.", links, baseUrl);
+
+                ViewData["SUCCESS"] = "Correo de confirmación enviado";
+                return View("Login");
+            }
+            ViewData["MESSAGE"] = "Datos inválidos";
+            return View("Login");
         }
 
         [HttpPost]
@@ -42,6 +69,13 @@ namespace MoodReboot.Controllers
             if (user == null)
             {
                 ViewData["MESSAGE"] = "Usuario/password incorrectos";
+                return View();
+            }
+            else if (user.Approved == false)
+            {
+                string token = await this.repositoryUsers.CreateUserAction(user.Id);
+                string resendUrl = Url.Action("ResendConfirmationEmail", "Managed", new { userId = user.Id, token });
+                ViewData["MESSAGE"] = $"Este usuario no ha sido validado, <a class='text-blue-700 hover:underline dark:text-blue-500' href='{resendUrl}'>Quiero recibir de nuevo la confirmación por correo</a>";
                 return View();
             }
 
@@ -82,14 +116,15 @@ namespace MoodReboot.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        public IActionResult SignUp()
+        public IActionResult SignUp(bool noUserImage)
         {
+            ViewData["NO_IMAGE"] = noUserImage;
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> SignUp
-            (string userName, string firstName, string lastName, string email, string password, IFormFile? image)
+            (string userName, string firstName, string lastName, string email, string password, IFormFile image)
         {
             // BBDD
             string path = "default_user_logo.svg";
@@ -100,7 +135,7 @@ namespace MoodReboot.Controllers
 
                 string fileName = "image_" + maximo;
 
-                path = await this.helperFile.UploadFileAsync(image, Folders.Images, fileName);
+                path = await this.helperFile.UploadFileAsync(image, Folders.ProfileImages, fileName);
             }
 
             int userId = await this.repositoryUsers.RegisterUser(userName, firstName, lastName, email, password, path);
@@ -108,6 +143,8 @@ namespace MoodReboot.Controllers
 
             // Confirmation mail
             string protocol = HttpContext.Request.IsHttps ? "https" : "http";
+            string domainName = HttpContext.Request.Host.Value.ToString();
+            string baseUrl = protocol + domainName;
             string url = Url.Action("ApproveUserEmail", "Users", new { userId, token }, protocol)!;
 
             List<MailLink> links = new()
@@ -118,9 +155,9 @@ namespace MoodReboot.Controllers
                     Link = url
                 }
             };
-            await this.helperMail.SendMailAsync(email, "Confirmación de cuenta", "Se ha solicitado una petición para crear una cuenta en MoodReboot con este correo electrónico. Pulsa el siguiente enlace para confirmarla. Si no has sido tu el solicitante no te procupes, la petición será cancelada en un período de 24hrs.", links);
+            await this.helperMail.SendMailAsync(email, "Confirmación de cuenta", "Se ha solicitado una petición para crear una cuenta en MoodReboot con este correo electrónico. Pulsa el siguiente enlace para confirmarla. Si no has sido tu el solicitante no te procupes, la petición será cancelada en un período de 24hrs.", links, baseUrl);
 
-            ViewData["MENSAJE"] = "Revisa tu correo electrónico";
+            ViewData["SUCCESS"] = "Revisa tu correo electrónico";
             return View();
         }
 

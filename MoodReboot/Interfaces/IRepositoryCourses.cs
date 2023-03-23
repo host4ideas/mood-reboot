@@ -14,7 +14,8 @@ namespace MoodReboot.Interfaces
         public Task RemoveCourseUserAsync(int courseId, int userId);
         public Task RemoveCourseEditorAsync(int courseId, int userId);
         public Task AddCourseEditorAsync(int courseId, int userId);
-        public Task<bool> AddCourseUserAsync(int courseId, int userId, bool isEditor, string? password);
+        public Task<bool> AddCourseUserAsync(int courseId, int userId, bool isEditor);
+        public Task<bool> AddCourseUserAsync(int courseId, int userId, bool isEditor, string password);
         public Task CreateCourse(int centerId, string name, bool isVisible, string? description = null, string? image = null, string? password = null);
         public Task DeleteCourse(int id);
         public Task UpdateCourse(int id, string description, string image, string name, Boolean isVisible);

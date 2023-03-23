@@ -80,85 +80,67 @@ namespace MoodReboot.Repositories
             }
         }
 
-        public async Task<bool> AddCourseUserAsync(int courseId, int userId, bool isEditor, string? password)
+        public async Task<bool> AddUserToCourseLogicAsync(Course course, int userId, bool isEditor)
+        {
+            // Add user to the course
+            UserCourse userCourse = new()
+            {
+                Id = await this.GetMaxUserCourse(),
+                CourseId = course.Id,
+                IsEditor = isEditor,
+                UserId = userId,
+            };
+            await this.context.UserCourses.AddAsync(userCourse);
+
+            // Add user to the course's discussion chat group if the group exist
+            if (course.GroupId.HasValue)
+            {
+                // In case is the first group to be created
+                int newId = 1;
+                if (this.context.ChatGroups.Any())
+                {
+                    newId = await this.context.UserChatGroups.MaxAsync(x => x.Id) + 1;
+                }
+
+                this.context.UserChatGroups.Add(new UserChatGroup()
+                {
+                    Id = newId,
+                    GroupId = course.GroupId.Value,
+                    JoinDate = DateTime.Now,
+                    LastSeen = DateTime.Now,
+                    UserID = userId
+                });
+
+                await this.context.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<bool> AddCourseUserAsync(int courseId, int userId, bool isEditor)
         {
             Course? course = await this.FindCourse(courseId);
 
             if (course != null)
             {
-                if (course.Password != null)
+                return await this.AddUserToCourseLogicAsync(course, userId, isEditor);
+            }
+
+            return false;
+        }
+
+        public async Task<bool> AddCourseUserAsync(int courseId, int userId, bool isEditor, string password)
+        {
+            Course? course = await this.FindCourse(courseId);
+
+            if (course != null)
+            {
+                if (course.Password == password)
                 {
-                    if (course.Password == password)
-                    {
-                        UserCourse userCourse = new()
-                        {
-                            Id = await this.GetMaxUserCourse(),
-                            CourseId = courseId,
-                            IsEditor = isEditor,
-                            UserId = userId,
-                        };
-
-                        this.context.UserCourses.Add(userCourse);
-
-                        // Add user to the course's discussion chat group if the group exist
-                        if (course.GroupId.HasValue)
-                        {
-                            // In case is the first group to be created
-                            int newId = 1;
-                            if (this.context.ChatGroups.Any())
-                            {
-                                newId = await this.context.UserChatGroups.MaxAsync(x => x.Id);
-                            }
-
-                            this.context.UserChatGroups.Add(new UserChatGroup()
-                            {
-                                Id = newId,
-                                GroupId = course.GroupId.Value,
-                                JoinDate = DateTime.Now,
-                                LastSeen = DateTime.Now,
-                                UserID = userId
-                            });
-                        }
-
-                        await this.context.SaveChangesAsync();
-                        return true;
-                    }
-                }
-                else
-                {
-                    UserCourse userCourse = new()
-                    {
-                        Id = await this.GetMaxUserCourse(),
-                        CourseId = courseId,
-                        IsEditor = isEditor,
-                        UserId = userId,
-                    };
-
-                    // Add user to the course's discussion chat group if the group exist
-                    if (course.GroupId.HasValue)
-                    {
-                        // In case is the first group to be created
-                        int newId = 1;
-                        if (this.context.ChatGroups.Any())
-                        {
-                            newId = await this.context.UserChatGroups.MaxAsync(x => x.Id);
-                        }
-
-                        this.context.UserChatGroups.Add(new UserChatGroup()
-                        {
-                            Id = newId,
-                            GroupId = course.GroupId.Value,
-                            JoinDate = DateTime.Now,
-                            LastSeen = DateTime.Now,
-                            UserID = userId
-                        });
-                    }
-
-                    this.context.UserCourses.Add(userCourse);
-                    await this.context.SaveChangesAsync();
-                    return true;
+                    return await this.AddUserToCourseLogicAsync(course, userId, isEditor);
                 }
             }
+
             return false;
         }
 
@@ -323,6 +305,7 @@ namespace MoodReboot.Repositories
                 course.IsVisible = isVisible;
                 course.Image = image;
                 course.Name = name;
+                course.DateModified = DateTime.Now;
                 await this.context.SaveChangesAsync();
             }
         }

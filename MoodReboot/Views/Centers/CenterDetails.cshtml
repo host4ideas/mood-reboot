@@ -24,18 +24,18 @@
 
                     if (userId == center.Director)
                     {
-                        <a asp-controller="Centers" asp-action="EditorView" class="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">Editar contenidos</a>
-                        <a asp-controller="Centers" asp-action="DirectorView" class="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">Administrar centro</a>
+                        <a asp-controller="Centers" asp-action="EditorView" class="block text-blue-700 hover:underline dark:text-blue-500">Editar contenidos</a>
+                        <a asp-controller="Centers" asp-action="DirectorView" class="block text-blue-700 hover:underline dark:text-blue-500">Administrar centro</a>
                     }
                     else if (isEditor == true)
                     {
-                        <a asp-controller="Centers" asp-action="EditorView" class="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">Editar contenidos</a>
+                        <a asp-controller="Centers" asp-action="EditorView" class="text-blue-700 hover:underline dark:text-blue-500">Editar contenidos</a>
                     }
                 }
             }
         </div>
         <div class="flex justify-center md:w-full lg:col-span-5 m-5">
-            <img class="max-w-sm" src="@center.Image" alt="@center.Name Image">
+            <img class="max-w-sm" src="~/uploads/center_images/@center.Image" alt="@center.Name Image">
         </div>
     </div>
 </section>

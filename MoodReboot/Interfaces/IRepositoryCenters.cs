@@ -4,6 +4,7 @@ namespace MoodReboot.Interfaces
 {
     public interface IRepositoryCenters
     {
+        public Task<int> GetMaxCenter();
         public Task<List<CenterListView>> GetAllCenters();
         public Task<List<Center>> GetPendingCenters();
         public Task ApproveCenter(Center center);

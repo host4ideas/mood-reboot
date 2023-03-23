@@ -76,8 +76,7 @@ namespace MoodReboot.Controllers
             // The course doesn't exist
             if (course == null)
             {
-                SessionUser user = HttpContext.Session.GetObject<SessionUser>("USER")!;
-                return RedirectToAction("Courses", new { userId = user.Id });
+                return RedirectToAction("CourseDetails", new { courseId });
             }
 
             return View(course);
@@ -94,7 +93,7 @@ namespace MoodReboot.Controllers
                 // If the course doesn't have password, enroll the user in the course
                 if (course.Password == null)
                 {
-                    await this.repositoryCourses.AddCourseUserAsync(courseId, userId, isEditor, null);
+                    await this.repositoryCourses.AddCourseUserAsync(courseId, userId, isEditor);
                     return RedirectToAction("CourseDetails", new { courseId });
                 }
                 // If the course has password
@@ -129,8 +128,7 @@ namespace MoodReboot.Controllers
 
                 if (course == null || contentGroups == null)
                 {
-                    SessionUser currentLoggedUser = HttpContext.Session.GetObject<SessionUser>("user")!;
-                    return RedirectToAction("UserCourses", new { userId = currentLoggedUser.Id });
+                    return RedirectToAction("UserCourses", new { userId });
                 }
 
                 List<CourseUsersModel> courseUsers = this.repositoryCourses.GetCourseUsers(course.Id);

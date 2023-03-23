@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MoodReboot.Extensions;
 using MoodReboot.Helpers;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
@@ -33,15 +32,15 @@ namespace MoodReboot.Controllers
         [HttpPost]
         public async Task<IActionResult> Profile(int userId, string userName, string firstName, string lastName, IFormFile image)
         {
-            //if (image != null)
-            //{
-            //    string fileName = "image_" + userId;
-            //    await this.helperFile.UploadFileAsync(image, Folders.Images, fileName);
-            //    await this.repositoryUsers.UpdateUserBasics(userId, userName, firstName, lastName, fileName);
-            //    return RedirectToAction("Profile", new { userId });
-            //}
+            if (image != null)
+            {
+                string fileName = "image_" + userId;
+                await this.helperFile.UploadFileAsync(image, Folders.Images, fileName);
+                await this.repositoryUsers.UpdateUserBasics(userId, userName, firstName, lastName, fileName);
+                return RedirectToAction("Profile", new { userId });
+            }
 
-            //await this.repositoryUsers.UpdateUserBasics(userId, userName, firstName, lastName);
+            await this.repositoryUsers.UpdateUserBasics(userId, userName, firstName, lastName);
             return RedirectToAction("Profile", new { userId });
         }
 
@@ -50,7 +49,7 @@ namespace MoodReboot.Controllers
             return await this.repositoryUsers.SearchUsers(pattern);
         }
 
-        public async Task ApproveUserEmail(int userId, string token)
+        public async Task<IActionResult> ApproveUserEmail(int userId, string token)
         {
             UserAction? userAction = await this.repositoryUsers.FindUserAction(userId, token);
 
@@ -68,9 +67,10 @@ namespace MoodReboot.Controllers
                     await this.repositoryUsers.ApproveUser(userId);
                 }
             }
+            return RedirectToAction("Profile", "Users");
         }
 
-        public async Task ApproveUserEmail(int userId, string token, string newEmail)
+        public async Task ApproveUserNewEmail(int userId, string token, string newEmail)
         {
             UserAction? userAction = await this.repositoryUsers.FindUserAction(userId, token);
 
@@ -104,7 +104,10 @@ namespace MoodReboot.Controllers
                 }
             };
             await this.repositoryUsers.CreateUserAction(userId);
-            await this.helperMail.SendMailAsync(email, "Cambio de datos", "Se ha solicitado una petición para cambiar el correo electrónico de la cuenta asociada. Pulsa el siguiente enlace para confirmarla. Una vez cambiada deberás de iniciar sesión con el nuevo correo electónico, si surge cualquier problema o tienes alguna duda, contáctanos a: moodreboot@gmail.com. <br/><br/> Si no eres solicitante no te procupes, la petición será cancelada en un período de 24hrs.", links);
+            string protocol = HttpContext.Request.IsHttps ? "https" : "http";
+            string domainName = HttpContext.Request.Host.Value.ToString();
+            string baseUrl = protocol + domainName;
+            await this.helperMail.SendMailAsync(email, "Cambio de datos", "Se ha solicitado una petición para cambiar el correo electrónico de la cuenta asociada. Pulsa el siguiente enlace para confirmarla. Una vez cambiada deberás de iniciar sesión con el nuevo correo electónico, si surge cualquier problema o tienes alguna duda, contáctanos a: moodreboot@gmail.com. <br/><br/> Si no eres solicitante no te procupes, la petición será cancelada en un período de 24hrs.", links, baseUrl);
         }
     }
 }

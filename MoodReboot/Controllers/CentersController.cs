@@ -85,12 +85,23 @@ namespace MoodReboot.Controllers
 
         [AuthorizeUsers]
         [HttpPost]
-        public async Task<IActionResult> CenterRequest(string contactMail, string centerEmail, string centerName, string centerAddress, string centerTelephone, int director, IFormFile centerImage)
+        public async Task<IActionResult> CenterRequest(string email, string centerEmail, string centerName, string centerAddress, string centerTelephone, IFormFile centerImage)
         {
-            string fileName = await this.helperFile.UploadFileAsync(centerImage, Folders.CenterImages);
-            await this.repositoryCenters.CreateCenter(centerEmail, centerName, centerAddress, centerTelephone, fileName, director, false);
-            await this.helperMail.SendMailAsync(contactMail, "Aprobación de centro en curso", "Estamos en proceso de aprobar su solicitud de creación de centro. Por favor, si ha cometido algún error en los datos o quisiera cancelar la operación. Mande un correo a: moodreboot@gmail.com");
+            int director = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            int maximo = await this.repositoryCenters.GetMaxCenter();
+
+            string fileName = "center_image_" + maximo;
+
+            string path = await this.helperFile.UploadFileAsync(centerImage, Folders.CenterImages, fileName);
+
+            await this.repositoryCenters.CreateCenter(centerEmail, centerName, centerAddress, centerTelephone, path, director, false);
+            string protocol = HttpContext.Request.IsHttps ? "https" : "http";
+            string domainName = HttpContext.Request.Host.Value.ToString();
+            string baseUrl = protocol + domainName;
+            await this.helperMail.SendMailAsync(email, "Aprobación de centro en curso", "Estamos en proceso de aprobar su solicitud de creación de centro. Por favor, si ha cometido algún error en los datos o quisiera cancelar la operación. Mande un correo a: moodreboot@gmail.com", baseUrl);
             ViewData["MESSAGE"] = "Solicitud enviada";
+            ViewData["ERROR"] = "Solicitud enviada";
             return View();
         }
     }

@@ -26,14 +26,26 @@ namespace MoodReboot.Repositories
             await this.context.SaveChangesAsync();
         }
 
-        private async Task<int> GetMaxCenter()
+        public async Task<int> GetMaxCenter()
         {
             return await this.context.Centers.MaxAsync(x => x.Id) + 1;
         }
 
+        private Task<int> GetMaxUserCenter()
+        {
+            return this.context.UserCenters.MaxAsync(x => x.Id);
+        }
+
+        public async Task AddUserCenter(int userId, int centerId, bool isEditor)
+        {
+            UserCenter userCenter = new() { Id = await this.GetMaxUserCenter(), UserId = userId, CenterId = centerId, IsEditor = isEditor };
+            await this.context.UserCenters.AddAsync(userCenter);
+            await this.context.SaveChangesAsync();
+        }
+
         public async Task CreateCenter(string email, string name, string address, string telephone, string image, int director, bool approved)
         {
-            this.context.Centers.Add(new()
+            await this.context.Centers.AddAsync(new()
             {
                 Id = await this.GetMaxCenter(),
                 Name = name,
@@ -61,12 +73,13 @@ namespace MoodReboot.Repositories
             return await this.context.Centers.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public Task<List<CenterListView>> GetAllCenters()
+        public async Task<List<CenterListView>> GetAllCenters()
         {
-            List<Center> centers = this.context.Centers.ToList();
+            List<Center> centers = await this.context.Centers.ToListAsync();
 
             var result = from c in context.Centers
                          join u in context.Users on c.Director equals u.Id
+                         where c.Approved == true
                          select new CenterListView
                          {
                              CenterName = c.Name,
@@ -78,7 +91,7 @@ namespace MoodReboot.Repositories
                              Telephone = c.Telephone
                          };
 
-            return result.ToListAsync();
+            return await result.ToListAsync();
         }
 
         public Task<List<AppUser>> GetCenterEditorsAsync(int centerId)
@@ -97,7 +110,7 @@ namespace MoodReboot.Repositories
             var result = from uc in this.context.UserCenters
                          join c in this.context.Centers on uc.CenterId equals c.Id
                          join u in this.context.Users on uc.UserId equals u.Id
-                         where uc.UserId == userId
+                         where uc.UserId == userId && c.Approved == true
                          select new CenterListView
                          {
                              CenterName = c.Name,
