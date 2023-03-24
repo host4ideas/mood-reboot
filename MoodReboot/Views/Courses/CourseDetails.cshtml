@@ -316,8 +316,7 @@
                 <div class="w-1/2 m-5 mb-5 px-4 py-2 bg-white rounded-b-lg dark:bg-gray-800">
                     <label for="editor" class="sr-only">Publish post</label>
                     <!-- Text Area -->
-                    <textarea id="editor" name="unsafeHtml" oninput="resizeTextArea(event)" cols="100" class="block w-full px-0 text-sm text-gray-800 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400 scrollbar-styled" placeholder="Acepta Markdown y HTML..." required>
-                                                                            </textarea>
+                    <textarea id="editor" name="unsafeHtml" oninput="resizeTextArea(event)" cols="100" class="block w-full px-0 text-sm text-gray-800 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400 scrollbar-styled" placeholder="Acepta Markdown y HTML..." required></textarea>
 
                     <!-- Excel preview -->
                     <div id="tableDataPreview" class="hidden relative overflow-x-auto max-w-36 max-h-72"></div>
@@ -402,11 +401,11 @@
                     // Get the content's Markdown (article tag)
                     const id = "#" + contentId;
                     let contentHtml = $(id).html().trim();
-                    
+
                     // Parse the HTML to Markdown
                     let contentMd = converter.makeMarkdown(contentHtml);
                     $("#editor").html(contentMd);
-                    
+
                     // Show the editor
                     $("#editorWindow").toggleClass("hidden");
                     $("#btnEditorSubmit").text("Actualizar")
@@ -533,6 +532,7 @@
 </aside>
 
 @{
+    // Course users
     if (Model.IsEditor == true && Model.CourseUsers != null)
     {
         int userId = int.Parse(Context.User.FindFirstValue(ClaimTypes.NameIdentifier));

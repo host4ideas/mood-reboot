@@ -20,6 +20,7 @@ namespace MoodReboot.Interfaces
         public Task UpdateUserBasics(int userId, string userName, string firstName, string lastName, string? image = null);
         public Task UpdateUserEmail(int userId, string email);
         public Task UpdateUserPassword(int userId, string password);
+        public Task DeactivateUser(int userId);
         // User Action
         public Task<UserAction?> FindUserAction(int userId, string token);
         public Task RemoveUserAction(UserAction userAction);

@@ -98,9 +98,9 @@ namespace MoodReboot.Controllers
             return RedirectToAction("Centers");
         }
 
-        public IActionResult Courses()
+        public async Task<IActionResult> Courses()
         {
-            List<Course> courses = this.repositoryCourses.GetAllCourses();
+            List<Course> courses = await this.repositoryCourses.GetAllCourses();
             return View(courses);
         }
 

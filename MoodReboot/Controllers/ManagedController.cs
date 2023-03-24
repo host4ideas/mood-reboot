@@ -105,11 +105,6 @@ namespace MoodReboot.Controllers
             return RedirectToAction(action, controller);
         }
 
-        public IActionResult ErrorAcceso()
-        {
-            return View();
-        }
-
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -161,6 +156,7 @@ namespace MoodReboot.Controllers
             return View();
         }
 
+        // Forms validations
         [AcceptVerbs("GET", "POST")]
         public async Task<IActionResult> EmailExists(string email)
         {

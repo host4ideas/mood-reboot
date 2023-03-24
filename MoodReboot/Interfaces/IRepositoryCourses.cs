@@ -4,13 +4,13 @@ namespace MoodReboot.Interfaces
 {
     public interface IRepositoryCourses
     {
-        public List<Course> GetAllCourses();
+        public Task<List<Course>> GetAllCourses();
         public Task<Course?> FindCourse(int id);
         public Task<UserCourse?> FindUserCourse(int userId, int courseId);
-        public List<CourseListView> GetUserCourses(int id);
-        public List<CourseListView> GetCenterCourses(int id);
-        public List<CourseUsersModel> GetCourseUsers(int courseId);
-        public List<CourseListView> CenterCoursesListView(int centerId);
+        public Task<List<CourseListView>> GetUserCourses(int id);
+        public Task<List<CourseListView>> GetCenterCourses(int id);
+        public Task<List<CourseUsersModel>> GetCourseUsers(int courseId);
+        public Task<List<CourseListView>> CenterCoursesListView(int centerId);
         public Task RemoveCourseUserAsync(int courseId, int userId);
         public Task RemoveCourseEditorAsync(int courseId, int userId);
         public Task AddCourseEditorAsync(int courseId, int userId);

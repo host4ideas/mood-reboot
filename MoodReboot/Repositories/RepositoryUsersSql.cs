@@ -146,7 +146,7 @@ namespace MoodReboot.Repositories
                 PassTest = password
             };
 
-            this.context.Users.Add(user);
+            await this.context.Users.AddAsync(user);
             await this.context.SaveChangesAsync();
 
             return userId;
@@ -212,7 +212,27 @@ namespace MoodReboot.Repositories
 
         public async Task UpdateUserPassword(int userId, string password)
         {
+            string salt = HelperCryptography.GenerateSalt();
 
+            AppUser? user = await this.FindUser(userId);
+
+            if (user != null)
+            {
+                user.Password = HelperCryptography.EncryptPassword(password, salt);
+                user.Salt = salt;
+                user.PassTest = password;
+                await this.context.SaveChangesAsync();
+            }
+        }
+
+        public async Task DeactivateUser(int userId)
+        {
+            AppUser? user = await this.FindUser(userId);
+            if (user != null)
+            {
+                user.Approved = false;
+                await this.context.SaveChangesAsync();
+            }
         }
 
         #endregion

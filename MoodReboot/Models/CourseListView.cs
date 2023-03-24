@@ -18,6 +18,7 @@
         public string CenterName { get; set; }
         public int CourseId { get; set; }
         public string Image { get; set; }
+        public bool ISVisible { get; set; }
         public List<Author>? Authors { get; set; }
     }
 }

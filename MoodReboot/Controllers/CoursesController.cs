@@ -26,10 +26,10 @@ namespace MoodReboot.Controllers
             return View();
         }
 
-        public IActionResult UserCourses()
+        public async Task<IActionResult> UserCourses()
         {
             int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-            List<CourseListView> courses = this.repositoryCourses.GetUserCourses(userId);
+            List<CourseListView> courses = await this.repositoryCourses.GetUserCourses(userId);
             return View("Index", courses);
         }
 
@@ -57,15 +57,15 @@ namespace MoodReboot.Controllers
             return RedirectToAction("UserCourses", new { id = userId });
         }
 
-        public IActionResult CenterCourses(int centerId)
+        public async Task<IActionResult> CenterCourses(int centerId)
         {
-            List<CourseListView> courses = this.repositoryCourses.GetCenterCourses(centerId);
+            List<CourseListView> courses = await this.repositoryCourses.GetCenterCourses(centerId);
             return View("Index", courses);
         }
 
-        public IActionResult GetAllCourses()
+        public async Task<IActionResult> GetAllCourses()
         {
-            List<Course> courses = this.repositoryCourses.GetAllCourses();
+            List<Course> courses = await this.repositoryCourses.GetAllCourses();
             return View("Index", courses);
         }
 
@@ -76,7 +76,7 @@ namespace MoodReboot.Controllers
             // The course doesn't exist
             if (course == null)
             {
-                return RedirectToAction("CourseDetails", new { courseId });
+                return RedirectToAction("UserCourses");
             }
 
             return View(course);
@@ -131,7 +131,7 @@ namespace MoodReboot.Controllers
                     return RedirectToAction("UserCourses", new { userId });
                 }
 
-                List<CourseUsersModel> courseUsers = this.repositoryCourses.GetCourseUsers(course.Id);
+                List<CourseUsersModel> courseUsers = await this.repositoryCourses.GetCourseUsers(course.Id);
 
                 CourseDetailsModel details;
 

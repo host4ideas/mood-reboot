@@ -15,6 +15,34 @@ namespace MoodReboot.Repositories
             this.context = context;
         }
 
+        public async Task RemoveUserCenter(int userId, int centerId)
+        {
+            UserCenter userCenter = await this.context.UserCenters.FirstOrDefaultAsync(x => x.UserId == userId && x.CenterId == centerId);
+            if (userCenter != null)
+            {
+                this.context.UserCenters.Remove(userCenter);
+                await this.context.SaveChangesAsync();
+            }
+        }
+
+        public async Task AddEditorsCenter(int centerId, List<int> userIds)
+        {
+            int firstNewId = await this.GetMaxUserCenter();
+            foreach (int userId in userIds)
+            {
+                UserCenter userCenter = new()
+                {
+                    Id = firstNewId,
+                    CenterId = centerId,
+                    UserId = userId,
+                    IsEditor = true
+                };
+                this.context.UserCenters.Add(userCenter);
+                firstNewId += 1;
+            }
+            await this.context.SaveChangesAsync();
+        }
+
         public Task<List<Center>> GetPendingCenters()
         {
             return this.context.Centers.Where(x => x.Approved == false).ToListAsync();
@@ -31,9 +59,9 @@ namespace MoodReboot.Repositories
             return await this.context.Centers.MaxAsync(x => x.Id) + 1;
         }
 
-        private Task<int> GetMaxUserCenter()
+        private async Task<int> GetMaxUserCenter()
         {
-            return this.context.UserCenters.MaxAsync(x => x.Id);
+            return await this.context.UserCenters.MaxAsync(x => x.Id) + 1;
         }
 
         public async Task AddUserCenter(int userId, int centerId, bool isEditor)

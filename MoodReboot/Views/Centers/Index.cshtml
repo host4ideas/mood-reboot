@@ -28,6 +28,7 @@
 @section scripts {
     <script>
         const list = @Html.Raw(Json.Serialize(Model));
+        let userId = @Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         function htmlListItem(center, director) {
             return `
@@ -54,12 +55,15 @@
                         <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">${center.centerName}</h5>
                     </div>
 
-                    <div class="flex flex-wrap gap-4 items-center justify-start overflow-y-scroll">
-                        <div class="flex items-center">
-                             <img class="w-7 h-7 mr-2 rounded-full" src="/uploads/profile_images/${director.image}" alt="${director.username} avatar" />
-                            <span class="font-medium dark:text-white">
-                                ${director.userName}
-                            </span>
+                    <div class="flex flex-wrap items-center overflow-y-scroll">
+                        <div class="flex items-center justify-between w-full">
+                             <div class="flex items-center">
+                                <img class="w-7 h-7 mr-2 rounded-full" src="/uploads/profile_images/${director.image}" alt="${director.username} avatar" />
+                                <span class="font-medium dark:text-white">
+                                    ${director.userName}
+                                </span>
+                             </div>
+                            ${center.isEditor == true || center.director.id == userId ? '<span class="font-medium dark:text-white">✏️</span>' : ''}
                         </div>
                     </div>
                 </a>`;

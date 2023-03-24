@@ -27,7 +27,7 @@ namespace MoodReboot.Models
         [Display(Name = "Confirmar contraseña")]
         [Compare("Password", ErrorMessage = "Las contraseñas no coinciden")]
         [StringLength(20, ErrorMessage = "{0} debe de estar entre {2} y {1}.", MinimumLength = 6)]
-        public string? ConfirmPassword { get; set; }
+        public string ConfirmPassword { get; set; }
         // Validations
         [Display(Name = "Nombre de usuario")]
         [Required(ErrorMessage = "Nombre de usuario requerido")]

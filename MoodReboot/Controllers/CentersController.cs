@@ -33,9 +33,13 @@ namespace MoodReboot.Controllers
             return View();
         }
 
-        public IActionResult DirectorView()
+        public async Task<IActionResult> DirectorView(int centerId)
         {
-            return View();
+            List<AppUser> users = await this.repositoryCenters.GetCenterEditorsAsync(centerId);
+            List<CourseListView> courses = await this.repositoryCourses.GetCenterCourses(centerId);
+            ViewData["COURSES"] = courses;
+            ViewData["CENTERID"] = centerId;
+            return View(users);
         }
 
         public async Task<IActionResult> CenterDetails(int id)
@@ -62,7 +66,7 @@ namespace MoodReboot.Controllers
                 return View();
             }
 
-            List<CourseListView> courses = this.repositoryCourses.CenterCoursesListView(id);
+            List<CourseListView> courses = await this.repositoryCourses.CenterCoursesListView(id);
 
             ViewData["IS_EDITOR"] = isEditor;
             ViewData["CENTER"] = center;
@@ -76,6 +80,21 @@ namespace MoodReboot.Controllers
             List<CenterListView> centers = await this.repositoryCenters.GetUserCentersAsync(userId);
             return View("Index", centers);
         }
+
+        public async Task<IActionResult> RemoveUserCenter(int centerId, int userId)
+        {
+            await this.repositoryCenters.RemoveUserCenter(centerId, userId);
+            return RedirectToAction("DirectorView", new { centerId });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddCenterEditors(int centerId, List<int> userIds)
+        {
+            await this.repositoryCenters.AddEditorsCenter(centerId, userIds);
+            return RedirectToAction("DirectorView", new { centerId });
+        }
+
+        #region CREATE CENTER
 
         [AuthorizeUsers]
         public IActionResult CenterRequest()
@@ -104,5 +123,7 @@ namespace MoodReboot.Controllers
             ViewData["ERROR"] = "Solicitud enviada";
             return View();
         }
+
+        #endregion
     }
 }

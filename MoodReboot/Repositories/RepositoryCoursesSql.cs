@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using MoodReboot.Data;
 using MoodReboot.Interfaces;
@@ -16,7 +15,7 @@ namespace MoodReboot.Repositories
             this.context = context;
         }
 
-        public List<CourseUsersModel> GetCourseUsers(int courseId)
+        public Task<List<CourseUsersModel>> GetCourseUsers(int courseId)
         {
             var result = from uc in this.context.UserCourses
                          join u in this.context.Users on uc.UserId equals u.Id
@@ -29,7 +28,7 @@ namespace MoodReboot.Repositories
                              IsEditor = uc.IsEditor
                          };
 
-            return result.ToList();
+            return result.ToListAsync();
         }
 
         public Task<UserCourse?> FindUserCourse(int userId, int courseId)
@@ -80,7 +79,7 @@ namespace MoodReboot.Repositories
             }
         }
 
-        public async Task<bool> AddUserToCourseLogicAsync(Course course, int userId, bool isEditor)
+        public async Task AddUserToCourseLogicAsync(Course course, int userId, bool isEditor)
         {
             // Add user to the course
             UserCourse userCourse = new()
@@ -92,6 +91,22 @@ namespace MoodReboot.Repositories
             };
             await this.context.UserCourses.AddAsync(userCourse);
 
+            // Add user to the center if it's not already in
+            UserCenter? userCenter = await this.context.UserCenters.FirstOrDefaultAsync(x => x.CenterId == course.CenterId && x.UserId == userId);
+            // If the user isn't in the center
+            if (userCenter == null)
+            {
+                UserCenter newUserCenter = new()
+                {
+                    Id = await this.context.UserCenters.MaxAsync(x => x.Id),
+                    CenterId = course.CenterId,
+                    IsEditor = isEditor,
+                    UserId = userId,
+                };
+
+                await this.context.UserCenters.AddAsync(newUserCenter);
+            }
+
             // Add user to the course's discussion chat group if the group exist
             if (course.GroupId.HasValue)
             {
@@ -102,7 +117,7 @@ namespace MoodReboot.Repositories
                     newId = await this.context.UserChatGroups.MaxAsync(x => x.Id) + 1;
                 }
 
-                this.context.UserChatGroups.Add(new UserChatGroup()
+                await this.context.UserChatGroups.AddAsync(new UserChatGroup()
                 {
                     Id = newId,
                     GroupId = course.GroupId.Value,
@@ -110,11 +125,8 @@ namespace MoodReboot.Repositories
                     LastSeen = DateTime.Now,
                     UserID = userId
                 });
-
-                await this.context.SaveChangesAsync();
-                return true;
             }
-            return false;
+            await this.context.SaveChangesAsync();
         }
 
         public async Task<bool> AddCourseUserAsync(int courseId, int userId, bool isEditor)
@@ -123,7 +135,9 @@ namespace MoodReboot.Repositories
 
             if (course != null)
             {
-                return await this.AddUserToCourseLogicAsync(course, userId, isEditor);
+
+                await this.AddUserToCourseLogicAsync(course, userId, isEditor);
+                return true;
             }
 
             return false;
@@ -137,7 +151,8 @@ namespace MoodReboot.Repositories
             {
                 if (course.Password == password)
                 {
-                    return await this.AddUserToCourseLogicAsync(course, userId, isEditor);
+                    await this.AddUserToCourseLogicAsync(course, userId, isEditor);
+                    return true;
                 }
             }
 
@@ -183,9 +198,9 @@ namespace MoodReboot.Repositories
             return this.context.Courses.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public List<Course> GetAllCourses()
+        public Task<List<Course>> GetAllCourses()
         {
-            return this.context.Courses.ToList();
+            return this.context.Courses.ToListAsync();
         }
 
         /// <summary>
@@ -193,7 +208,7 @@ namespace MoodReboot.Repositories
         /// </summary>
         /// <param name="courseListView"></param>
         /// <returns></returns>
-        public List<CourseListView> GetCoursesAuthors(List<CourseListView> courseListView)
+        public async Task<List<CourseListView>> GetCoursesAuthors(List<CourseListView> courseListView)
         {
             List<int> courseIds = new();
 
@@ -207,7 +222,7 @@ namespace MoodReboot.Repositories
                           where courseIds.Contains(uc.CourseId) && uc.IsEditor == true
                           select new { u.UserName, u.Image, u.Id, uc.CourseId };
 
-            var possibleAuthors = result2.ToList();
+            var possibleAuthors = await result2.ToListAsync();
 
             // Filter the authors for each course
             foreach (CourseListView course in courseListView)
@@ -230,7 +245,7 @@ namespace MoodReboot.Repositories
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public List<CourseListView> GetUserCourses(int userId)
+        public async Task<List<CourseListView>> GetUserCourses(int userId)
         {
             var result = from c in context.Courses
                          join uc in context.UserCourses on c.Id equals uc.CourseId
@@ -250,21 +265,21 @@ namespace MoodReboot.Repositories
                          };
 
             // Courses without authors
-            List<CourseListView> courseListView = result.ToList();
+            List<CourseListView> courseListView = await result.ToListAsync();
 
             // Courses with authors
-            List<CourseListView> coursesAuthors = this.GetCoursesAuthors(courseListView);
+            List<CourseListView> coursesAuthors = await this.GetCoursesAuthors(courseListView);
 
             return coursesAuthors;
         }
 
-        public List<CourseListView> CenterCoursesListView(int centerId)
+        public async Task<List<CourseListView>> CenterCoursesListView(int centerId)
         {
             // Courses without authors
-            List<CourseListView> courseListView = this.GetCenterCourses(centerId);
+            List<CourseListView> courseListView = await this.GetCenterCourses(centerId);
 
             // Courses with authors
-            List<CourseListView> coursesAuthors = this.GetCoursesAuthors(courseListView);
+            List<CourseListView> coursesAuthors = await this.GetCoursesAuthors(courseListView);
 
             return coursesAuthors;
         }
@@ -274,7 +289,7 @@ namespace MoodReboot.Repositories
         /// </summary>
         /// <param name="centerId"></param>
         /// <returns></returns>
-        public List<CourseListView> GetCenterCourses(int centerId)
+        public Task<List<CourseListView>> GetCenterCourses(int centerId)
         {
             var result = from cr in this.context.Courses
                          join ct in this.context.Centers on cr.CenterId equals ct.Id
@@ -291,8 +306,7 @@ namespace MoodReboot.Repositories
                              Authors = new List<Author>()
                          };
 
-            var courses = result.ToList();
-            return courses;
+            return result.ToListAsync();
         }
 
         public async Task UpdateCourse(int id, string description, string image, string name, bool isVisible)
