@@ -28,7 +28,7 @@
 @section scripts {
     <script>
         const list = @Html.Raw(Json.Serialize(Model));
-        let userId = @Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        let userId = @(Context.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "-1");
 
         function htmlListItem(center, director) {
             return `
@@ -63,7 +63,7 @@
                                     ${director.userName}
                                 </span>
                              </div>
-                            ${center.isEditor == true || center.director.id == userId ? '<span class="font-medium dark:text-white">✏️</span>' : ''}
+                            ${center.isEditor === true || center.director.id === userId ? '<span class="font-medium dark:text-white">✏️</span>' : ''}
                         </div>
                     </div>
                 </a>`;

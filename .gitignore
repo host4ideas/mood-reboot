@@ -9,6 +9,12 @@
 *.user
 *.userosscache
 *.sln.docstates
+MoodReboot/wwwroot/uploads/*/*.jpg
+MoodReboot/wwwroot/uploads/*/*.jpeg
+MoodReboot/wwwroot/uploads/*/*.png
+MoodReboot/wwwroot/uploads/*/*.webp
+MoodReboot/wwwroot/uploads/*/*.pdf
+MoodReboot/wwwroot/uploads/*/*.xlsx
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

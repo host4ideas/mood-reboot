@@ -129,7 +129,7 @@ $("#hidden-file").on("change", function (e) {
         reader.readAsDataURL(e.target.files[0]);
     }
 
-    if (file.type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+    if (file.type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || file.type == "application/vnd.ms-excel") {
         var reader = new FileReader();
         reader.readAsArrayBuffer(e.target.files[0]);
         reader.onload = function (e) {

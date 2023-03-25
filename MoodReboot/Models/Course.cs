@@ -22,7 +22,7 @@ namespace MoodReboot.Models
         [Column("CENTER_ID")]
         public int CenterId { get; set; }
         [Column("IS_VISIBLE")]
-        public Boolean IsVisible { get; set; }
+        public bool IsVisible { get; set; }
         [Column("GROUP_ID")]
         public int? GroupId { get; set; }
         [Column("PASSWORD")]

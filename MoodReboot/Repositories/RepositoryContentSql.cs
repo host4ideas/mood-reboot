@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using MoodReboot.Data;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MoodReboot.Repositories
 {
@@ -15,37 +16,45 @@ namespace MoodReboot.Repositories
             this.context = context;
         }
 
+        public async Task<int> GetMaxContent()
+        {
+            return await this.context.Contents.MaxAsync(x => x.Id) + 1;
+        }
+
         public Task<Content?> FindContent(int id)
         {
-            return this.context.Contents.FirstOrDefaultAsync(x=> x.Id == id);
+            return this.context.Contents.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public List<Content> GetContentByGroup(int groupId)
+        public Task<List<Content>> GetContentByGroup(int groupId)
         {
-            var consulta = from datos in this.context.Contents
-                           where datos.ContentGroupId == groupId
-                           select datos;
-            return consulta.ToList();
+            return this.context.Contents.Where(x => x.ContentGroupId == groupId).ToListAsync();
         }
 
-        public Task CreateContent(int contentGroupId, string text)
+        public async Task CreateContent(int contentGroupId, string text)
         {
-            string sql = "SP_CREATE_CONTENT @TEXT, @GROUP_CONTENT_ID";
+            Content content = new()
+            {
+                Id = await this.GetMaxContent(),
+                Text = text,
+                ContentGroupId = contentGroupId,
+            };
 
-            SqlParameter paramText = new("@TEXT", text);
-            SqlParameter paramGroupId = new("@GROUP_CONTENT_ID", contentGroupId);
-
-            return this.context.Database.ExecuteSqlRawAsync(sql, paramText, paramGroupId);
+            await this.context.Contents.AddAsync(content);
+            await this.context.SaveChangesAsync();
         }
 
         public async Task CreateContentFile(int contentGroupId, int fileId)
         {
-            string sql = "SP_CREATE_CONTENT @GROUP_CONTENT_ID, @FILE_ID";
+            Content content = new()
+            {
+                Id = await this.GetMaxContent(),
+                ContentGroupId = contentGroupId,
+                FileId = fileId
+            };
 
-            SqlParameter paramGroupId = new("@GROUP_CONTENT_ID", contentGroupId);
-            SqlParameter paramFileId = new("@FILE_ID", fileId);
-
-            await this.context.Database.ExecuteSqlRawAsync(sql, paramGroupId, paramFileId);
+            await this.context.Contents.AddAsync(content);
+            await this.context.SaveChangesAsync();
         }
 
         public async Task DeleteContent(int id)

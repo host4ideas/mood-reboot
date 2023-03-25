@@ -26,11 +26,12 @@ EXEC SP_CREATE_USER
 PRINT @RESPONSE_MESSAGE;
 
 EXEC SP_CREATE_CENTER
-@EMAIL = 'example@example.com',
+@EMAIL = @EMAIL,
 @NAME = 'IES Clara del Rey',
 @ADDRESS = 'Calle del Padre Claret, 8',
 @TELEPHONE = '999999999',
 @APPROVED = 1,
+@IMAGE = 'default_center_image.webp',
 @DIRECTOR = @USERID,
 @CENTERID = @CENTERID OUT;
 
@@ -39,6 +40,7 @@ EXEC SP_CREATE_COURSE
 @NAME = 'Mi primer curso',
 @DESCRIPTION = '#Normas Este es el primer curso del centro IES Clara del Rey. El curso está enfocado a informática para los alumnos de FP.',
 @IS_VISIBLE = 1,
+@IMAGE = 'default_course_image.jpeg',
 @COURSEID = @COURSEID OUT,
 @GROUPID = @GROUPID OUT;
 

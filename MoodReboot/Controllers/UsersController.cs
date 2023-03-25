@@ -3,7 +3,6 @@ using MoodReboot.Helpers;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
 using MvcCoreSeguridadEmpleados.Filters;
-using NuGet.Common;
 using System.Security.Claims;
 
 namespace MoodReboot.Controllers
@@ -41,7 +40,7 @@ namespace MoodReboot.Controllers
             if (image != null)
             {
                 string fileName = "image_" + userId;
-                await this.helperFile.UploadFileAsync(image, Folders.Images, fileName);
+                await this.helperFile.UploadFileAsync(image, Folders.ProfileImages, FileTypes.Image, fileName);
                 await this.repositoryUsers.UpdateUserBasics(userId, userName, firstName, lastName, fileName);
                 return RedirectToAction("Profile", new { userId });
             }

@@ -239,6 +239,20 @@ namespace MoodReboot.Repositories
 
         #region FILES
 
+        public Task<AppFile> FindFile(int fileId)
+        {
+            return this.context.Files.FirstOrDefaultAsync(x => x.Id == fileId);
+        }
+
+        public async Task<int> GetMaxFile()
+        {
+            if (!context.Files.Any())
+            {
+                return 1;
+            }
+            return await this.context.Files.MaxAsync(x => x.Id) + 1;
+        }
+
         /// <summary>
         /// Inserts a new File in the File table of the database
         /// </summary>
@@ -271,19 +285,19 @@ namespace MoodReboot.Repositories
         /// <returns></returns>
         public async Task<int> InsertFileAsync(string name, string mimeType, int userId)
         {
-            string sql = "SP_CREATE_FILE @NAME, @MIME_TYPE, @USER_ID, @FILE_ID OUT";
+            int fileId = await this.GetMaxFile();
 
-            SqlParameter paramName = new("@NAME", name);
-            SqlParameter paramMime = new("@MIME_TYPE", mimeType);
-            SqlParameter paramUserId = new("@USER_ID", userId);
-            SqlParameter paramFileIdOut = new("@FILE_ID", null)
+            AppFile file = new()
             {
-                Direction = System.Data.ParameterDirection.Output
+                Id = fileId,
+                Name = name,
+                MimeType = mimeType,
+                UserId = userId
             };
 
-            await this.context.Database.ExecuteSqlRawAsync(sql, paramName, paramMime, paramUserId, paramFileIdOut);
-
-            return (int)paramFileIdOut.Value;
+            await this.context.Files.AddAsync(file);
+            await this.context.SaveChangesAsync();
+            return fileId;
         }
 
         /// <summary>
@@ -325,6 +339,7 @@ namespace MoodReboot.Repositories
 
                 alreadyUserIds.AddRange(newUserIds);
 
+                // Eliminate duplicates
                 HashSet<int> userIdsNoDups = new(alreadyUserIds);
 
                 int firstId = await this.GetMaxUserChatGroup();
@@ -352,6 +367,7 @@ namespace MoodReboot.Repositories
 
         public async Task NewChatGroup(HashSet<int> userIdsNoDups)
         {
+
             // Create the chat group
             ChatGroup chatGroup = new()
             {
@@ -383,12 +399,14 @@ namespace MoodReboot.Repositories
             await this.context.SaveChangesAsync();
         }
 
-        public async Task NewChatGroup(HashSet<int> userIdsNoDups, int adminUserId, string chatGroupName)
+        public async Task<int> NewChatGroup(HashSet<int> userIdsNoDups, int adminUserId, string chatGroupName)
         {
+            int newId = await this.GetMaxChatGroup();
+
             // Create the chat group
             ChatGroup chatGroup = new()
             {
-                Id = await this.GetMaxChatGroup(),
+                Id = newId,
                 Name = chatGroupName,
             };
 
@@ -421,6 +439,7 @@ namespace MoodReboot.Repositories
             }
 
             await this.context.SaveChangesAsync();
+            return newId;
         }
 
         public async Task UpdateChatGroup(int chatGroupId, string name)

@@ -1,10 +1,14 @@
 ﻿@using Markdig;
+@model CourseDetailsModel
 
 @{
     Layout = "_MenuLayout";
 }
 
-@model CourseDetailsModel
+@{
+    List<FilePreviewModel> previewFiles = new();
+    int userId = int.Parse(Context.User.FindFirstValue(ClaimTypes.NameIdentifier));
+}
 
 <section id="accordion-collapse" class="mt-5 mb-10" data-accordion="collapse">
 
@@ -56,6 +60,7 @@
             </form>
         }
 
+        int indexContentGroup = 0;
         for (int i = 0; i < Model.ContentGroups.Count; i++)
         {
             ContentGroup group = Model.ContentGroups[i];
@@ -69,15 +74,15 @@
             // Different header style per position
             if (i < 1)
             {
-                headingClass = "flex items-center justify-between w-full p-2 sm:p-4 text-lg font-bold text-left text-gray-500 border-2 border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer";
+                headingClass = "flex items-center justify-between w-full p-2 sm:p-4 text-lg font-bold text-left text-gray-500 border-2 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer";
             }
             else if (i > 0 && i < Model.ContentGroups.Count - 1)
             {
-                headingClass = "flex items-center justify-between w-full p-2 sm:p-4 text-lg font-bold text-left text-gray-500 border-2 border-b-0 border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer";
+                headingClass = "flex items-center justify-between w-full p-2 sm:p-4 text-lg font-bold text-left text-gray-500 border-2 border-t-0 border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer";
             }
             else
             {
-                headingClass = "flex items-center justify-between w-full p-2 sm:p-4 text-lg font-bold text-left text-gray-500 border-2 border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer";
+                headingClass = "flex items-center justify-between w-full p-2 sm:p-4 text-lg font-bold text-left text-gray-500 border-2 border-t-0 border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer";
             }
 
             // Header
@@ -107,11 +112,11 @@
                                     @{
                                         if (group.IsVisible == true)
                                         {
-                                            <input onclick="toggleIsVisible(event)" name="isVisible" type="checkbox" value="1" class="sr-only peer" checked>
+                                            <input onclick="toggleIsVisible(event)" name="isVisible" type="checkbox" value="true" class="sr-only peer" checked>
                                         }
                                         else
                                         {
-                                            <input onclick="toggleIsVisible(event)" name="isVisible" type="checkbox" value="0" class="sr-only peer">
+                                            <input onclick="toggleIsVisible(event)" name="isVisible" type="checkbox" value="false" class="sr-only peer">
                                         }
                                     }
                                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
@@ -151,13 +156,15 @@
                     @{
                         foreach (Content content in group.Contents)
                         {
+                            indexContentGroup += 1;
+
                             <div class="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900">
                                 @{
                                     if (Model.IsEditor == true)
                                     {
                                         <div class="editor-option text-center mb-2">
                                             <!-- Update content -->
-                                            <button onclick="btnUpdateContentHandler(@content.Id)" type="button" class="my-1 p-3 text-gray-900 bg-white font-medium rounded border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                                            <button onclick="@(content.FileId != null ? $"btnUpdateContentFileHandler({content.Id})" : $"btnUpdateContentHandler({content.Id})")" type="button" class="my-1 p-3 text-gray-900 bg-white font-medium rounded border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                                                 </svg>
@@ -184,24 +191,30 @@
                                             if (content.File.MimeType == "image/webp" || content.File.MimeType == "image/jpeg" || content.File.MimeType == "image/png" || content.File.MimeType == "image/gif")
                                             {
                                                 <article id="@content.Id" class="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
-                                                    <img src="~/images/@content.File.Name" width="300" />
+                                                    <img src="~/uploads/content_files/@content.File.Name" width="400" />
                                                 </article>
                                             }
                                             else if (content.File.MimeType == "application/pdf")
                                             {
-                                                <!-- PDF preview -->
-                                                <article id="@content.Id" value="" class=" mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
-                                                    <div class="previewContent">
-                                                        <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
+                                                previewFiles.Add(new FilePreviewModel()
+                            {
+                                FileName = content.File.Name,
+                                Type = content.File.MimeType,
+                                TargetId = indexContentGroup
+                            });
 
+                                                <!-- PDF preview -->
+                                                <article value="@content.File.Name" id="@("content" + indexContentGroup)" class="pdf-preview mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
+                                                    <!-- PDF preview -->
+                                                    <div id="@("previewContent" + indexContentGroup)" class="hidden">
                                                         <!-- Prev button -->
-                                                        <button id="prev" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
+                                                        <button type="button" id="@("prev" + indexContentGroup)" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
                                                             <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
                                                                 Previous
                                                             </span>
                                                         </button>
                                                         <!-- Next button -->
-                                                        <button id="next" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">
+                                                        <button type="button" id=@("next" + indexContentGroup) class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">
                                                             <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
                                                                 Next
                                                             </span>
@@ -209,19 +222,29 @@
 
                                                         <!-- Page progress bar -->
                                                         <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700" style="max-height:20px">
-                                                            <div id="pageProgressBar" class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: 0%"><span id="page_num"></span> / <span id="page_count"></span></div>
+                                                            <div id="@("pageProgressBar" + indexContentGroup)" class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: 0%">
+                                                                <span id="@("pageNum" + indexContentGroup)"></span> / <span id="@("pageCount" + indexContentGroup)"></span>
+                                                            </div>
                                                         </div>
 
+
                                                         <!-- Preview pdf content canvas -->
-                                                        <canvas id="canvasPdfPreview" style="max-width:250px"></canvas>
+                                                        <canvas id="@("canvasPdfPreview" + indexContentGroup)" style="max-width:250px"></canvas>
                                                     </div>
                                                 </article>
                                             }
-                                            else if (content.File.MimeType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                                            else if (content.File.MimeType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || content.File.MimeType == "application/vnd.ms-excel")
                                             {
-                                                <article id="@content.Id" class="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
+                                                previewFiles.Add(new FilePreviewModel()
+                            {
+                                FileName = content.File.Name,
+                                Type = content.File.MimeType,
+                                TargetId = indexContentGroup
+                            });
+
+                                                <article value="@content.File.Name" id="@("content" + indexContentGroup)" class="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
                                                     <!-- Excel preview -->
-                                                    <div class="tableDataPreview relative overflow-x-auto max-w-36 max-h-72">
+                                                    <div id="@("tableDataPreview" + indexContentGroup)" class="excel-preview relative overflow-x-auto max-w-36 max-h-72">
                                                     </div>
                                                 </article>
                                             }
@@ -254,15 +277,16 @@
 
 <!-- Editor -->
 <div id="editorWindow" class="hidden" style="margin: 50px auto;">
-    <form id="editorForm" method="post" action="">
+    <form id="editorForm" action="" method="post" enctype="multipart/form-data">
         @{
             // Take userId from session
-            <input type="hidden" value="0" name="userId" />
+            <input type="hidden" value="@userId" name="userId" />
             // Take courseId from Model
             <input type="hidden" value="@Model.Course.Id" name="courseId" />
         }
         <input id="groupId" type="hidden" value="0" name="groupId" />
         <input id="contentId" type="hidden" value="0" name="contentId" />
+        <input name="hiddenFileInput" id="hiddenFileInput" type="file" class="hidden" />
 
         <div class="w-full mb-4 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
             <div class="flex flex-wrap items-center justify-between px-3 py-2 border-b dark:border-gray-600">
@@ -277,7 +301,7 @@
                             Subir archivo
                             <div class="tooltip-arrow" data-popper-arrow></div>
                         </div>
-                        <input id="input-upload-file" type="file" class="hidden-file-input hidden" />
+
                         <!-- Upload image -->
                         <button id="btn-upload-image" type="button" data-tooltip-target="tooltip-attach-image" class="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
                             <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path></svg>
@@ -287,7 +311,7 @@
                             Subir imagen
                             <div class="tooltip-arrow" data-popper-arrow></div>
                         </div>
-                        <input id="input-upload-image" type="file" class="hidden-file-input hidden" />
+
                     </div>
                     <!-- Add list -->
                     <div class="flex flex-wrap items-center space-x-1 sm:pl-4">
@@ -316,7 +340,7 @@
                 <div class="w-1/2 m-5 mb-5 px-4 py-2 bg-white rounded-b-lg dark:bg-gray-800">
                     <label for="editor" class="sr-only">Publish post</label>
                     <!-- Text Area -->
-                    <textarea id="editor" name="unsafeHtml" oninput="resizeTextArea(event)" cols="100" class="block w-full px-0 text-sm text-gray-800 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400 scrollbar-styled" placeholder="Acepta Markdown y HTML..." required></textarea>
+                    <textarea id="editor" name="unsafeHtml" oninput="resizeTextArea(event)" cols="100" class="block w-full px-0 text-sm text-gray-800 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400 scrollbar-styled" placeholder="Acepta Markdown y HTML..."></textarea>
 
                     <!-- Excel preview -->
                     <div id="tableDataPreview" class="hidden relative overflow-x-auto max-w-36 max-h-72"></div>
@@ -330,13 +354,13 @@
                     <div id="previewContent" class="hidden">
                         <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
                         <!-- Prev button -->
-                        <button id="prev" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
+                        <button type="button" id="prev" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
                             <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
                                 Previous
                             </span>
                         </button>
                         <!-- Next button -->
-                        <button id="next" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">
+                        <button type="button" id="next" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">
                             <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
                                 Next
                             </span>
@@ -373,7 +397,40 @@
     {
         <text>
             <script>
-                const converter = new showdown.Converter({ extensions: ['xssfilter'] })
+                let previewFilesList = @Html.Raw(Json.Serialize(previewFiles))
+
+                    $(document).ready(function () {
+                        previewFilesList.forEach(file => {
+                            const url = "/uploads/content_files/" + file.fileName;
+                            const targetId = file.targetId;
+
+                            var req = new XMLHttpRequest();
+                            req.open("GET", url, true);
+                            req.responseType = "blob";
+                            req.onload = function (event) {
+                                var blob = req.response;
+
+                                var fileReader = new FileReader();
+                                fileReader.onload = function () {
+                                    var data = fileReader.result;
+
+                                    if (file.type == "application/pdf") {
+                                        previewPdf(data, "previewContent" + targetId, "canvasPdfPreview" + targetId, "next" + targetId, "prev" + targetId, "pageNum" + targetId, "pageProgressBar" + targetId, "countId" + targetId);
+                                    }
+
+                                    if (file.type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || file.type == "application/vnd.ms-excel") {
+                                        previewExcel(data, "tableDataPreview" + targetId);
+                                    }
+
+                                };
+                                fileReader.readAsArrayBuffer(blob);
+                            };
+
+                            req.send();
+                        });
+                    });
+
+                const converter = new showdown.Converter({ extensions: ['xssfilter'] });
 
                 function parseArticleMd(contentId, isFile) {
                     const text = $(`#${contentId}`).html();
@@ -407,7 +464,7 @@
                     $("#editor").html(contentMd);
 
                     // Show the editor
-                    $("#editorWindow").toggleClass("hidden");
+                    $("#editorWindow").removeClass("hidden");
                     $("#btnEditorSubmit").text("Actualizar")
                     // Set contentId hidden input value
                     $("#contentId").val(contentId);
@@ -415,6 +472,18 @@
                     document.getElementById("editorForm").action = "/Content/UpdateContent"
                     // Display nicely the content's HTML in the editor preview
                     parseMarkdown();
+                    scrollToEditor();
+                }
+
+                function btnUpdateContentFileHandler(contentId) {
+                    //// Show the editor
+                    $("#editorWindow").removeClass("hidden");
+                    $("#btnEditorSubmit").text("Actualizar")
+                    // Set contentId hidden input value
+                    $("#contentId").val(contentId);
+                    // Update editor's form action
+                    document.getElementById("editorForm").action = "/Content/UpdateContent"
+                    //document.getElementById(editor).placeholder = "No puedes "
                     scrollToEditor();
                 }
 
@@ -440,20 +509,20 @@
                 }
 
                 function toggleIsVisible(e) {
-                    if (e.target.value == "0") {
-                        e.target.value = "1";
+                    if (e.target.value == "false") {
+                        e.target.value = "true";
                     } else {
-                        e.target.value = "0";
+                        e.target.value = "false";
                     }
                 }
 
                 // Upload file button
                 $("#btn-upload-file").click(function () {
-                    $("#input-upload-file").click();
+                    $("#hiddenFileInput").click();
                 });
                 // Upload image button
                 $("#btn-upload-image").click(function () {
-                    $("#input-upload-image").click();
+                    $("#hiddenFileInput").click();
                 });
                 // Add list button
                 $("#btn-add-list").click(function () {
@@ -535,8 +604,6 @@
     // Course users
     if (Model.IsEditor == true && Model.CourseUsers != null)
     {
-        int userId = int.Parse(Context.User.FindFirstValue(ClaimTypes.NameIdentifier));
-
         <!-- Course's users sidebar -->
         <div id="drawer-backdrop" class="editor-option fixed top-0 left-0 z-50 h-screen p-4 overflow-y-auto transition-transform -translate-x-full bg-white w-80 dark:bg-gray-800" tabindex="-1" aria-labelledby="drawer-backdrop-label">
             <h5 id="drawer-backdrop-label" class="text-base font-semibold text-gray-500 uppercase dark:text-gray-400">Usuarios</h5>

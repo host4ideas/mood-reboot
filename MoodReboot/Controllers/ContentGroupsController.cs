@@ -30,17 +30,11 @@ namespace MoodReboot.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateContentGroup(int id, string name, int courseId, int isVisible)
+        public async Task<IActionResult> UpdateContentGroup(int id, string name, int courseId, bool isVisible)
         {
             if (name != null && courseId >= 0)
             {
-                bool visible = true;
-                if (isVisible == 0)
-                {
-                    visible = false;
-                }
-
-                await this.repo.UpdateContentGroupAsync(id, name, visible);
+                await this.repo.UpdateContentGroupAsync(id, name, isVisible);
             }
             return RedirectToAction("CourseDetails", "Courses", new { id = courseId });
         }

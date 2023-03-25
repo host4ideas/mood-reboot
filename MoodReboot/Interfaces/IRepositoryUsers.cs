@@ -26,6 +26,8 @@ namespace MoodReboot.Interfaces
         public Task RemoveUserAction(UserAction userAction);
         public Task<string> CreateUserAction(int userId);
         // Files
+        Task<AppFile> FindFile(int fileId);
+        Task<int> GetMaxFile();
         Task DeleteFile(int fileId);
         Task<int> InsertFileAsync(string name, string mimeType);
         Task<int> InsertFileAsync(string name, string mimeType, int userId);
@@ -37,7 +39,7 @@ namespace MoodReboot.Interfaces
         List<Message> GetUnseenMessages(int userId);
         Task UpdateChatLastSeen(int chatGroupId, int userId);
         public Task NewChatGroup(HashSet<int> userIdsNoDups);
-        public Task NewChatGroup(HashSet<int> userIdsNoDups, int adminUserId, string chatGroupName);
+        public Task<int> NewChatGroup(HashSet<int> userIdsNoDups, int adminUserId, string chatGroupName);
         public Task RemoveChatGroup(int chatGroupId);
         public Task UpdateChatGroup(int chatGroupId, string name);
         public Task<List<ChatUserModel>> GetChatGroupUsers(int chatGroupId);

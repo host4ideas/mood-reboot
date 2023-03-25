@@ -55,6 +55,7 @@ builder.Services.AddSingleton<HelperPath>();
 builder.Services.AddSingleton<HelperJsonSession>();
 builder.Services.AddSingleton<HelperMail>();
 builder.Services.AddTransient<HelperFile>();
+builder.Services.AddTransient<HelperCourse>();
 // Custom
 builder.Services.AddSingleton<HtmlSanitizer>();
 

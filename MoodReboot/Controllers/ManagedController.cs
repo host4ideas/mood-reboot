@@ -121,19 +121,28 @@ namespace MoodReboot.Controllers
         public async Task<IActionResult> SignUp
             (string userName, string firstName, string lastName, string email, string password, IFormFile image)
         {
-            // BBDD
-            string path = "default_user_logo.svg";
+            string? path = "default_user_logo.svg";
 
+            // Upload profile image
             if (image != null)
             {
                 int maximo = await this.repositoryUsers.GetMaxUser();
 
                 string fileName = "image_" + maximo;
 
-                path = await this.helperFile.UploadFileAsync(image, Folders.ProfileImages, fileName);
+                path = await this.helperFile.UploadFileAsync(image, Folders.ProfileImages, FileTypes.Image, fileName);
+
+                if (path == null)
+                {
+                    ViewData["ERROR"] = "Error al subir archivo";
+                    return View();
+                }
             }
 
+            // BBDD
             int userId = await this.repositoryUsers.RegisterUser(userName, firstName, lastName, email, password, path);
+
+            // Confirmation token
             string token = await this.repositoryUsers.CreateUserAction(userId);
 
             // Confirmation mail

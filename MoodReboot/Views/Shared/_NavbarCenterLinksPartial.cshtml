@@ -1,27 +1,27 @@
-﻿<div class="items-center justify-between hidden w-full md:flex md:w-auto" id="mobile-menu-2">
-    <ul class="flex flex-col p-2 mt-4 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium border-2 border-gray-500 md:border-0 rounded">
-        @{
-            string GetActiveLinkClass(string route)
-            {
-                string currentAction = ViewContext.RouteData.Values["action"]!.ToString()!;
-                string currentController = ViewContext.RouteData.Values["controller"]!.ToString()!;
-                string active = "block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white";
-                string notActive = "block py-2 pl-3 pr-4 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700";
+﻿@{
+    string GetActiveLinkClass(string route)
+    {
+        string currentAction = ViewContext.RouteData.Values["action"]!.ToString()!;
+        string currentController = ViewContext.RouteData.Values["controller"]!.ToString()!;
+        string active = "block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white";
+        string notActive = "block py-2 pl-3 pr-4 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700";
 
-                if (currentAction.Contains(route) || currentController.Contains(route))
-                {
-                    return active;
-                }
-                return notActive;
-            }
-
-            <li class="flex items-center">
-                <a asp-controller="Home" asp-action="Index" class="@GetActiveLinkClass("Home")">Home</a>
-            </li>
-            <li class="flex items-center">
-                <a asp-controller="Centers" asp-action="Index" class="@GetActiveLinkClass("Centers")">Centros</a>
-            </li>
+        if (currentAction.Contains(route) || currentController.Contains(route))
+        {
+            return active;
         }
+        return notActive;
+    }
+}
+
+<div class="items-center justify-between hidden w-full md:flex md:w-auto" id="mobile-menu-2">
+    <ul class="flex flex-col p-2 mt-4 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium border-2 border-gray-500 md:border-0 rounded">
+        <li class="flex items-center">
+            <a asp-controller="Home" asp-action="Index" class="@GetActiveLinkClass("Home")">Home</a>
+        </li>
+        <li class="flex items-center">
+            <a asp-controller="Centers" asp-action="Index" class="@GetActiveLinkClass("Centers")">Centros</a>
+        </li>
 
         @{
             if (Context.User.Identity.IsAuthenticated == false)
@@ -29,6 +29,15 @@
                 <!-- Hide if the user is logged in -->
                 <li class="flex items-center">
                     <a asp-controller="Users" asp-action="Profile" class="block py-2 pl-3 pr-4 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Login</a>
+                </li>
+            }
+            else
+            {
+                <li class="flex items-center">
+                    <a asp-controller="Centers" asp-action="UserCenters" class="@GetActiveLinkClass("UserCenters")">Mis centros</a>
+                </li>
+                <li class="flex items-center">
+                    <a asp-controller="Courses" asp-action="UserCourses" class="@GetActiveLinkClass("UserCourses")">Mis cursos</a>
                 </li>
             }
         }

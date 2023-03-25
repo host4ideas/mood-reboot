@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using MoodReboot.Data;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
+using NuGet.Packaging;
 
 namespace MoodReboot.Repositories
 {
@@ -98,7 +99,7 @@ namespace MoodReboot.Repositories
             {
                 UserCenter newUserCenter = new()
                 {
-                    Id = await this.context.UserCenters.MaxAsync(x => x.Id),
+                    Id = await this.context.UserCenters.MaxAsync(x => x.Id) + 1,
                     CenterId = course.CenterId,
                     IsEditor = isEditor,
                     UserId = userId,
@@ -123,7 +124,8 @@ namespace MoodReboot.Repositories
                     GroupId = course.GroupId.Value,
                     JoinDate = DateTime.Now,
                     LastSeen = DateTime.Now,
-                    UserID = userId
+                    UserID = userId,
+                    IsAdmin = isEditor
                 });
             }
             await this.context.SaveChangesAsync();
@@ -135,7 +137,6 @@ namespace MoodReboot.Repositories
 
             if (course != null)
             {
-
                 await this.AddUserToCourseLogicAsync(course, userId, isEditor);
                 return true;
             }
@@ -159,28 +160,9 @@ namespace MoodReboot.Repositories
             return false;
         }
 
-        public Task CreateCourse(int centerId, string name, bool isVisible, string? description = null, string? image = null, string? password = null)
+        public async Task<int> GetMaxCourse()
         {
-            string sql = "SP_CREATE_COURSE @CENTER_ID, @NAME, @DESCRIPTION, @IMAGE, @IS_VISIBLE, @PASSWORD, @COURSEID OUT, @GROUPID OUT";
-
-            SqlParameter[] sqlParameters = new[] {
-                new SqlParameter("@CENTER_ID", centerId),
-                new SqlParameter("@NAME", name),
-                new SqlParameter("@DESCRIPTION", description),
-                new SqlParameter("@IMAGE", image),
-                new SqlParameter("@IS_VISIBLE", isVisible),
-                new SqlParameter("@PASSWORD", password),
-                new SqlParameter("@COURSEID", -1)
-                {
-                    Direction = System.Data.ParameterDirection.Output
-                },
-                new SqlParameter("@GROUPID", -1)
-                {
-                    Direction = System.Data.ParameterDirection.Output
-                },
-            };
-
-            return this.context.Database.ExecuteSqlRawAsync(sql, sqlParameters);
+            return await this.context.Courses.MaxAsync(x => x.Id) + 1;
         }
 
         public async Task DeleteCourse(int id)
@@ -238,6 +220,35 @@ namespace MoodReboot.Repositories
             }
 
             return courseListView;
+        }
+
+        public async Task<List<CourseListView>> GetEditorCenterCourses(int userId, int centerId)
+        {
+            var result = from c in context.Courses
+                         join uc in context.UserCourses on c.Id equals uc.CourseId
+                         join u in context.Users on uc.UserId equals u.Id
+                         join ct in context.Centers on c.CenterId equals ct.Id
+                         where uc.UserId == userId && c.CenterId == centerId && uc.IsEditor == true
+                         select new CourseListView
+                         {
+                             CourseId = c.Id,
+                             DatePublished = c.DatePublished,
+                             DateModified = c.DateModified,
+                             Description = c.Description,
+                             Image = c.Image,
+                             CourseName = c.Name,
+                             CenterName = ct.Name,
+                             IsEditor = uc.IsEditor,
+                             IsVisible = c.IsVisible,
+                         };
+
+            // Courses without authors
+            List<CourseListView> courseListView = await result.ToListAsync();
+
+            // Courses with authors
+            List<CourseListView> coursesAuthors = await this.GetCoursesAuthors(courseListView);
+
+            return coursesAuthors;
         }
 
         /// <summary>
@@ -307,6 +318,23 @@ namespace MoodReboot.Repositories
                          };
 
             return result.ToListAsync();
+        }
+
+        public async Task UpdateCourseVisibility(int courseId)
+        {
+            Course? course = await this.FindCourse(courseId);
+            if (course != null)
+            {
+                if (course.IsVisible == false)
+                {
+                    course.IsVisible = true;
+                }
+                else
+                {
+                    course.IsVisible = false;
+                }
+            }
+            await this.context.SaveChangesAsync();
         }
 
         public async Task UpdateCourse(int id, string description, string image, string name, bool isVisible)

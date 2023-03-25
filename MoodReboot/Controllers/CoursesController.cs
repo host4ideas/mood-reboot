@@ -13,12 +13,14 @@ namespace MoodReboot.Controllers
         private readonly IRepositoryCourses repositoryCourses;
         private readonly IRepositoryContent repositoryContent;
         private readonly IRepositoryContentGroups repositoryContentGroups;
+        private readonly IRepositoryUsers repositoryUsers;
 
-        public CoursesController(IRepositoryCourses repositoryCourses, IRepositoryContent repositoryContent, IRepositoryContentGroups repositoryContentGroups)
+        public CoursesController(IRepositoryCourses repositoryCourses, IRepositoryContent repositoryContent, IRepositoryContentGroups repositoryContentGroups, IRepositoryUsers repositoryUsers)
         {
             this.repositoryCourses = repositoryCourses;
             this.repositoryContent = repositoryContent;
             this.repositoryContentGroups = repositoryContentGroups;
+            this.repositoryUsers = repositoryUsers;
         }
 
         public IActionResult Index()
@@ -108,6 +110,7 @@ namespace MoodReboot.Controllers
             return RedirectToAction("UserCourses", new { id = courseId });
         }
 
+        [AuthorizeUsers]
         public async Task<IActionResult> CourseDetails(int courseId)
         {
             int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
@@ -120,7 +123,16 @@ namespace MoodReboot.Controllers
 
                 foreach (ContentGroup group in contentGroups)
                 {
-                    List<Content> content = this.repositoryContent.GetContentByGroup(group.ContentGroupId);
+                    List<Content> content = await this.repositoryContent.GetContentByGroup(group.ContentGroupId);
+
+                    foreach (Content ctn in content)
+                    {
+                        if (ctn.FileId != null)
+                        {
+                            ctn.File = await this.repositoryUsers.FindFile(ctn.FileId.Value);
+                        }
+                    }
+
                     group.Contents = content;
                 }
 

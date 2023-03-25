@@ -73,9 +73,11 @@ namespace MoodReboot.Repositories
 
         public async Task CreateCenter(string email, string name, string address, string telephone, string image, int director, bool approved)
         {
+            int centerId = await this.GetMaxCenter();
+
             await this.context.Centers.AddAsync(new()
             {
-                Id = await this.GetMaxCenter(),
+                Id = centerId,
                 Name = name,
                 Address = address,
                 Telephone = telephone,
@@ -84,6 +86,9 @@ namespace MoodReboot.Repositories
                 Email = email,
                 Approved = approved
             });
+
+            await this.AddUserCenter(director, centerId, true);
+
             await this.context.SaveChangesAsync();
         }
 

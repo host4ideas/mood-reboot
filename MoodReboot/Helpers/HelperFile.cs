@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.StaticFiles;
+﻿using System.IO;
 
 namespace MoodReboot.Helpers
 {
+    public enum FileTypes { Image, Document, Excel, Pdf }
+
     public class HelperFile
     {
         private readonly HelperPath helperPath;
@@ -16,24 +18,107 @@ namespace MoodReboot.Helpers
             throw new NotImplementedException();
         }
 
-        public async Task<string> UploadFileAsync(IFormFile file, Folders folder, string? fileName = null)
+        public bool IsImage(string contentType)
         {
-            if (fileName == null)
+            if (contentType.Contains("image/jpeg") || contentType.Contains("image/png") || contentType.Contains("image/webp"))
             {
-                fileName = file.FileName;
+                return true;
             }
             else
             {
-                fileName = fileName + Path.GetExtension(file.FileName);
+                return false;
             }
+        }
 
-            string path = this.helperPath.MapPath(fileName, folder);
-
-            using (Stream stream = new FileStream(path, FileMode.Create))
+        public bool IsExcel(string contentType)
+        {
+            if (contentType.Contains("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") || contentType.Contains("application/vnd.ms-excel"))
             {
-                await file.CopyToAsync(stream);
-                return fileName;
+                return true;
             }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool IsPdf(string contentType)
+        {
+            if (contentType.Contains("application/pdf"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Returns the file's fileName if the file was correctly uploaded, otherwise returns null
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="folder"></param>
+        /// <param name="fileType"></param>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public async Task<string?> UploadFileAsync(IFormFile file, Folders folder, FileTypes fileType, string? fileName = null)
+        {
+            string mimeType = file.ContentType;
+
+            bool isValid = false;
+
+            switch (fileType)
+            {
+                case FileTypes.Excel:
+                    if (this.IsExcel(mimeType))
+                    {
+                        isValid = true;
+                    }
+                    break;
+
+                case FileTypes.Pdf:
+                    if (this.IsPdf(mimeType))
+                    {
+                        isValid = true;
+                    }
+                    break;
+
+                case FileTypes.Image:
+                    if (this.IsImage(mimeType))
+                    {
+                        isValid = true;
+                    }
+                    break;
+
+                case FileTypes.Document:
+                    if (this.IsExcel(mimeType) || this.IsPdf(mimeType))
+                    {
+                        isValid = true;
+                    }
+                    break;
+            }
+
+            if (isValid)
+            {
+                if (fileName == null)
+                {
+                    fileName = file.FileName;
+                }
+                else
+                {
+                    fileName = fileName + Path.GetExtension(file.FileName);
+                }
+
+                string path = this.helperPath.MapPath(fileName, folder);
+
+                using (Stream stream = new FileStream(path, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                    return fileName;
+                }
+            }
+            return null;
         }
 
         public async Task<List<string>> UploadFilesAsync(List<IFormFile> files, Folders folder)
@@ -52,20 +137,6 @@ namespace MoodReboot.Helpers
                 }
             }
             return paths;
-        }
-
-        public string GetMimeTypeForFileExtension(string filePath)
-        {
-            const string DefaultContentType = "application/octet-stream";
-
-            var provider = new FileExtensionContentTypeProvider();
-
-            if (!provider.TryGetContentType(filePath, out string contentType))
-            {
-                contentType = DefaultContentType;
-            }
-
-            return contentType;
         }
     }
 }

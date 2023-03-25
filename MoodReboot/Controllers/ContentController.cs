@@ -27,21 +27,29 @@ namespace MoodReboot.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddContent(int userId, int courseId, int groupId, string unsafeHtml, IFormFile file)
+        public async Task<IActionResult> AddContent(int userId, int courseId, int groupId, string unsafeHtml, IFormFile hiddenFileInput)
         {
-            if (file != null)
+            if (hiddenFileInput != null)
             {
-                string mimeType = file.ContentType;
-                string fileName = file.FileName;
-                // Upload file                
-                await this.helperFile.UploadFileAsync(file, Folders.Temp, fileName);
-                // Update DB
-                int fileId = await this.repositoryUser.InsertFileAsync(fileName, mimeType, userId);
-                // Update Content
-                await this.repositoryContent.CreateContentFile(contentGroupId: groupId, fileId: fileId);
-            }
+                string mimeType = hiddenFileInput.ContentType;
 
-            if (unsafeHtml != null)
+                string fileName = "content_file_" + await this.repositoryUser.GetMaxFile();
+                // Upload file                
+                string? path = await this.helperFile.UploadFileAsync(hiddenFileInput, Folders.ContentFiles, FileTypes.Document, fileName);
+                if (path != null)
+                {
+                    // Insert file in DB
+                    int fileId = await this.repositoryUser.InsertFileAsync(path, mimeType, userId);
+                    // Update Content
+                    await this.repositoryContent.CreateContentFile(contentGroupId: groupId, fileId: fileId);
+                }
+                else
+                {
+                    ViewData["ERROR"] = "Error al subir archivo";
+                    return RedirectToAction("CourseDetails", "Courses", new { id = courseId });
+                }
+            }
+            else if (unsafeHtml != null)
             {
                 string html = unsafeHtml;
                 string sanitized = this.sanitizer.Sanitize(html);
@@ -58,16 +66,23 @@ namespace MoodReboot.Controllers
             if (file != null)
             {
                 string mimeType = file.ContentType;
-                string fileName = file.FileName;
+                string fileName = "content_file_" + await this.repositoryUser.GetMaxFile();
                 // Upload file                
-                await this.helperFile.UploadFileAsync(file, Folders.Temp);
-                // Update DB
-                int fileId = await this.repositoryUser.InsertFileAsync(fileName, mimeType, userId);
-                // Update Content
-                await this.repositoryContent.UpdateContent(id: contentId, fileId: fileId);
+                string? path = await this.helperFile.UploadFileAsync(file, Folders.ContentFiles, FileTypes.Document, fileName);
+                if (path != null)
+                {
+                    // Update DB
+                    int fileId = await this.repositoryUser.InsertFileAsync(fileName, mimeType, userId);
+                    // Update Content
+                    await this.repositoryContent.UpdateContent(id: contentId, fileId: fileId);
+                }
+                else
+                {
+                    ViewData["ERROR"] = "Error al subir archivo";
+                    return RedirectToAction("CourseDetails", "Courses", new { id = courseId });
+                }
             }
-
-            if (unsafeHtml != null)
+            else if (unsafeHtml != null)
             {
                 string sanitized = this.sanitizer.Sanitize(unsafeHtml);
 
