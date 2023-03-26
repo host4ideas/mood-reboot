@@ -109,6 +109,7 @@
     if (Context.User.Identity.IsAuthenticated == true)
     {
         string userId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        string currentUserName = Context.User.FindFirstValue(ClaimTypes.Name);
         string requestMessages = Url.Action("GetChatMessages", "Messages");
         string requestUpdateLastSeen = Url.Action("UpdateChatLastSeen", "Messages");
         string requestSearchUsers = Url.Action("SearchUsers", "Users");
@@ -129,17 +130,17 @@
                         // If the chat is loaded change the button
                         if (statusTxt == "success") {
                             let html = `
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <button onclick="btnChatToggle()" type="button" class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-full hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <svg width="20px" height="20px" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    </svg>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </button>`;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <button onclick="btnChatToggle()" type="button" class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-full hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <svg width="20px" height="20px" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    </svg>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </button>`;
                             $("#btnChatToggle").html(html);
 
                             // Load notifications
                             $("#notifications-window").load('@Url.Action("ChatNotificationsPartial", "Messages", new { userId = userId })');
 
-                            initializeConnection("@connectionString");
+                            initializeConnection("@connectionString", "@currentUserName");
                         }
 
                         if (statusTxt == "error") {
@@ -151,6 +152,7 @@
             <script>
                 function loadChatMessages(chatGroupId, notificationId) {
                     $("#messagesList").html("");
+                    $("#messagesList").removeClass("hidden");
                     $("#hiddenGroupId").val(chatGroupId);
                     // Hide chats sidebar
                     $("#chatsSidenav").hide();
@@ -161,24 +163,44 @@
                     $("#open-sidenav-icon").toggle("fast");
                     $("#close-sidenav-icon").toggle("fast");
                     // Show input message
-                    $("#input-message-container").removeClass(("hidden"));
+                    $("#input-message-container").removeClass("hidden");
                     // Notifications
                     $(`#${notificationId}`).remove();
                     $("#btn-open-notifications").removeClass("animate-pulse");
+                    // Editor stuff
+                    $("#new-chat-window-editor").addClass("hidden");
+                    $("#edit-chat-panel").addClass("hidden");
+                    $("#search-users-chat-panel").addClass("hidden");
 
                     // Load messages of the clicked chat
                     const requestMessages = '@requestMessages' + '?chatGroupId=' + chatGroupId;
                     $.get(requestMessages, function (messageList) {
                         messageList.forEach((message) => {
-                            var li = document.createElement("li");
-                            li.classList.add("dark:text-gray-200");
-                            li.classList.add("my-4");
-                            li.classList.add("text-sm");
+                            let messageDate = new Date(message.datePosted);
+                            let formattedDate = messageDate.getDay() + "/" + messageDate.getMonth() + " | " + messageDate.getHours() + ":" + messageDate.getMinutes();
+
+                            let messageUserName = message.userName;
+
+                            if (messageUserName == "@currentUserName") {
+
+                                messageUserName = "You";
+                            }
+
+                            const li = document.createElement("li");
+                            const htmlMessage = `
+                                    <li class="dark:text-gray-200 my-4 text-sm">
+                                        <div class="mr-2 p-2 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                                            <h5 class="mb-2 text-md font-semibold tracking-tight text-gray-900 dark:text-white">${messageUserName}</h5>
+                                            <p class="mb-2 font-normal text-gray-500 dark:text-gray-400">${message.text}</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">${formattedDate}</p>
+                                        </div>
+                                    </li>`;
                             document.getElementById("messagesList").appendChild(li);
-                            li.textContent = `in group ${chatGroupId} user ${message.userName} says ${message.text} at ${message.datePosted}`;
+                            li.innerHTML = htmlMessage;
                         });
                         // Scroll to bottom
-                        $("#messagesList").animate({ scrollTop: $('#messagesList').prop("scrollHeight") });
+                        const d = $('#messagesList');
+                        d.scrollTop(d.prop("scrollHeight"));
                     });
 
                     // Save that the user has clicked in the chat
@@ -190,16 +212,62 @@
                     $("#selected-search-users-chat").children().each(function () {
                         usersToAdd.push(this.value);
                     });
-                    $.post('@requestCreateChat', { userIds: usersToAdd, groupName: "TEST_GROUP" });
+                    $.post('@requestCreateChat', { userIds: usersToAdd }, function () {
+                        location.reload();
+                    });
                 }
 
-                function editChatGroup(action, chatGroupId, inputId) {
+                function editChatGroup(e, action, chatGroupId, groupName) {
+                    e.stopPropagation();
+                    $("#input-message-container").addClass("hidden");
+                    $("#new-chat-window-editor").addClass("hidden");
+                    $("#edit-chat-panel").addClass("hidden");
+                    $("#messagesList").addClass("hidden");
+                    $("#chatsSidenav").hide("fast");
+                    $("#search-users-chat-panel").addClass("hidden");
+
                     if (action === "update") {
-                        $.get('@requestUpdateChat', { Id: chatGroupId, Name: newChatName });
+                        $("#edit-chat-panel").removeClass("hidden");
+
+                        let html = `<h1 class="text-2xl">Editar chat</h1>
+                                                                                                                                                                        <form action="@requestUpdateChat" method="post">
+                                                                                                                                                                                        <input type="hidden" name="Id" value="${chatGroupId}" />
+                                                                                                                                                                                        <input type="text" name="Name" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" value="${groupName}">
+                                                                                                                                                                                        <button type="submit" class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                                                                                                                                                                                            Editar
+                                                                                                                                                                                        </button>
+                                                                                                                                                                                    </form>
+                                                                                                                                                                                    <!-- Add users to the group -->
+                                                                                                                                                                                    <div class="flex justify-center items-center gap-2">
+                                                                                                                                                                                        <button onclick="toggleSearchUserChat()" class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700" type="button">
+                                                                                                                                                                                            Añadir usuarios
+                                                                                                                                                                                        </button>
+                                                                                                                                                                                        <button onclick="addUsersToChat(${chatGroupId})" type="button" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+                                                                                                                                                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                                                                                                                                                                                                <path fill-rule="evenodd" d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z" clip-rule="evenodd" />
+                                                                                                                                                                                            </svg>
+                                                                                                                                                                                        </button>
+                                                                                                                                                                                    </div>
+                                                                                                                                                                                <div id="dropdown-user-search" class="z-50 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
+                                                                                                                                                                                    <input type="text" oninput="searchUsers(event)" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Email o usuario">
+                                                                                                                                                                                    <ul id="selected-search-users-chat" class="py-2 text-sm text-gray-700 dark:text-gray-200 max-h-72 overflow-y-auto overflow-x-hidden">
+                                                                                                                                                                                    </ul>
+                                                                                                                                                                                    <ul id="users-result-list" class="py-2 text-sm text-gray-700 dark:text-gray-200 max-h-72 overflow-y-auto overflow-x-hidden">
+                                                                                                                                                                                    </ul>
+                                                                                                                                                                                </div>`;
+
+                        $("#edit-chat-panel").html(html);
                     } else if (action === "delete") {
-                        $.get('@requestDeleteChat', { chatGroupId: chatGroupId });
+                        $.get('@requestDeleteChat', { chatGroupId: chatGroupId }, function () {
+                            location.reload();
+                        });
                     } else if (action === "out") {
-                        $.get('@requestRemoveUserChat', { userId: @userId, chatGroupId: chatGroupId });
+                        $.get('@requestRemoveUserChat', { userId: @userId, chatGroupId: chatGroupId }, function () {
+                            location.reload();
+                        });
+                    } else if (action === "new") {
+                        $("#new-chat-window-editor").removeClass("hidden");
+                        $("#search-users-chat-panel").removeClass("hidden");
                     }
                 }
 
@@ -208,7 +276,7 @@
                     $("#selected-users-add-chat").children().each(function () {
                         usersToAdd.push(this.value);
                     });
-                    $.post('@requestAddUsersChat', { chatGroupId: chatGroupId, userIds: usersToAdd});
+                    $.post('@requestAddUsersChat', { chatGroupId: chatGroupId, userIds: usersToAdd });
                 }
 
                 function searchUsers(e) {

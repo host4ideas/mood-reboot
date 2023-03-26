@@ -1,5 +1,4 @@
-﻿using AngleSharp.Dom;
-using System.Net;
+﻿using System.Net;
 using System.Net.Mail;
 
 namespace MoodReboot.Helpers
@@ -12,8 +11,6 @@ namespace MoodReboot.Helpers
 
     public class HelperMail
     {
-        private readonly HttpContext httpContext;
-        private readonly HelperPath helperPath;
         private readonly IConfiguration configuration;
         private string MRBaseMail = @"<!DOCTYPE html>
 <html
@@ -80,7 +77,7 @@ namespace MoodReboot.Helpers
                                 <img
                                     src=""%MOODREBOOT_IMAGE%""
                                     alt=""""
-                                    width=""300""
+                                    width=""200""
                                     style=""height: auto; display: block""
                                 />
                             </td>
@@ -188,11 +185,9 @@ namespace MoodReboot.Helpers
 </html>
 ";
 
-        public HelperMail(IConfiguration configuration, IHttpContextAccessor httpContextAccessor, HelperPath helperPath)
+        public HelperMail(IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
             this.configuration = configuration;
-            this.httpContext = httpContextAccessor.HttpContext;
-            this.helperPath = helperPath;
         }
 
         private MailMessage ConfigureMailMessage(string para, string asunto, string mensaje)
@@ -282,7 +277,7 @@ namespace MoodReboot.Helpers
             nuevoEmail = nuevoEmail.Replace("%SUBJECT%", asunto);
             nuevoEmail = nuevoEmail.Replace("%BODY%", mensaje);
             nuevoEmail = nuevoEmail.Replace("%MOODREBOOTLINK%", baseUrl);
-            nuevoEmail = nuevoEmail.Replace("%MOODREBOOT_IMAGE%", baseUrl + "/assets/site-logo.jpg");
+            nuevoEmail = nuevoEmail.Replace("%MOODREBOOT_IMAGE%", "https://live.staticflickr.com/65535/52772156860_2cdcd949cb_m.jpg");
 
             string linksHtml = "";
 

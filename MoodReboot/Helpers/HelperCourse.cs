@@ -32,7 +32,7 @@ namespace MoodReboot.Helpers
 
             string? path = "default_course_image.jpeg";
             // If the user wants an image
-            if (image != null)
+            if (image != null && image.Length > 0)
             {
                 string fileName = "course_image_" + newCourseId;
                 path = await this.helperFile.UploadFileAsync(image, Folders.CourseImages, FileTypes.Image, fileName);

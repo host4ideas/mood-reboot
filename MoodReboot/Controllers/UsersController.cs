@@ -37,7 +37,7 @@ namespace MoodReboot.Controllers
         [HttpPost]
         public async Task<IActionResult> Profile(int userId, string userName, string firstName, string lastName, IFormFile image)
         {
-            if (image != null)
+            if (image != null && image.Length > 0)
             {
                 string fileName = "image_" + userId;
                 await this.helperFile.UploadFileAsync(image, Folders.ProfileImages, FileTypes.Image, fileName);

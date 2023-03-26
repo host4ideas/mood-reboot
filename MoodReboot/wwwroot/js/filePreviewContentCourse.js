@@ -136,9 +136,8 @@ function previewPdf(data, previewContent, canvasPdfId, nextId, prevId, pageNumId
 }
 
 $("#hiddenFileInput").on("change", function (e) {
-    var file = e.target.files[0]
-
-    console.log("test");
+    const file = e.target.files[0]
+    const fileSizeInBytes = e.target.files[0].size;
 
     // Clean previews
     $('#imgImagePreview').empty();
@@ -146,16 +145,45 @@ $("#hiddenFileInput").on("change", function (e) {
     $("#tableDataPreview").empty();
 
     try {
-        var fileReader = new FileReader();
+        const fileReader = new FileReader();
         fileReader.onload = function () {
-            var data = fileReader.result;
+            const data = fileReader.result;
 
             if (file.type == "application/pdf") {
-                previewPdf(data, "canvasPdfPreview", "page_num", "pageProgressBar", "prev", "next", "page_count");
-            }
+                const maxFileSizeInBytes = 20 * 1024 * 1024;  // 20 MB
 
-            if (file.type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || file.type == "application/vnd.ms-excel") {
-                previewExcel(data, "tableDataPreview");
+                if (fileSizeInBytes > maxFileSizeInBytes) {
+                    alert("El tamaño del archivo debe de ser menor que 20MB.");
+                    e.target.value = "";  // Clear the file input
+                } else {
+                    previewPdf(data, "previewContent", "canvasPdfPreview", "page_num", "pageProgressBar", "prev", "next", "page_count");
+                }
+            } else if (file.type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || file.type == "application/vnd.ms-excel") {
+                const maxFileSizeInBytes = 20 * 1024 * 1024;  // 20 MB
+
+                if (fileSizeInBytes > maxFileSizeInBytes) {
+                    alert("El tamaño del archivo debe de ser menor que 20MB.");
+                    e.target.value = "";  // Clear the file input
+                } else {
+                    previewExcel(data, "tableDataPreview");
+                }
+            } else if (file.type == "image/jpeg" || file.type == "image/png" || file.type == "image/webp") {
+                const maxFileSizeInBytes = 5 * 1024 * 1024;  // 5 MB
+
+                if (fileSizeInBytes > maxFileSizeInBytes) {
+                    alert("El tamaño del archivo debe de ser menor de 5MB.");
+                    e.target.value = "";  // Clear the file input
+                } else {
+                    var reader = new FileReader();
+                    reader.onload = function () {
+                        $('#imgImagePreview').attr("src", reader.result);
+                        $("#previewImage").removeClass("hidden");
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            } else {
+                alert("Archivo no soportado");
+                e.target.value = "";  // Clear the file input
             }
 
         };

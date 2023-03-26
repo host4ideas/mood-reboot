@@ -33,15 +33,17 @@
                     function htmlListItem(editor, modified, description, published, course) {
                         let authorsHtml = "";
 
-                        course.authors.forEach(author => {
-                            authorsHtml += `
-                                <div class="flex items-center">
-                                    <img class="mr-2 w-7 h-7 rounded-full" src="/uploads/profile_images/${author.image}" alt="${author.userName} avatar" />
-                                    <span class="font-medium dark:text-white">
-                                        ${author.userName}
-                                    </span>
-                                </div>`
-                        });
+                        if(course.authors) {
+                            course.authors.forEach(author => {
+                                authorsHtml += `
+                                    <div class="flex items-center">
+                                        <img class="mr-2 w-7 h-7 rounded-full" src="/uploads/profile_images/${author.image}" alt="${author.userName} avatar" />
+                                        <span class="font-medium dark:text-white">
+                                            ${author.userName}
+                                        </span>
+                                    </div>`
+                            });
+                        }
 
                         return `
                             <a href='CourseDetails?courseId=${course.courseId}' class="flex flex-col gap-6 justify-between p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 overflow-hidden">

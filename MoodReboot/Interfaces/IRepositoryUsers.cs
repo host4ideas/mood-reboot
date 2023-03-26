@@ -26,9 +26,11 @@ namespace MoodReboot.Interfaces
         public Task RemoveUserAction(UserAction userAction);
         public Task<string> CreateUserAction(int userId);
         // Files
-        Task<AppFile> FindFile(int fileId);
+        Task<AppFile?> FindFile(int fileId);
         Task<int> GetMaxFile();
         Task DeleteFile(int fileId);
+        Task UpdateFileAsync(int fileId, string fileName, string mimeType);
+        Task UpdateFileAsync(int fileId, string fileName, string mimeType, int userId);
         Task<int> InsertFileAsync(string name, string mimeType);
         Task<int> InsertFileAsync(string name, string mimeType, int userId);
         // Messages

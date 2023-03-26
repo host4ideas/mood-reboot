@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using MoodReboot.Helpers;
 using MoodReboot.Interfaces;
+using MoodReboot.Models;
+using System.Security.Claims;
 
 namespace MoodReboot.Controllers
 {
@@ -20,9 +22,10 @@ namespace MoodReboot.Controllers
             this.helperFile = helperFile;
         }
 
-        public IActionResult DeleteContent(int id, int courseId)
+        public IActionResult DeleteContent(int contentId, int courseId)
         {
-            this.repositoryContent.DeleteContent(id);
+            // If using an asynchronous controller invokes 500 server error
+            this.repositoryContent.DeleteContent(contentId).Wait();
             return RedirectToAction("CourseDetails", "Courses", new { id = courseId });
         }
 
@@ -34,19 +37,27 @@ namespace MoodReboot.Controllers
                 string mimeType = hiddenFileInput.ContentType;
 
                 string fileName = "content_file_" + await this.repositoryUser.GetMaxFile();
-                // Upload file                
+                // Upload file
+                // Try with a document
                 string? path = await this.helperFile.UploadFileAsync(hiddenFileInput, Folders.ContentFiles, FileTypes.Document, fileName);
+                if (path == null)
+                {
+                    // Try with an image
+                    path = await this.helperFile.UploadFileAsync(hiddenFileInput, Folders.ContentFiles, FileTypes.Image, fileName);
+
+                    if (path == null)
+                    {
+                        ViewData["ERROR"] = "Error al subir archivo. Formatos soportados: .pdf, .xlsx, .jpeg, .jpg, .png, .webp. Tamaño máximo: 10MB.";
+                        return RedirectToAction("CourseDetails", "Courses", new { id = courseId });
+
+                    }
+                }
                 if (path != null)
                 {
                     // Insert file in DB
                     int fileId = await this.repositoryUser.InsertFileAsync(path, mimeType, userId);
                     // Update Content
                     await this.repositoryContent.CreateContentFile(contentGroupId: groupId, fileId: fileId);
-                }
-                else
-                {
-                    ViewData["ERROR"] = "Error al subir archivo";
-                    return RedirectToAction("CourseDetails", "Courses", new { id = courseId });
                 }
             }
             else if (unsafeHtml != null)
@@ -61,32 +72,57 @@ namespace MoodReboot.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateContent(int userId, int courseId, int contentId, string unsafeHtml, IFormFile file)
+        public async Task<IActionResult> UpdateContent(int userId, int courseId, int contentId, string unsafeHtml, IFormFile hiddenFileInput)
         {
-            if (file != null)
-            {
-                string mimeType = file.ContentType;
-                string fileName = "content_file_" + await this.repositoryUser.GetMaxFile();
-                // Upload file                
-                string? path = await this.helperFile.UploadFileAsync(file, Folders.ContentFiles, FileTypes.Document, fileName);
-                if (path != null)
-                {
-                    // Update DB
-                    int fileId = await this.repositoryUser.InsertFileAsync(fileName, mimeType, userId);
-                    // Update Content
-                    await this.repositoryContent.UpdateContent(id: contentId, fileId: fileId);
-                }
-                else
-                {
-                    ViewData["ERROR"] = "Error al subir archivo";
-                    return RedirectToAction("CourseDetails", "Courses", new { id = courseId });
-                }
-            }
-            else if (unsafeHtml != null)
-            {
-                string sanitized = this.sanitizer.Sanitize(unsafeHtml);
+            Content? content = await this.repositoryContent.FindContent(contentId);
 
-                await this.repositoryContent.UpdateContent(id: contentId, text: sanitized);
+            if (content != null)
+            {
+                if (hiddenFileInput != null)
+                {
+                    string mimeType = hiddenFileInput.ContentType;
+                    string fileName = "content_file_" + contentId;
+                    // Upload file                
+                    // Try with a document
+                    string? path = await this.helperFile.UploadFileAsync(hiddenFileInput, Folders.ContentFiles, FileTypes.Document, fileName);
+                    if (path == null)
+                    {
+                        // Try with an image
+                        path = await this.helperFile.UploadFileAsync(hiddenFileInput, Folders.ContentFiles, FileTypes.Image, fileName);
+
+                        if (path == null)
+                        {
+                            ViewData["ERROR"] = "Error al subir archivo. Formatos soportados: .pdf, .xlsx, .jpeg, .jpg, .png, .webp. Tamaño máximo: 10MB.";
+                            return RedirectToAction("CourseDetails", "Courses", new { id = courseId });
+
+                        }
+                    }
+
+                    if (path != null)
+                    {
+                        if (content.FileId == null)
+                        {
+                            // Update DB
+                            int fileId = await this.repositoryUser.InsertFileAsync(path, mimeType, userId);
+                            // Update Content
+                            await this.repositoryContent.UpdateContent(id: contentId, fileId: fileId);
+                        }
+                        else
+                        {
+                            // Update DB
+                            int fileId = content.FileId.Value;
+                            await this.repositoryUser.UpdateFileAsync(fileId, path, mimeType, userId);
+                            // Update Content
+                            await this.repositoryContent.UpdateContent(id: contentId, fileId: fileId);
+                        }
+                    }
+                }
+                else if (unsafeHtml != null)
+                {
+                    string sanitized = this.sanitizer.Sanitize(unsafeHtml);
+
+                    await this.repositoryContent.UpdateContent(id: contentId, text: sanitized);
+                }
             }
 
             return RedirectToAction("CourseDetails", "Courses", new { id = courseId });

@@ -27,6 +27,7 @@
                 <a asp-controller="Courses" asp-action="UserCourses" class="@GetActiveLinkClass("Courses")">Mis Cursos</a>
             </li>
         }
+        @Html.Raw(ViewData["ADDITIONAL_LINK"])
     </ul>
 </div>
 

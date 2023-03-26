@@ -17,7 +17,7 @@
         public bool IsEditor { get; set; }
         public string CenterName { get; set; }
         public int CourseId { get; set; }
-        public string Image { get; set; }
+        public string? Image { get; set; }
         public bool IsVisible { get; set; }
         public List<Author>? Authors { get; set; }
     }

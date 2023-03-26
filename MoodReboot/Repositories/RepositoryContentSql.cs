@@ -18,12 +18,17 @@ namespace MoodReboot.Repositories
 
         public async Task<int> GetMaxContent()
         {
+            if (!context.Contents.Any())
+            {
+                return 1;
+            }
+
             return await this.context.Contents.MaxAsync(x => x.Id) + 1;
         }
 
-        public Task<Content?> FindContent(int id)
+        public async Task<Content?> FindContent(int id)
         {
-            return this.context.Contents.FirstOrDefaultAsync(x => x.Id == id);
+            return await this.context.Contents.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public Task<List<Content>> GetContentByGroup(int groupId)

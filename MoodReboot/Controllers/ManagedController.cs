@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using MoodReboot.Extensions;
 using MoodReboot.Helpers;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
@@ -29,35 +30,6 @@ namespace MoodReboot.Controllers
         public IActionResult Login()
         {
             return View();
-        }
-
-        public async Task<IActionResult> ResendConfirmationEmail(int userId, string token)
-        {
-            AppUser? user = await this.repositoryUsers.FindUser(userId);
-
-            if (user != null)
-            {
-                // Confirmation mail
-                string protocol = HttpContext.Request.IsHttps ? "https" : "http";
-                string domainName = HttpContext.Request.Host.Value.ToString();
-                string baseUrl = protocol + domainName;
-                string url = Url.Action("ApproveUserEmail", "Users", new { userId, token }, protocol)!;
-
-                List<MailLink> links = new()
-            {
-                new MailLink()
-                {
-                    LinkText = "Confirmar cuenta",
-                    Link = url
-                }
-            };
-                await this.helperMail.SendMailAsync(user.Email, "Confirmación de cuenta", "Se ha solicitado una petición para crear una cuenta en MoodReboot con este correo electrónico. Pulsa el siguiente enlace para confirmarla. Si no has sido tu el solicitante no te procupes, la petición será cancelada en un período de 24hrs.", links, baseUrl);
-
-                ViewData["SUCCESS"] = "Correo de confirmación enviado";
-                return View("Login");
-            }
-            ViewData["MESSAGE"] = "Datos inválidos";
-            return View("Login");
         }
 
         [HttpPost]
@@ -103,6 +75,35 @@ namespace MoodReboot.Controllers
             string action = TempData["action"].ToString();
 
             return RedirectToAction(action, controller);
+        }
+
+        public async Task<IActionResult> ResendConfirmationEmail(int userId, string token)
+        {
+            AppUser? user = await this.repositoryUsers.FindUser(userId);
+
+            if (user != null)
+            {
+                // Confirmation mail
+                string protocol = HttpContext.Request.IsHttps ? "https" : "http";
+                string domainName = HttpContext.Request.Host.Value.ToString();
+                string baseUrl = protocol + domainName;
+                string url = Url.Action("ApproveUserEmail", "Users", new { userId, token }, protocol)!;
+
+                List<MailLink> links = new()
+            {
+                new MailLink()
+                {
+                    LinkText = "Confirmar cuenta",
+                    Link = url
+                }
+            };
+                await this.helperMail.SendMailAsync(user.Email, "Confirmación de cuenta", "Se ha solicitado una petición para crear una cuenta en MoodReboot con este correo electrónico. Pulsa el siguiente enlace para confirmarla. Si no has sido tu el solicitante no te procupes, la petición será cancelada en un período de 24hrs.", links, baseUrl);
+
+                ViewData["SUCCESS"] = "Correo de confirmación enviado";
+                return View("Login");
+            }
+            ViewData["MESSAGE"] = "Datos inválidos";
+            return View("Login");
         }
 
         public async Task<IActionResult> Logout()

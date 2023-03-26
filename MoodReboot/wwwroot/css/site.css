@@ -1,4 +1,12 @@
-﻿/* 
+﻿.scale-hover-animation {
+    transition: transform .5s; /* Animation */
+}
+
+.scale-hover-animation:hover {
+    transform: scale(1.1); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+}
+
+/* 
     Scrollbar hiding 
 */
 @media (max-width: 1280px) {

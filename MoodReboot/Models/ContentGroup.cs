@@ -16,6 +16,6 @@ namespace MoodReboot.Models
         [Column("COURSE_ID")]
         public int CourseID { get; set; }
         // Extra
-        public List<Content>? Contents { get; set; }
+        public List<ContentListModel>? Contents { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using AngleSharp.Io;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using MoodReboot.Data;
 using MoodReboot.Helpers;
@@ -184,6 +185,7 @@ namespace MoodReboot.Repositories
             if (user != null)
             {
                 this.context.Users.Remove(user);
+                await this.context.SaveChangesAsync();
             }
         }
 
@@ -239,7 +241,7 @@ namespace MoodReboot.Repositories
 
         #region FILES
 
-        public Task<AppFile> FindFile(int fileId)
+        public Task<AppFile?> FindFile(int fileId)
         {
             return this.context.Files.FirstOrDefaultAsync(x => x.Id == fileId);
         }
@@ -262,18 +264,18 @@ namespace MoodReboot.Repositories
         /// <returns></returns>
         public async Task<int> InsertFileAsync(string name, string mimeType)
         {
-            string sql = "SP_CREATE_FILE @NAME, @MIME_TYPE, @USER_ID, @FILE_ID OUT";
+            int fileId = await this.GetMaxFile();
 
-            SqlParameter paramName = new("@NAME", name);
-            SqlParameter paramMime = new("@MIME_TYPE", mimeType);
-            SqlParameter paramFileIdOut = new("@FILE_ID", null)
+            await this.context.Files.AddAsync(new()
             {
-                Direction = System.Data.ParameterDirection.Output
-            };
+                Id = fileId,
+                Name = name,
+                MimeType = mimeType
+            });
 
-            await this.context.Database.ExecuteSqlRawAsync(sql, paramName, paramMime, paramFileIdOut);
+            await this.context.SaveChangesAsync();
 
-            return (int)paramFileIdOut.Value;
+            return fileId;
         }
 
         /// <summary>
@@ -298,6 +300,31 @@ namespace MoodReboot.Repositories
             await this.context.Files.AddAsync(file);
             await this.context.SaveChangesAsync();
             return fileId;
+        }
+
+        public async Task UpdateFileAsync(int fileId, string fileName, string mimeType)
+        {
+            AppFile? appFile = await this.FindFile(fileId);
+
+            if (appFile != null)
+            {
+                appFile.MimeType = mimeType;
+                appFile.Name = fileName;
+                await this.context.SaveChangesAsync();
+            }
+        }
+
+        public async Task UpdateFileAsync(int fileId, string fileName, string mimeType, int userId)
+        {
+            AppFile? appFile = await this.FindFile(fileId);
+
+            if (appFile != null)
+            {
+                appFile.MimeType = mimeType;
+                appFile.Name = fileName;
+                appFile.UserId = userId;
+                await this.context.SaveChangesAsync();
+            }
         }
 
         /// <summary>
@@ -616,6 +643,15 @@ namespace MoodReboot.Repositories
             if (userChat != null)
             {
                 this.context.UserChatGroups.Remove(userChat);
+                await this.context.SaveChangesAsync();
+
+                List<ChatUserModel> users = await this.GetChatGroupUsers(chatGroupId);
+                // If there aren't any remaining users in the chat delete it
+                if (users.Count == 0)
+                {
+                    await this.RemoveChatGroup(chatGroupId);
+                }
+
                 await this.context.SaveChangesAsync();
             }
         }

@@ -56,11 +56,21 @@ namespace MoodReboot.Repositories
 
         public async Task<int> GetMaxCenter()
         {
+            if (!context.Centers.Any())
+            {
+                return 1;
+            }
+
             return await this.context.Centers.MaxAsync(x => x.Id) + 1;
         }
 
         private async Task<int> GetMaxUserCenter()
         {
+            if (!context.Centers.Any())
+            {
+                return 1;
+            }
+
             return await this.context.UserCenters.MaxAsync(x => x.Id) + 1;
         }
 

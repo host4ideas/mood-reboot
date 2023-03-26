@@ -68,6 +68,29 @@ namespace MoodReboot.Helpers
 
             bool isValid = false;
 
+            if (file == null || file.Length == 0)
+            {
+                return null;
+            }
+
+            long maxImageSize = 1024 * 1024 * 5;
+            long maxDocumentSize = 1024 * 1024 * 20;
+
+            if (fileType == FileTypes.Pdf || fileType == FileTypes.Excel || fileType == FileTypes.Document)
+            {
+                if (file.Length > maxDocumentSize)
+                {
+                    return null;
+                }
+            }
+            else if (fileType == FileTypes.Image)
+            {
+                if (file.Length > maxImageSize)
+                {
+                    return null;
+                }
+            }
+
             switch (fileType)
             {
                 case FileTypes.Excel:

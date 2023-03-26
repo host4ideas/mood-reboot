@@ -15,7 +15,5 @@ namespace MoodReboot.Models
         public int ContentGroupId { get; set; }
         [Column("FILE_ID")]
         public int? FileId { get; set; }
-        // Extra
-        public AppFile? File { get; set; }
     }
 }

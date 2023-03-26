@@ -4,7 +4,7 @@ var pdfjsLib = window['pdfjs-dist/build/pdf'];
 pdfjsLib.GlobalWorkerOptions.workerSrc = './js/pdfjs-3.3.122-dist/build/pdf.worker.js';
 
 $("#hidden-file").on("change", function (e) {
-    var file = e.target.files[0]
+    var file = e.target.files[0];
 
     // Clean previews
     $('#imgImagePreview').empty();

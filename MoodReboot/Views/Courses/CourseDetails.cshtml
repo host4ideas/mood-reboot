@@ -8,6 +8,28 @@
 @{
     List<FilePreviewModel> previewFiles = new();
     int userId = int.Parse(Context.User.FindFirstValue(ClaimTypes.NameIdentifier));
+    List<LastSeenCourse>? lastSeenCourses = Context.Session.GetObject<List<LastSeenCourse>>("LAST_COURSES");
+
+    string leaveCourse = Url.Action("DeleteCourseUser", "Courses", new { id = Model.Course.Id, userId });
+    ViewData["ADDITIONAL_LINK"] = $@"<li class='absolute right-5'>
+                                    <button id='btn-course-options' data-dropdown-toggle='dropdown-course-options' class='text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700' type='button'>Opciones</button>
+                                    <div id='dropdown-course-options' class='z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700'>
+                                        <ul class='py-2 text-sm text-gray-700 dark:text-gray-200' aria-labelledby='btn-course-options'>
+                                          <li>
+                                            <a href='{leaveCourse}' class='block px-4 py-1 hover:bg-red-800 hover:text-white dark:hover:bg-red-600 dark:hover:text-gray-800'>Salir del curso</a>
+                                          </li>
+                                        </ul>
+                                    </div>
+                                </li>";
+}
+
+@{
+    if (ViewData["ERROR"] != null)
+    {
+        <div class="p-4 my-6 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+            <span class="font-medium animate-pulse text-red-600">Error: </span> @ViewData["ERROR"]
+        </div>
+    }
 }
 
 <section id="accordion-collapse" class="mt-5 mb-10" data-accordion="collapse">
@@ -27,7 +49,7 @@
         }
     }
 
-    <h2 class="mb-4 text-3xl lg:text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Contenidos</h2>
+    <h2 class="mb-8 text-3xl lg:text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Contenidos</h2>
 
     @{
         if (Model.IsEditor == true)
@@ -100,11 +122,11 @@
                                 </a>
                             </div>
                             <!-- Update content group -->
-                            <form id="@formId" class="editor-option flex flex-wrap items-center gap-4 justify-center" method="post" onclick="handlePropagation(event)" action="@Url.Action("UpdateContentGroup", "ContentGroups")">
+                            <form id="@formId" class="editor-option flex flex-wrap items-center gap-4 justify-center" method="post" data-accordion-target="#accordion-collapse-body-@index" aria-expanded="false" aria-controls="accordion-collapse-body-@index" action="@Url.Action("UpdateContentGroup", "ContentGroups")">
                                 <input type="hidden" name="id" value="@group.ContentGroupId" />
                                 <input type="hidden" name="courseId" value="@Model.Course.Id" />
                                 <div class="relative">
-                                    <input value="@group.Name" name="name" type="text" id="@floatingLabelId" aria-describedby="floating_helper_text" class="block rounded-t-lg px-2.5 pb-2.5 pt-5 w-full text-sm text-gray-900 bg-gray-50 dark:bg-gray-700 border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " />
+                                    <input value="@group.Name" name="name" type="text" id="@floatingLabelId" aria-describedby="floating_helper_text" onclick="handlePropagation(event)" class="block rounded-t-lg px-2.5 pb-2.5 pt-5 w-full text-sm text-gray-900 bg-gray-50 dark:bg-gray-700 border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " />
                                     <label for="@floatingLabelId" class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] left-2.5 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4">Nuevo nombre</label>
                                 </div>
                                 <!-- IsVisible -->
@@ -142,7 +164,7 @@
 
             if (i < 1 || (i > 0 && i < Model.ContentGroups.Count - 1))
             {
-                contentBodyClass = "p-5 font-light border-2 border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900";
+                contentBodyClass = "p-5 font-light border-2 border-gray-200 dark:border-gray-700 dark:bg-gray-900";
             }
             else
             {
@@ -154,7 +176,7 @@
                 <div class="@contentBodyClass">
                     <!-- Content -->
                     @{
-                        foreach (Content content in group.Contents)
+                        foreach (ContentListModel content in group.Contents)
                         {
                             indexContentGroup += 1;
 
@@ -170,7 +192,7 @@
                                                 </svg>
                                             </button>
                                             <!-- Delete content -->
-                                            <a asp-controller="Content" asp-action="DeleteContent" asp-route-id="@content.Id" asp-route-courseId="@Model.Course.Id" class="inline-flex items-center my-1 p-3 text-gray-900 dark:text-white font-medium rounded border border-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-200 bg-red-400 hover:bg-red-200 dark:hover:bg-red-700 dark:bg-red-900 dark:border-gray-600 dark:hover:bg-red-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                                            <a asp-controller="Content" asp-action="DeleteContent" asp-route-contentId="@content.Id" asp-route-courseId="@Model.Course.Id" class="inline-flex items-center my-1 p-3 text-gray-900 dark:text-white font-medium rounded border border-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-200 bg-red-400 hover:bg-red-200 dark:hover:bg-red-700 dark:bg-red-900 dark:border-gray-600 dark:hover:bg-red-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                                                 </svg>
@@ -191,7 +213,7 @@
                                             if (content.File.MimeType == "image/webp" || content.File.MimeType == "image/jpeg" || content.File.MimeType == "image/png" || content.File.MimeType == "image/gif")
                                             {
                                                 <article id="@content.Id" class="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
-                                                    <img src="~/uploads/content_files/@content.File.Name" width="400" />
+                                                    <img src="~/uploads/content_files/@content.File.Name" class="mx-auto" width="400" />
                                                 </article>
                                             }
                                             else if (content.File.MimeType == "application/pdf")
@@ -229,7 +251,7 @@
 
 
                                                         <!-- Preview pdf content canvas -->
-                                                        <canvas id="@("canvasPdfPreview" + indexContentGroup)" style="max-width:250px"></canvas>
+                                                        <canvas id="@("canvasPdfPreview" + indexContentGroup)" class="mx-auto" style="max-width:250px"></canvas>
                                                     </div>
                                                 </article>
                                             }
@@ -244,7 +266,7 @@
 
                                                 <article value="@content.File.Name" id="@("content" + indexContentGroup)" class="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
                                                     <!-- Excel preview -->
-                                                    <div id="@("tableDataPreview" + indexContentGroup)" class="excel-preview relative overflow-x-auto max-w-36 max-h-72">
+                                                    <div id="@("tableDataPreview" + indexContentGroup)" class="mx-auto excel-preview relative overflow-x-auto max-w-36 max-h-72">
                                                     </div>
                                                 </article>
                                             }
@@ -354,20 +376,20 @@
                     <div id="previewContent" class="hidden">
                         <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
                         <!-- Prev button -->
-                        <button type="button" id="prev" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
+                        <button type="button" id="prev" class="hidden relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
                             <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
                                 Previous
                             </span>
                         </button>
                         <!-- Next button -->
-                        <button type="button" id="next" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">
+                        <button type="button" id="next" class="hidden relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">
                             <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
                                 Next
                             </span>
                         </button>
 
                         <!-- Page progress bar -->
-                        <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700" style="max-height:20px">
+                        <div class="hidden w-full bg-gray-200 rounded-full dark:bg-gray-700" style="max-height:20px">
                             <div id="pageProgressBar" class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: 0%">
                                 <span id="page_num"></span> / <span id="page_count"></span>
                             </div>
@@ -392,44 +414,45 @@
 
 @section scripts {
     <script src="~/js/filePreviewContentCourse.js"></script>
+    <script src="/js/pdfjs-3.3.122-dist/build/pdf.worker.js"></script>
+    <script>
+        let previewFilesList = @Html.Raw(Json.Serialize(previewFiles));
+
+        $(document).ready(function () {
+            previewFilesList.forEach(file => {
+                const url = "/uploads/content_files/" + file.fileName;
+                const targetId = file.targetId;
+
+                var req = new XMLHttpRequest();
+                req.open("GET", url, true);
+                req.responseType = "blob";
+                req.onload = function (event) {
+                    var blob = req.response;
+
+                    var fileReader = new FileReader();
+                    fileReader.onload = function () {
+                        var data = fileReader.result;
+
+                        if (file.type == "application/pdf") {
+                            previewPdf(data, "previewContent" + targetId, "canvasPdfPreview" + targetId, "next" + targetId, "prev" + targetId, "pageNum" + targetId, "pageProgressBar" + targetId, "countId" + targetId);
+                        }
+
+                        if (file.type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || file.type == "application/vnd.ms-excel") {
+                            previewExcel(data, "tableDataPreview" + targetId);
+                        }
+                    };
+                    fileReader.readAsArrayBuffer(blob);
+                };
+
+                req.send();
+            });
+        });
+    </script>
     <!-- Cargar los scripts solo para editor -->
     @if (Model.IsEditor == true)
     {
         <text>
             <script>
-                let previewFilesList = @Html.Raw(Json.Serialize(previewFiles))
-
-                    $(document).ready(function () {
-                        previewFilesList.forEach(file => {
-                            const url = "/uploads/content_files/" + file.fileName;
-                            const targetId = file.targetId;
-
-                            var req = new XMLHttpRequest();
-                            req.open("GET", url, true);
-                            req.responseType = "blob";
-                            req.onload = function (event) {
-                                var blob = req.response;
-
-                                var fileReader = new FileReader();
-                                fileReader.onload = function () {
-                                    var data = fileReader.result;
-
-                                    if (file.type == "application/pdf") {
-                                        previewPdf(data, "previewContent" + targetId, "canvasPdfPreview" + targetId, "next" + targetId, "prev" + targetId, "pageNum" + targetId, "pageProgressBar" + targetId, "countId" + targetId);
-                                    }
-
-                                    if (file.type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || file.type == "application/vnd.ms-excel") {
-                                        previewExcel(data, "tableDataPreview" + targetId);
-                                    }
-
-                                };
-                                fileReader.readAsArrayBuffer(blob);
-                            };
-
-                            req.send();
-                        });
-                    });
-
                 const converter = new showdown.Converter({ extensions: ['xssfilter'] });
 
                 function parseArticleMd(contentId, isFile) {
@@ -555,51 +578,33 @@
     }
 }
 
-<!-- Related courses -->
-<aside aria-label="Cursos relacionados" class="py-4 rounded-lg bg-gray-50 dark:bg-gray-800">
-    <div class="px-4 mx-auto max-w-screen-xl">
-        <h2 class="mb-8 text-2xl font-bold text-gray-900 dark:text-white">Cursos relacionados</h2>
-        <div class="overflow-x-auto whitespace-nowrap">
-            <article class="inline-block mx-4 max-w-xs overflow-hidden">
-                <a href="#">
-                    <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/article/blog-1.png" class="mb-5 rounded-lg" alt="Image 1">
-                </a>
-                <h2 class="mb-2 text-xl font-bold leading-tight text-gray-900 dark:text-white">
-                    <a href="#">Our first office</a>
-                </h2>
-                <p class="font-light text-gray-500 dark:text-gray-400">Over the past year, Volosoft has undergone many changes! After months of preparation.</p>
-            </article>
-            <article class="inline-block mx-4 max-w-xs overflow-hidden">
-                <a href="#">
-                    <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/article/blog-1.png" class="mb-5 rounded-lg" alt="Image 1">
-                </a>
-                <h2 class="mb-2 text-xl font-bold leading-tight text-gray-900 dark:text-white">
-                    <a href="#">Our first office</a>
-                </h2>
-                <p class="font-light text-gray-500 dark:text-gray-400">Over the past year, Volosoft has undergone many changes! After months of preparation.</p>
-            </article>
-            <article class="inline-block mx-4 max-w-xs overflow-hidden">
-                <a href="#">
-                    <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/article/blog-1.png" class="mb-5 rounded-lg" alt="Image 1">
-                </a>
-                <h2 class="mb-2 text-xl font-bold leading-tight text-gray-900 dark:text-white">
-                    <a href="#">Our first office</a>
-                </h2>
-                <p class="font-light text-gray-500 dark:text-gray-400">Over the past year, Volosoft has undergone many changes! After months of preparation.</p>
-            </article>
-            <article class="inline-block mx-4 max-w-xs overflow-hidden">
-                <a href="#">
-                    <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/article/blog-1.png" class="mb-5 rounded-lg" alt="Image 1">
-                </a>
-                <h2 class="mb-2 text-xl font-bold leading-tight text-gray-900 dark:text-white">
-                    <a href="#">Our first office</a>
-                </h2>
-                <p class="font-light text-gray-500 dark:text-gray-400">Over the past year, Volosoft has undergone many changes! After months of preparation.</p>
-            </article>
-        </div>
-    </div>
-</aside>
-
+@{
+    if (lastSeenCourses != null)
+    {
+        <!-- Related courses -->
+        <aside aria-label="Cursos relacionados" class="py-4 rounded-lg bg-gray-50 dark:bg-gray-800" style="margin-top: 75px;">
+            <div class="px-4 mx-auto max-w-screen-xl">
+                <h2 class="mb-8 text-2xl font-bold text-gray-900 dark:text-white">Últimos cursos vistos</h2>
+                <div class="whitespace-nowrap overflow-hidden overflow-x-auto">
+                    @foreach (LastSeenCourse course in lastSeenCourses)
+                    {
+                        <article class="scale-hover-animation inline-block mx-4 max-w-xs overflow-hidden">
+                            <a asp-controller="Courses" asp-action="CourseDetails" asp-route-courseId="@course.Id">
+                                <img src="~/uploads/course_images/@course.Image" class="mb-2 rounded-lg" alt="Image 1" style="width: 15rem;">
+                            </a>
+                            <h2 class="mb-2 text-xl font-bold leading-tight text-gray-900 dark:text-white">
+                                <a asp-controller="Courses" asp-action="CourseDetails" asp-route-courseId="@course.Id">
+                                    <p class="font-light text-gray-500 dark:text-gray-400">@course.Name</p>
+                                </a>
+                            </h2>
+                            <p class="font-light text-gray-500 dark:text-gray-400">@course.Description[50..]</p>
+                        </article>
+                    }
+                </div>
+            </div>
+        </aside>
+    }
+}
 @{
     // Course users
     if (Model.IsEditor == true && Model.CourseUsers != null)

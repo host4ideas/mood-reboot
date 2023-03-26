@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MoodReboot.Extensions;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
 using MvcCoreSeguridadEmpleados.Filters;
@@ -52,7 +51,7 @@ namespace MoodReboot.Controllers
             await this.repositoryUsers.UpdateChatLastSeen(chatGroupId, userId);
         }
 
-        public async Task CreateChatGroup(List<int> userIds, string? groupName)
+        public async Task CreateChatGroup(List<int> userIds, string? groupName = "NEW CHAT GROUP")
         {
             // Add current user to the list of users
             int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
@@ -65,7 +64,7 @@ namespace MoodReboot.Controllers
             {
                 await this.repositoryUsers.NewChatGroup(userIdsNoDups);
             }
-            else if (userIds.Count > 2 && groupName != null)
+            else if (userIds.Count > 2)
             {
                 await this.repositoryUsers.NewChatGroup(userIdsNoDups, userId, groupName);
             }
@@ -77,14 +76,16 @@ namespace MoodReboot.Controllers
             return this.repositoryUsers.AddUsersToChat(chatGroupId, userIds);
         }
 
-        public Task UpdateChatGroup(ChatGroup chatGroup)
+        [HttpPost]
+        public async Task<IActionResult> UpdateChatGroup(ChatGroup chatGroup)
         {
-            return this.repositoryUsers.UpdateChatGroup(chatGroup.Id, chatGroup.Name);
+            await this.repositoryUsers.UpdateChatGroup(chatGroup.Id, chatGroup.Name);
+            return RedirectToAction("Index", "Home");
         }
 
-        public Task DeleteChatGroup(int userId)
+        public async Task DeleteChatGroup(int chatGroupId)
         {
-            return this.repositoryUsers.RemoveChatGroup(userId);
+            await this.repositoryUsers.RemoveChatGroup(chatGroupId);
         }
 
         public Task RemoveUserFromChat(int userId, int chatGroupId)

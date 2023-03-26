@@ -3,6 +3,7 @@ using MoodReboot.Extensions;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
 using MvcCoreSeguridadEmpleados.Filters;
+using System.Collections.Generic;
 using System.Security.Claims;
 
 namespace MoodReboot.Controllers
@@ -123,17 +124,28 @@ namespace MoodReboot.Controllers
 
                 foreach (ContentGroup group in contentGroups)
                 {
-                    List<Content> content = await this.repositoryContent.GetContentByGroup(group.ContentGroupId);
+                    List<Content> contentList = await this.repositoryContent.GetContentByGroup(group.ContentGroupId);
+                    List<ContentListModel> contentFileList = new();
 
-                    foreach (Content ctn in content)
+                    foreach (Content ctn in contentList)
                     {
+                        ContentListModel contentFile = new()
+                        {
+                            ContentGroupId = ctn.ContentGroupId,
+                            Id = ctn.Id,
+                            Text = ctn.Text,
+                            FileId = ctn.FileId
+                        };
+
                         if (ctn.FileId != null)
                         {
-                            ctn.File = await this.repositoryUsers.FindFile(ctn.FileId.Value);
+                            contentFile.File = await this.repositoryUsers.FindFile(ctn.FileId.Value);
                         }
+
+                        contentFileList.Add(contentFile);
                     }
 
-                    group.Contents = content;
+                    group.Contents = contentFileList;
                 }
 
                 Course? course = await this.repositoryCourses.FindCourse(courseId);
@@ -143,6 +155,30 @@ namespace MoodReboot.Controllers
                     return RedirectToAction("UserCourses", new { userId });
                 }
 
+                // Add to last seen courses
+                List<LastSeenCourse>? lastSeenCourses = HttpContext.Session.GetObject<List<LastSeenCourse>>("LAST_COURSES");
+
+                if (lastSeenCourses == null)
+                {
+                    lastSeenCourses = new();
+                }
+                else if (lastSeenCourses.Count == 5)
+                {
+                    lastSeenCourses.RemoveAt(0);
+                }
+
+                lastSeenCourses.Add(new LastSeenCourse()
+                {
+                    Id = course.Id,
+                    Description = course.Description,
+                    Image = course.Image,
+                    Name = course.Name,
+                });
+
+                // Save without duplicates
+                HttpContext.Session.SetObject("LAST_COURSES", lastSeenCourses.DistinctBy(x => x.Id).ToList());
+
+                // Course users
                 List<CourseUsersModel> courseUsers = await this.repositoryCourses.GetCourseUsers(course.Id);
 
                 CourseDetailsModel details;
@@ -169,6 +205,7 @@ namespace MoodReboot.Controllers
 
                 return View(details);
             }
+            // If the user is not already enrolled to the course
             return RedirectToAction("CourseEnrollment", new { courseId });
         }
 

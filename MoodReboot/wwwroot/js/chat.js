@@ -1,6 +1,6 @@
 ﻿"use strict";
 
-function initializeConnection(connectionString) {
+function initializeConnection(connectionString, currentUserName) {
     $("#btnChatsSidenav").click(function () {
         $("#chatsSidenav").fadeToggle("fast");
         $("#chatsSidenav").height($("#chatWindow").height() - 50);
@@ -18,23 +18,45 @@ function initializeConnection(connectionString) {
     //    li.classList.add("dark:text-gray-200");
     //    document.getElementById("messagesList").appendChild(li);
     //    // We can assign user-supplied strings to an element's textContent because it
-    //    // is not interpreted as markup. If you're assigning in any other way, you 
+    //    // is not interpreted as markup. If you're assigning in any other way, you
     //    // should be aware of possible script injection concerns.
     //    li.textContent = `${user} says ${message}`;
     //});
 
     connection.on("ReceiveMessageGroup", function (userName, groupChatId, date, text) {
-        var li = document.createElement("li");
-        li.classList.add("dark:text-gray-200");
-        li.classList.add("my-4");
-        li.classList.add("text-sm");
+        //var li = document.createElement("li");
+        //li.classList.add("dark:text-gray-200");
+        //li.classList.add("my-4");
+        //li.classList.add("text-sm");
+        //document.getElementById("messagesList").appendChild(li);
+        //// We can assign user-supplied strings to an element's textContent because it
+        //// is not interpreted as markup. If you're assigning in any other way, you
+        //// should be aware of possible script injection concerns.
+        //li.textContent = `in group ${groupChatId} user ${userName} says ${text} at ${date}`;
+
+        let messageDate = new Date(date);
+        let formattedDate = messageDate.getDay() + "/" + messageDate.getMonth() + " | " + messageDate.getHours() + ":" + messageDate.getMinutes();
+
+        let messageUserName = userName;
+
+        if (messageUserName == currentUserName) {
+
+            messageUserName = "You";
+        }
+
+        const li = document.createElement("li");
+        const htmlMessage = `<li class="dark:text-gray-200 my-4 text-sm">
+            <div class="mr-2 p-2 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                <h5 class="mb-2 text-md font-semibold tracking-tight text-gray-900 dark:text-white">${messageUserName}</h5>
+                <p class="mb-2 font-normal text-gray-500 dark:text-gray-400">${text}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">${formattedDate}</p>
+            </div>
+        </li>`;
         document.getElementById("messagesList").appendChild(li);
-        // We can assign user-supplied strings to an element's textContent because it
-        // is not interpreted as markup. If you're assigning in any other way, you 
-        // should be aware of possible script injection concerns.
-        li.textContent = `in group ${groupChatId} user ${userName} says ${text} at ${date}`;
+        li.innerHTML = htmlMessage;
+
         // Scroll to bottom
-        var d = $('#messagesList');
+        const d = $('#messagesList');
         d.scrollTop(d.prop("scrollHeight"));
 
         const id = "notification_" + $("#chat-notification-list").children().length + 1;

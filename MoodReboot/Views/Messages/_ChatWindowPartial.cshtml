@@ -60,32 +60,22 @@
                                 {
                                     if (groupName != "PRIVATE")
                                     {
-                                        <li class="block px-4 py-2">
-                                            <div onclick="editChatGroup('update', @group.Id, 'new-name-@group.Id')" class="block px-4 py-2 hover:font-bold hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">
+                                        <li>
+                                            <div onclick="editChatGroup(event, 'update', @group.Id, '@groupName')" class="w-full block px-4 py-2 hover:font-bold hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">
                                                 Editar
-                                            </div>
-                                            <input type="text" id="new-name-@group.Id" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" value="@groupName">
-                                        </li>
-                                        <li class="block px-4 py-2">
-                                            <div class="flex justify-center items-center gap-2">
-                                                <button onclick="toggleSearchUserChat()" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900" type="button">
-                                                    Añadir usuarios
-                                                </button>
-                                                <button onclick="newChatGroup()" type="button" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-                                                        <path fill-rule="evenodd" d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z" clip-rule="evenodd" />
-                                                    </svg>
-                                                </button>
                                             </div>
                                         </li>
                                     }
 
-                                    <li onclick="editChatGroup('delete', @group.Id, null)" class="block px-4 py-2 hover:font-bold hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">
+                                    <li onclick="editChatGroup(event, 'delete', @group.Id, null)" class="block px-4 py-2 hover:font-bold hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">
                                         Borrar chat
                                     </li>
                                 }
-                                <li onclick="editChatGroup('out', @group.Id, null)" class="block px-4 py-2 hover:font-bold hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">
+                                <li onclick="editChatGroup(event, 'out', @group.Id, null)" class="block px-4 py-2 hover:font-bold hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">
                                     Salir del grupo
+                                </li>
+                                <li onclick="editChatGroup(event, 'new')" class="block px-4 py-2 hover:font-bold hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">
+                                    Nuevo chat
                                 </li>
                             </ul>
                         </div>
@@ -125,21 +115,24 @@
     </div>
     <hr class="h-px my-3 border-0 bg-gray-400" />
 
-    <div class="hidden" id="chat-window-editor">
-        <h1 class="text-2xl">Nuevo chat</h1>
+    <div class="hidden text-center" id="new-chat-window-editor">
+        <h1 class="text-2xl mb-4">Nuevo chat</h1>
+        <button onclick="newChatGroup()" type="button" class="mb-4 focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                <path fill-rule="evenodd" d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z" clip-rule="evenodd" />
+            </svg>
+        </button>
+    </div>
 
-        <div class="flex justify-center items-center gap-2">
-            <button onclick="toggleSearchUserChat()" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900" type="button">
-                Nuevo chat
-            </button>
-            <button onclick="newChatGroup()" type="button" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-                    <path fill-rule="evenodd" d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z" clip-rule="evenodd" />
-                </svg>
-            </button>
-        </div>
+    <div id="edit-chat-panel" class="hidden"></div>
+
+    <div id="search-users-chat-panel" class="hidden flex flex-col justify-center items-center gap-2">
+        <button onclick="toggleSearchUserChat()" class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700" type="button">
+            Añadir usuarios
+        </button>
+
         <!-- Dropdown chat group options -->
-        <div id="dropdown-user-search" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
+        <div id="dropdown-user-search" class="z-50 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
             <input type="text" oninput="searchUsers(event)" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Email o usuario">
             <ul id="selected-search-users-chat" class="py-2 text-sm text-gray-700 dark:text-gray-200 max-h-72 overflow-y-auto overflow-x-hidden">
             </ul>
@@ -149,62 +142,6 @@
     </div>
 
     <div id="chat-window-messages">
-        <!-- Toggle excel preview -->
-        <button id="toggleExcelPreview" class="hidden relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
-            <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                Toggle preview
-            </span>
-        </button>
-
-        <!-- Excel preview -->
-        <div id="tableDataPreview" class="hidden relative overflow-x-auto max-w-36 max-h-72">
-        </div>
-
-        <!-- Toggle preview image -->
-        <button id="toggleImgPreview" class="hidden relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
-            <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                Toggle preview
-            </span>
-        </button>
-
-        <!-- Image preview -->
-        <div id="previewImage" class="hidden">
-            <img class="h-auto max-w-xs" id="imgImagePreview" alt="image description" />
-        </div>
-
-        <!-- Toggle preview PDF -->
-        <button id="togglePdfPreview" class="hidden relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
-            <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                Toogle preview
-            </span>
-        </button>
-
-        <!-- PDF preview -->
-        <div id="previewContent" class="hidden">
-            <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
-
-            <!-- Prev button -->
-            <button id="prev" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
-                <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                    Previous
-                </span>
-            </button>
-            <!-- Next button -->
-            <button id="next" class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">
-                <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                    Next
-                </span>
-            </button>
-
-            <!-- Page progress bar -->
-            <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700" style="max-height:20px">
-                <div id="pageProgressBar" class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: 0%"><span id="page_num"></span> / <span id="page_count"></span></div>
-            </div>
-
-            <!-- Preview pdf content canvas -->
-            <canvas id="canvasPdfPreview" style="max-width:250px"></canvas>
-        </div>
-
         <!-- Messages list -->
         <div id="messages-list-container">
             <input id="hidden-userid" value="@userId" hidden />
@@ -212,14 +149,14 @@
             <input id="hiddenGroupId" value="" hidden />
             <div class="row">
                 <div class="col-6">
-                    <ul id="messagesList" class="row overflow-y-auto" style="height: 340px;"></ul>
+                    <ul id="messagesList" class="row overflow-y-auto" style="height: 340px;">
+                    </ul>
                 </div>
             </div>
         </div>
 
         <!-- Input message with file upload -->
-        <div id="input-message-container" class="hidden bottom-0">
-            @*<form asp-controller="FileUpload" asp-action="Index" enctype="multipart/form-data" method="POST" accept-charset="">*@
+        <div id="input-message-container" class="hidden bottom-0 mt-2">
             <label for="chat" class="sr-only">Your message</label>
             <div class="flex items-center px-2 py-2 rounded-lg bg-gray-50 dark:bg-gray-800">
                 <label for="hidden-file" title="Upload image" class="inline-flex justify-center p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
@@ -233,7 +170,6 @@
                     <span class="sr-only">Send message</span>
                 </button>
             </div>
-            @*</form>*@
         </div>
     </div>
 </div>
