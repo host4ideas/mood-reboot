@@ -356,23 +356,24 @@ namespace MoodReboot.Repositories
             {
                 List<ChatUserModel> users = await this.GetChatGroupUsers(chatGroupId);
                 List<int> alreadyUserIds = users.ConvertAll(x => x.UserID).ToList();
+                List<int> noDupsNewUsers = userIds.Distinct().ToList();
 
-                var consulta = from u in this.context.Users
-                               join uc in this.context.UserChatGroups on u.Id equals uc.UserID
-                               where userIds.Contains(u.Id)
-                               select u.Id;
-
-                List<int> newUserIds = await consulta.ToListAsync();
-
-                alreadyUserIds.AddRange(newUserIds);
-
-                // Eliminate duplicates
-                HashSet<int> userIdsNoDups = new(alreadyUserIds);
+                // Delete already users
+                foreach (var alreadyUser in alreadyUserIds)
+                {
+                    foreach (var newUser in noDupsNewUsers)
+                    {
+                        if (newUser == alreadyUser)
+                        {
+                            noDupsNewUsers.Remove(alreadyUser);
+                        }
+                    }
+                }
 
                 int firstId = await this.GetMaxUserChatGroup();
 
                 // Add users to the chat group
-                foreach (int userId in userIdsNoDups)
+                foreach (int userId in noDupsNewUsers)
                 {
                     UserChatGroup userChatGroup = new()
                     {
@@ -645,14 +646,13 @@ namespace MoodReboot.Repositories
                 this.context.UserChatGroups.Remove(userChat);
                 await this.context.SaveChangesAsync();
 
-                List<ChatUserModel> users = await this.GetChatGroupUsers(chatGroupId);
-                // If there aren't any remaining users in the chat delete it
-                if (users.Count == 0)
-                {
-                    await this.RemoveChatGroup(chatGroupId);
-                }
-
-                await this.context.SaveChangesAsync();
+                //List<ChatUserModel> users = await this.GetChatGroupUsers(chatGroupId);
+                //// If there aren't any remaining users in the chat delete it
+                //if (users.Count == 0)
+                //{
+                //    await this.RemoveChatGroup(chatGroupId);
+                //    await this.context.SaveChangesAsync();
+                //}
             }
         }
 

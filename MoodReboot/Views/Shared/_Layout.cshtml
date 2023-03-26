@@ -273,10 +273,13 @@
 
                 function addUsersToChat(chatGroupId) {
                     const usersToAdd = [];
-                    $("#selected-users-add-chat").children().each(function () {
+                    $("#selected-search-users-chat").children().each(function () {
                         usersToAdd.push(this.value);
                     });
-                    $.post('@requestAddUsersChat', { chatGroupId: chatGroupId, userIds: usersToAdd });
+                    console.log(usersToAdd);
+                    $.post('@requestAddUsersChat', { chatGroupId: chatGroupId, userIds: usersToAdd }, function () {
+                        location.reload();
+                    });
                 }
 
                 function searchUsers(e) {

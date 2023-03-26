@@ -38,7 +38,15 @@ namespace MoodReboot.Controllers
 
         public async Task<IActionResult> DeleteCourseUser(int courseId, int userId)
         {
-            await this.repositoryCourses.RemoveCourseUserAsync(courseId, userId);
+            Course? course = await this.repositoryCourses.FindCourse(courseId);
+            if (course != null)
+            {
+                await this.repositoryCourses.RemoveCourseUserAsync(courseId, userId);
+                if (course.GroupId.HasValue)
+                {
+                    await this.repositoryUsers.RemoveChatUser(userId, course.GroupId.Value);
+                }
+            }
             return RedirectToAction("CourseDetails", new { id = courseId });
         }
 
