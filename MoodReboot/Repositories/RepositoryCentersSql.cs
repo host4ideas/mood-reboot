@@ -115,7 +115,7 @@ namespace MoodReboot.Repositories
         {
             return await this.context.Centers.FirstOrDefaultAsync(x => x.Id == id);
         }
-
+         
         public async Task<List<CenterListView>> GetAllCenters()
         {
             //List<Center> centers = await this.context.Centers.ToListAsync();
