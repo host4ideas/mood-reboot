@@ -16,6 +16,9 @@ MoodReboot/wwwroot/uploads/*/*.webp
 MoodReboot/wwwroot/uploads/*/*.pdf
 MoodReboot/wwwroot/uploads/*/*.xlsx
 
+!MoodReboot/wwwroot/uploads/*/*center_image_1.jpg
+!MoodReboot/wwwroot/uploads/*/*image_2.png
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
