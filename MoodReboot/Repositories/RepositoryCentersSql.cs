@@ -118,7 +118,7 @@ namespace MoodReboot.Repositories
 
         public async Task<List<CenterListView>> GetAllCenters()
         {
-            List<Center> centers = await this.context.Centers.ToListAsync();
+            //List<Center> centers = await this.context.Centers.ToListAsync();
 
             var result = from c in context.Centers
                          join u in context.Users on c.Director equals u.Id
