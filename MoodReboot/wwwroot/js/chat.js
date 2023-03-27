@@ -63,12 +63,9 @@ function initializeConnection(connectionString, currentUserName) {
 
         const htmlNotification = `
                 <div id="${id}" onclick="loadChatMessages(${groupChatId},'${id}')" class="flex py-3 px-4 cursor-pointer text-gray-900 dark:text-gray-200 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
-                    <div class="flex-shrink-0">
-                        <img class="w-11 h-11 rounded-full" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/bonnie-green.png" alt="${userName} avatar">
-                    </div>
                     <div class="pl-3 w-full">
                         <div class="text-gray-500 font-normal text-sm mb-1.5 dark:text-gray-400">Nuevo mensaje de <span class="font-semibold text-gray-900 dark:text-white">${userName}</span>: "${text}"</div>
-                        <div class="text-xs font-medium text-primary-700 dark:text-gray-200">${date}</div>
+                        <div class="text-xs font-medium text-primary-700 dark:text-gray-200">${formattedDate}</div>
                     </div>
                 </div>`;
         $("#no-notifications-text").hide();
