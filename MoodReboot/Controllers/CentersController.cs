@@ -3,6 +3,7 @@ using MoodReboot.Helpers;
 using MoodReboot.Interfaces;
 using MoodReboot.Models;
 using MvcCoreSeguridadEmpleados.Filters;
+using NugetMoodReboot.Models;
 using System.Security.Claims;
 
 namespace MoodReboot.Controllers
@@ -69,6 +70,7 @@ namespace MoodReboot.Controllers
             return View("Index", centers);
         }
 
+        [AuthorizeUsers]
         public async Task<IActionResult> RemoveUserCenter(int userId, int centerId)
         {
             await this.repositoryCenters.RemoveUserCenter(userId, centerId);

@@ -8,7 +8,9 @@ using APIMoodReboot.Models;
 
 namespace APIMoodReboot.Controllers
 {
-    public class CentersController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class CentersController : ControllerBase
     {
         private readonly IRepositoryCenters repositoryCenters;
         private readonly IRepositoryCourses repositoryCourses;
@@ -25,60 +27,30 @@ namespace APIMoodReboot.Controllers
             this.helperCourse = helperCourse;
         }
 
-        public async Task<IActionResult> Index()
+        [HttpGet]
+        public async Task<ActionResult<List<CenterListView>>> GetCenters()
         {
-            List<CenterListView> centers = await this.repositoryCenters.GetAllCentersAsync();
-            return View(centers);
-        }
-
-        public async Task<IActionResult> CenterDetails(int id)
-        {
-            Center? center = await this.repositoryCenters.FindCenterAsync(id);
-            bool isEditor = false;
-
-            if (HttpContext.User.Identity!.IsAuthenticated == true)
-            {
-                int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-                List<AppUser> users = await this.repositoryCenters.GetCenterEditorsAsync(id);
-
-                foreach (AppUser user in users)
-                {
-                    if (user.Id == userId)
-                    {
-                        isEditor = true;
-                    }
-                }
-            }
-
-            if (center == null)
-            {
-                return RedirectToAction("UserCenters", "Centers");
-            }
-
-            List<CourseListView> courses = await this.repositoryCourses.CenterCoursesListViewAsync(id);
-
-            ViewData["IS_EDITOR"] = isEditor;
-            ViewData["CENTER"] = center;
-            return View(courses);
+            return await this.repositoryCenters.GetAllCentersAsync();
         }
 
         #region CENTER USER
 
         ////[AuthorizeUsers]
-        public async Task<IActionResult> UserCenters()
+        [HttpGet("[action]/{userId}")]
+        public async Task<ActionResult<List<CenterListView>>> UserCenters(int userId)
         {
-            int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-            List<CenterListView> centers = await this.repositoryCenters.GetUserCentersAsync(userId);
-            return View("Index", centers);
+            return await this.repositoryCenters.GetUserCentersAsync(userId);
         }
 
+        ////[AuthorizeUsers]
+        [HttpDelete("[action]/{userId}/{centerId}")]
         public async Task<IActionResult> RemoveUserCenter(int userId, int centerId)
         {
             await this.repositoryCenters.RemoveUserCenterAsync(userId, centerId);
-            return RedirectToAction("DirectorView", new { centerId });
+            return Ok();
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public async Task<IActionResult> AddCenterEditors(int centerId, List<int> userIds)
         {
             await this.repositoryCenters.AddEditorsCenterAsync(centerId, userIds);
@@ -89,37 +61,22 @@ namespace APIMoodReboot.Controllers
 
         #region EDITOR VIEW
 
-        ////[AuthorizeUsers]
-        public async Task<IActionResult> EditorView(int centerId)
-        {
-            Center? center = await this.repositoryCenters.FindCenterAsync(centerId);
-            if (center == null)
-            {
-                return RedirectToAction("UserCenters", "Centers");
-            }
-
-            // Center editor courses where it's editor
-            int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-            ViewData["COURSES"] = await this.repositoryCourses.GetEditorCenterCoursesAsync(userId, centerId);
-
-            ViewData["CENTER"] = center;
-            return View(new CreateCourseModel());
-        }
-
         //[AuthorizeUsers]
-        [HttpPost]
-        public async Task<IActionResult> EditorView(int centerId, string name, bool isVisible, string description, IFormFile image, string password)
+        [HttpPost("[action]")]
+        public async Task<ActionResult> CreateCourse(CreateCourseModel newCourse)
         {
             int firstEditorId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-            bool result = await this.helperCourse.CreateCourse(centerId, firstEditorId, name, isVisible, image, description, password);
+            bool isVisible = Convert.ToBoolean(newCourse.IsVisible);
+
+            bool result = await this.helperCourse.CreateCourse(newCourse.CenterId, firstEditorId, newCourse.Name, isVisible, newCourse.Image, newCourse.Description, newCourse.Password);
 
             if (!result)
             {
-                ViewData["ERROR"] = "Error al subir el archivo";
+                return BadRequest("Error al crear el curso");
             }
 
-            return RedirectToAction("EditorView");
+            return Ok();
         }
 
         public async Task<IActionResult> DeleteCourse(int courseId)
