@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MoodReboot.Models;
+using NugetMoodReboot.Models;
 
-namespace MoodReboot.Data
+namespace APIMoodReboot.Data
 {
     public class MoodRebootContext : DbContext
     {

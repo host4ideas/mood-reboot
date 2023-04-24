@@ -1,11 +1,9 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using MoodReboot.Data;
-using MoodReboot.Interfaces;
-using MoodReboot.Models;
-using NuGet.Packaging;
+﻿using Microsoft.EntityFrameworkCore;
+using APIMoodReboot.Data;
+using APIMoodReboot.Interfaces;
+using NugetMoodReboot.Models;
 
-namespace MoodReboot.Repositories
+namespace APIMoodReboot.Repositories
 {
     public class RepositoryCoursesSql : IRepositoryCourses
     {
@@ -16,7 +14,7 @@ namespace MoodReboot.Repositories
             this.context = context;
         }
 
-        public Task<List<CourseUsersModel>> GetCourseUsers(int courseId)
+        public Task<List<CourseUsersModel>> GetCourseUsersAsync(int courseId)
         {
             var result = from uc in this.context.UserCourses
                          join u in this.context.Users on uc.UserId equals u.Id
@@ -32,14 +30,14 @@ namespace MoodReboot.Repositories
             return result.ToListAsync();
         }
 
-        public Task<UserCourse?> FindUserCourse(int userId, int courseId)
+        public Task<UserCourse?> FindUserCourseAsync(int userId, int courseId)
         {
             return this.context.UserCourses.FirstOrDefaultAsync(x => x.UserId == userId && x.CourseId == courseId);
         }
 
         public async Task RemoveCourseUserAsync(int courseId, int userId)
         {
-            UserCourse? userCourse = await this.FindUserCourse(userId, courseId);
+            UserCourse? userCourse = await this.FindUserCourseAsync(userId, courseId);
 
             if (userCourse != null)
             {
@@ -59,7 +57,7 @@ namespace MoodReboot.Repositories
             }
         }
 
-        public async Task<int> GetMaxUserCourse()
+        public async Task<int> GetMaxUserCourseAsync()
         {
             if (!context.UserCourses.Any())
             {
@@ -85,7 +83,7 @@ namespace MoodReboot.Repositories
             // Add user to the course
             UserCourse userCourse = new()
             {
-                Id = await this.GetMaxUserCourse(),
+                Id = await this.GetMaxUserCourseAsync(),
                 CourseId = course.Id,
                 IsEditor = isEditor,
                 UserId = userId,
@@ -133,7 +131,7 @@ namespace MoodReboot.Repositories
 
         public async Task<bool> AddCourseUserAsync(int courseId, int userId, bool isEditor)
         {
-            Course? course = await this.FindCourse(courseId);
+            Course? course = await this.FindCourseAsync(courseId);
 
             if (course != null)
             {
@@ -146,7 +144,7 @@ namespace MoodReboot.Repositories
 
         public async Task<bool> AddCourseUserAsync(int courseId, int userId, bool isEditor, string password)
         {
-            Course? course = await this.FindCourse(courseId);
+            Course? course = await this.FindCourseAsync(courseId);
 
             if (course != null)
             {
@@ -160,14 +158,14 @@ namespace MoodReboot.Repositories
             return false;
         }
 
-        public async Task<int> GetMaxCourse()
+        public async Task<int> GetMaxCourseAsync()
         {
             return await this.context.Courses.MaxAsync(x => x.Id) + 1;
         }
 
-        public async Task DeleteCourse(int id)
+        public async Task DeleteCourseAsync(int id)
         {
-            Course? course = await this.FindCourse(id);
+            Course? course = await this.FindCourseAsync(id);
             if (course != null)
             {
                 this.context.Courses.Remove(course);
@@ -175,12 +173,12 @@ namespace MoodReboot.Repositories
             }
         }
 
-        public Task<Course?> FindCourse(int id)
+        public Task<Course?> FindCourseAsync(int id)
         {
             return this.context.Courses.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public Task<List<Course>> GetAllCourses()
+        public Task<List<Course>> GetAllCoursesAsync()
         {
             return this.context.Courses.ToListAsync();
         }
@@ -190,7 +188,7 @@ namespace MoodReboot.Repositories
         /// </summary>
         /// <param name="courseListView"></param>
         /// <returns></returns>
-        public async Task<List<CourseListView>> GetCoursesAuthors(List<CourseListView> courseListView)
+        public async Task<List<CourseListView>> GetCoursesAuthorsAsync(List<CourseListView> courseListView)
         {
             List<int> courseIds = new();
 
@@ -222,7 +220,7 @@ namespace MoodReboot.Repositories
             return courseListView;
         }
 
-        public async Task<List<CourseListView>> GetEditorCenterCourses(int userId, int centerId)
+        public async Task<List<CourseListView>> GetEditorCenterCoursesAsync(int userId, int centerId)
         {
             var result = from c in context.Courses
                          join uc in context.UserCourses on c.Id equals uc.CourseId
@@ -246,7 +244,7 @@ namespace MoodReboot.Repositories
             List<CourseListView> courseListView = await result.ToListAsync();
 
             // Courses with authors
-            List<CourseListView> coursesAuthors = await this.GetCoursesAuthors(courseListView);
+            List<CourseListView> coursesAuthors = await this.GetCoursesAuthorsAsync(courseListView);
 
             return coursesAuthors;
         }
@@ -256,7 +254,7 @@ namespace MoodReboot.Repositories
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<List<CourseListView>> GetUserCourses(int userId)
+        public async Task<List<CourseListView>> GetUserCoursesAsync(int userId)
         {
             var result = from c in context.Courses
                          join uc in context.UserCourses on c.Id equals uc.CourseId
@@ -279,18 +277,18 @@ namespace MoodReboot.Repositories
             List<CourseListView> courseListView = await result.ToListAsync();
 
             // Courses with authors
-            List<CourseListView> coursesAuthors = await this.GetCoursesAuthors(courseListView);
+            List<CourseListView> coursesAuthors = await this.GetCoursesAuthorsAsync(courseListView);
 
             return coursesAuthors;
         }
 
-        public async Task<List<CourseListView>> CenterCoursesListView(int centerId)
+        public async Task<List<CourseListView>> CenterCoursesListViewAsync(int centerId)
         {
             // Courses without authors
-            List<CourseListView> courseListView = await this.GetCenterCourses(centerId);
+            List<CourseListView> courseListView = await this.GetCenterCoursesAsync(centerId);
 
             // Courses with authors
-            List<CourseListView> coursesAuthors = await this.GetCoursesAuthors(courseListView);
+            List<CourseListView> coursesAuthors = await this.GetCoursesAuthorsAsync(courseListView);
 
             return coursesAuthors;
         }
@@ -300,7 +298,7 @@ namespace MoodReboot.Repositories
         /// </summary>
         /// <param name="centerId"></param>
         /// <returns></returns>
-        public Task<List<CourseListView>> GetCenterCourses(int centerId)
+        public Task<List<CourseListView>> GetCenterCoursesAsync(int centerId)
         {
             var result = from cr in this.context.Courses
                          join ct in this.context.Centers on cr.CenterId equals ct.Id
@@ -320,9 +318,9 @@ namespace MoodReboot.Repositories
             return result.ToListAsync();
         }
 
-        public async Task UpdateCourseVisibility(int courseId)
+        public async Task UpdateCourseVisibilityAsync(int courseId)
         {
-            Course? course = await this.FindCourse(courseId);
+            Course? course = await this.FindCourseAsync(courseId);
             if (course != null)
             {
                 if (course.IsVisible == false)
@@ -337,9 +335,9 @@ namespace MoodReboot.Repositories
             await this.context.SaveChangesAsync();
         }
 
-        public async Task UpdateCourse(int id, string description, string image, string name, bool isVisible)
+        public async Task UpdateCourseAsync(int id, string description, string image, string name, bool isVisible)
         {
-            Course? course = await this.FindCourse(id);
+            Course? course = await this.FindCourseAsync(id);
 
             if (course != null)
             {

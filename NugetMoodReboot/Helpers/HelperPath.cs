@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 
-namespace MoodReboot.Helpers
+namespace NugetMoodReboot.Helpers
 {
     public enum Folders { Assets, CenterImages, CourseImages, ProfileImages, ContentFiles, Icons, Logos }
 

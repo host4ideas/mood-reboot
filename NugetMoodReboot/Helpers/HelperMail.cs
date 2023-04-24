@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using System.Net;
 using System.Net.Mail;
 
-namespace MoodReboot.Helpers
+namespace NugetMoodReboot.Helpers
 {
     public class MailLink
     {

@@ -1,10 +1,9 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using MoodReboot.Data;
-using MoodReboot.Interfaces;
-using MoodReboot.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using APIMoodReboot.Data;
+using APIMoodReboot.Interfaces;
+using NugetMoodReboot.Models;
 
-namespace MoodReboot.Repositories
+namespace APIMoodReboot.Repositories
 {
     public class RepositoryCentersSql : IRepositoryCenters
     {
@@ -15,9 +14,9 @@ namespace MoodReboot.Repositories
             this.context = context;
         }
 
-        public async Task RemoveUserCenter(int userId, int centerId)
+        public async Task RemoveUserCenterAsync(int userId, int centerId)
         {
-            UserCenter userCenter = await this.context.UserCenters.FirstOrDefaultAsync(x => x.UserId == userId && x.CenterId == centerId);
+            UserCenter? userCenter = await this.context.UserCenters.FirstOrDefaultAsync(x => x.UserId == userId && x.CenterId == centerId);
             if (userCenter != null)
             {
                 this.context.UserCenters.Remove(userCenter);
@@ -25,9 +24,9 @@ namespace MoodReboot.Repositories
             }
         }
 
-        public async Task AddEditorsCenter(int centerId, List<int> userIds)
+        public async Task AddEditorsCenterAsync(int centerId, List<int> userIds)
         {
-            int firstNewId = await this.GetMaxUserCenter();
+            int firstNewId = await this.GetMaxUserCenterAsync();
             foreach (int userId in userIds)
             {
                 UserCenter userCenter = new()
@@ -43,18 +42,18 @@ namespace MoodReboot.Repositories
             await this.context.SaveChangesAsync();
         }
 
-        public Task<List<Center>> GetPendingCenters()
+        public Task<List<Center>> GetPendingCentersAsync()
         {
             return this.context.Centers.Where(x => x.Approved == false).ToListAsync();
         }
 
-        public async Task ApproveCenter(Center center)
+        public async Task ApproveCenterAsync(Center center)
         {
             center.Approved = true;
             await this.context.SaveChangesAsync();
         }
 
-        public async Task<int> GetMaxCenter()
+        public async Task<int> GetMaxCenterAsync()
         {
             if (!context.Centers.Any())
             {
@@ -64,7 +63,7 @@ namespace MoodReboot.Repositories
             return await this.context.Centers.MaxAsync(x => x.Id) + 1;
         }
 
-        private async Task<int> GetMaxUserCenter()
+        private async Task<int> GetMaxUserCenterAsync()
         {
             if (!context.Centers.Any())
             {
@@ -74,16 +73,16 @@ namespace MoodReboot.Repositories
             return await this.context.UserCenters.MaxAsync(x => x.Id) + 1;
         }
 
-        public async Task AddUserCenter(int userId, int centerId, bool isEditor)
+        public async Task AddUserCenterAsync(int userId, int centerId, bool isEditor)
         {
-            UserCenter userCenter = new() { Id = await this.GetMaxUserCenter(), UserId = userId, CenterId = centerId, IsEditor = isEditor };
+            UserCenter userCenter = new() { Id = await this.GetMaxUserCenterAsync(), UserId = userId, CenterId = centerId, IsEditor = isEditor };
             await this.context.UserCenters.AddAsync(userCenter);
             await this.context.SaveChangesAsync();
         }
 
-        public async Task CreateCenter(string email, string name, string address, string telephone, string image, int director, bool approved)
+        public async Task CreateCenterAsync(string email, string name, string address, string telephone, string image, int director, bool approved)
         {
-            int centerId = await this.GetMaxCenter();
+            int centerId = await this.GetMaxCenterAsync();
 
             await this.context.Centers.AddAsync(new()
             {
@@ -97,12 +96,12 @@ namespace MoodReboot.Repositories
                 Approved = approved
             });
 
-            await this.AddUserCenter(director, centerId, true);
+            await this.AddUserCenterAsync(director, centerId, true);
 
             await this.context.SaveChangesAsync();
         }
 
-        public async Task DeleteCenter(int id)
+        public async Task DeleteCenterAsync(int id)
         {
             Center? center = await this.context.Centers.FirstOrDefaultAsync(x => x.Id == id);
             if (center != null)
@@ -111,12 +110,12 @@ namespace MoodReboot.Repositories
             }
         }
 
-        public async Task<Center?> FindCenter(int id)
+        public async Task<Center?> FindCenterAsync(int id)
         {
             return await this.context.Centers.FirstOrDefaultAsync(x => x.Id == id);
         }
-        
-        public async Task<List<CenterListView>> GetAllCenters()
+
+        public async Task<List<CenterListView>> GetAllCentersAsync()
         {
             //List<Center> centers = await this.context.Centers.ToListAsync();
 
@@ -169,9 +168,9 @@ namespace MoodReboot.Repositories
             return await result.ToListAsync();
         }
 
-        public async Task UpdateCenter(int centerId, string email, string name, string address, string telephone, string image)
+        public async Task UpdateCenterAsync(int centerId, string email, string name, string address, string telephone, string image)
         {
-            Center? center = await this.FindCenter(centerId);
+            Center? center = await this.FindCenterAsync(centerId);
             if (center != null)
             {
                 center.Name = name;

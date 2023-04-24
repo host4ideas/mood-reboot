@@ -1,7 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
-using MoodReboot.Data;
-using MoodReboot.Interfaces;
-using MoodReboot.Models;
+using APIMoodReboot.Data;
+using APIMoodReboot.Interfaces;
+using APIMoodReboot.Models;
 using System.IO;
 
 namespace APIMoodReboot.Helpers

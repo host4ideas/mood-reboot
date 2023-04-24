@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.IO;
 
-namespace MoodReboot.Helpers
+namespace NugetMoodReboot.Helpers
 {
     public enum FileTypes { Image, Document, Excel, Pdf }
 

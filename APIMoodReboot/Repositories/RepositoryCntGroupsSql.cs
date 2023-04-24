@@ -1,10 +1,10 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using MoodReboot.Data;
-using MoodReboot.Interfaces;
-using MoodReboot.Models;
+using APIMoodReboot.Data;
+using APIMoodReboot.Interfaces;
+using APIMoodReboot.Models;
 
-namespace MoodReboot.Repositories
+namespace APIMoodReboot.Repositories
 {
     public class RepositoryCntGroupsSql : IRepositoryContentGroups
     {
@@ -15,10 +15,9 @@ namespace MoodReboot.Repositories
             this.context = context;
         }
 
-        public ContentGroup? FindContentGroup(int id)
+        public async Task<ContentGroup?> FindContentGroupAsync(int id)
         {
-            var consulta = from datos in this.context.ContentGroups where datos.ContentGroupId == id select datos;
-            return consulta.ToList().FirstOrDefault();
+            return await this.context.ContentGroups.FindAsync(id);
         }
 
         public List<ContentGroup> GetCourseContentGroups(int courseId)

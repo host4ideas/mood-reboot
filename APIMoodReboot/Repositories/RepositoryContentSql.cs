@@ -1,11 +1,10 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using MoodReboot.Data;
-using MoodReboot.Interfaces;
-using MoodReboot.Models;
-using static System.Net.Mime.MediaTypeNames;
+﻿using Microsoft.EntityFrameworkCore;
+using APIMoodReboot.Data;
+using APIMoodReboot.Interfaces;
+using APIMoodReboot.Models;
+using NugetMoodReboot.Models;
 
-namespace MoodReboot.Repositories
+namespace APIMoodReboot.Repositories
 {
     public class RepositoryContentSql : IRepositoryContent
     {
@@ -16,7 +15,7 @@ namespace MoodReboot.Repositories
             this.context = context;
         }
 
-        public async Task<int> GetMaxContent()
+        public async Task<int> GetMaxContentAsync()
         {
             if (!context.Contents.Any())
             {
@@ -26,21 +25,21 @@ namespace MoodReboot.Repositories
             return await this.context.Contents.MaxAsync(x => x.Id) + 1;
         }
 
-        public async Task<Content?> FindContent(int id)
+        public async Task<Content?> FindContentAsync(int id)
         {
             return await this.context.Contents.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public Task<List<Content>> GetContentByGroup(int groupId)
+        public Task<List<Content>> GetContentByGroupAsync(int groupId)
         {
             return this.context.Contents.Where(x => x.ContentGroupId == groupId).ToListAsync();
         }
 
-        public async Task CreateContent(int contentGroupId, string text)
+        public async Task CreateContentAsync(int contentGroupId, string text)
         {
             Content content = new()
             {
-                Id = await this.GetMaxContent(),
+                Id = await this.GetMaxContentAsync(),
                 Text = text,
                 ContentGroupId = contentGroupId,
             };
@@ -49,11 +48,11 @@ namespace MoodReboot.Repositories
             await this.context.SaveChangesAsync();
         }
 
-        public async Task CreateContentFile(int contentGroupId, int fileId)
+        public async Task CreateContentFileAsync(int contentGroupId, int fileId)
         {
             Content content = new()
             {
-                Id = await this.GetMaxContent(),
+                Id = await this.GetMaxContentAsync(),
                 ContentGroupId = contentGroupId,
                 FileId = fileId
             };
@@ -62,9 +61,9 @@ namespace MoodReboot.Repositories
             await this.context.SaveChangesAsync();
         }
 
-        public async Task DeleteContent(int id)
+        public async Task DeleteContentAsync(int id)
         {
-            Content? content = await this.FindContent(id);
+            Content? content = await this.FindContentAsync(id);
             if (content != null)
             {
                 this.context.Contents.Remove(content);
@@ -72,9 +71,9 @@ namespace MoodReboot.Repositories
             }
         }
 
-        public async Task UpdateContent(int id, string? text = null, int? fileId = null)
+        public async Task UpdateContentAsync(int id, string? text = null, int? fileId = null)
         {
-            Content? oldContent = await this.FindContent(id);
+            Content? oldContent = await this.FindContentAsync(id);
             if (oldContent != null)
             {
                 oldContent.Text = text;

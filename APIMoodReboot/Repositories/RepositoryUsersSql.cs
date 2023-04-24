@@ -1,12 +1,10 @@
-﻿using AngleSharp.Io;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using MoodReboot.Data;
-using MoodReboot.Helpers;
-using MoodReboot.Interfaces;
-using MoodReboot.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using APIMoodReboot.Data;
+using APIMoodReboot.Interfaces;
+using NugetMoodReboot.Models;
+using NugetMoodReboot.Helpers;
 
-namespace MoodReboot.Repositories
+namespace APIMoodReboot.Repositories
 {
     public class RepositoryUsersSql : IRepositoryUsers
     {
@@ -19,7 +17,7 @@ namespace MoodReboot.Repositories
 
         #region USERS
 
-        private async Task<int> GetMaxUserAction()
+        private async Task<int> GetMaxUserActionAsync()
         {
             if (!context.UserActions.Any())
             {
@@ -29,11 +27,11 @@ namespace MoodReboot.Repositories
             return await this.context.UserActions.MaxAsync(x => x.Id) + 1;
         }
 
-        public async Task<string> CreateUserAction(int userId)
+        public async Task<string> CreateUserActionAsync(int userId)
         {
             UserAction userAction = new()
             {
-                Id = await this.GetMaxUserAction(),
+                Id = await this.GetMaxUserActionAsync(),
                 Token = Guid.NewGuid().ToString(),
                 UserId = userId,
                 RequestDate = DateTime.Now
@@ -45,26 +43,26 @@ namespace MoodReboot.Repositories
             return userAction.Token;
         }
 
-        public Task<UserAction?> FindUserAction(int userId, string token)
+        public Task<UserAction?> FindUserActionAsync(int userId, string token)
         {
             return this.context.UserActions.FirstOrDefaultAsync(x => x.UserId == userId && x.Token == token);
         }
 
-        public async Task RemoveUserAction(UserAction userAction)
+        public async Task RemoveUserActionAsync(UserAction userAction)
         {
             this.context.UserActions.Remove(userAction);
             await this.context.SaveChangesAsync();
         }
 
-        public async Task ApproveUser(AppUser user)
+        public async Task ApproveUserAsync(AppUser user)
         {
             user.Approved = true;
             await this.context.SaveChangesAsync();
         }
 
-        public async Task ApproveUser(int userId)
+        public async Task ApproveUserAsync(int userId)
         {
-            AppUser? user = await this.FindUser(userId);
+            AppUser? user = await this.FindUserAsync(userId);
             if (user != null)
             {
                 user.Approved = true;
@@ -72,12 +70,12 @@ namespace MoodReboot.Repositories
             }
         }
 
-        public Task<List<AppUser>> GetPendingUsers()
+        public Task<List<AppUser>> GetPendingUsersAsync()
         {
             return this.context.Users.Where(x => x.Approved == false).ToListAsync();
         }
 
-        public async Task<bool> IsEmailAvailable(string email)
+        public async Task<bool> IsEmailAvailableAsync(string email)
         {
             int count = await this.context.Users.CountAsync(u => u.Email == email);
             if (count > 0)
@@ -87,7 +85,7 @@ namespace MoodReboot.Repositories
             return true;
         }
 
-        public async Task<bool> IsUsernameAvailable(string userName)
+        public async Task<bool> IsUsernameAvailableAsync(string userName)
         {
             int count = await this.context.Users.CountAsync(u => u.UserName == userName);
             if (count > 0)
@@ -97,7 +95,7 @@ namespace MoodReboot.Repositories
             return true;
         }
 
-        public Task<List<Tuple<string, int>>> SearchUsers(string pattern)
+        public Task<List<Tuple<string, int>>> SearchUsersAsync(string pattern)
         {
             var result = (from u in this.context.Users
                           where u.UserName.Contains(pattern) || u.Email.Contains(pattern)
@@ -105,7 +103,7 @@ namespace MoodReboot.Repositories
             return result.ToListAsync();
         }
 
-        public async Task<int> GetMaxUser()
+        public async Task<int> GetMaxUserAsync()
         {
             if (!context.Users.Any())
             {
@@ -115,21 +113,21 @@ namespace MoodReboot.Repositories
             return await this.context.Users.MaxAsync(z => z.Id) + 1;
         }
 
-        public async Task<AppUser?> FindUser(int userId)
+        public async Task<AppUser?> FindUserAsync(int userId)
         {
             return await this.context.Users.FindAsync(userId);
         }
 
-        public List<AppUser> GetAllUsers()
+        public Task<List<AppUser>> GetAllUsersAsync()
         {
-            return this.context.Users.ToList();
+            return this.context.Users.ToListAsync();
         }
 
-        public async Task<int> RegisterUser(string nombre, string firstName, string lastName, string email, string password, string image)
+        public async Task<int> RegisterUserAsync(string nombre, string firstName, string lastName, string email, string password, string image)
         {
             string salt = HelperCryptography.GenerateSalt();
 
-            int userId = await this.GetMaxUser();
+            int userId = await this.GetMaxUserAsync();
 
             AppUser user = new()
             {
@@ -153,7 +151,7 @@ namespace MoodReboot.Repositories
             return userId;
         }
 
-        public async Task<AppUser?> LoginUser(string usernameOrEmail, string password)
+        public async Task<AppUser?> LoginUserAsync(string usernameOrEmail, string password)
         {
             AppUser? user = await this.context.Users.FirstOrDefaultAsync(u => u.Email == usernameOrEmail || u.UserName == usernameOrEmail);
             if (user != null)
@@ -179,9 +177,9 @@ namespace MoodReboot.Repositories
             return default;
         }
 
-        public async Task DeleteUser(int userId)
+        public async Task DeleteUserAsync(int userId)
         {
-            AppUser? user = await this.FindUser(userId);
+            AppUser? user = await this.FindUserAsync(userId);
             if (user != null)
             {
                 this.context.Users.Remove(user);
@@ -189,9 +187,9 @@ namespace MoodReboot.Repositories
             }
         }
 
-        public async Task UpdateUserBasics(int userId, string userName, string firstName, string lastName, string? image = null)
+        public async Task UpdateUserBasicsAsync(int userId, string userName, string firstName, string lastName, string? image = null)
         {
-            AppUser? user = await this.FindUser(userId);
+            AppUser? user = await this.FindUserAsync(userId);
             if (user != null)
             {
                 user.UserName = userName;
@@ -202,9 +200,9 @@ namespace MoodReboot.Repositories
             }
         }
 
-        public async Task UpdateUserEmail(int userId, string email)
+        public async Task UpdateUserEmailAsync(int userId, string email)
         {
-            AppUser? user = await this.FindUser(userId);
+            AppUser? user = await this.FindUserAsync(userId);
             if (user != null)
             {
                 user.Email = email;
@@ -212,11 +210,11 @@ namespace MoodReboot.Repositories
             }
         }
 
-        public async Task UpdateUserPassword(int userId, string password)
+        public async Task UpdateUserPasswordAsync(int userId, string password)
         {
             string salt = HelperCryptography.GenerateSalt();
 
-            AppUser? user = await this.FindUser(userId);
+            AppUser? user = await this.FindUserAsync(userId);
 
             if (user != null)
             {
@@ -227,9 +225,9 @@ namespace MoodReboot.Repositories
             }
         }
 
-        public async Task DeactivateUser(int userId)
+        public async Task DeactivateUserAsync(int userId)
         {
-            AppUser? user = await this.FindUser(userId);
+            AppUser? user = await this.FindUserAsync(userId);
             if (user != null)
             {
                 user.Approved = false;
@@ -241,12 +239,12 @@ namespace MoodReboot.Repositories
 
         #region FILES
 
-        public Task<AppFile?> FindFile(int fileId)
+        public Task<AppFile?> FindFileAsync(int fileId)
         {
             return this.context.Files.FirstOrDefaultAsync(x => x.Id == fileId);
         }
 
-        public async Task<int> GetMaxFile()
+        public async Task<int> GetMaxFileAsync()
         {
             if (!context.Files.Any())
             {
@@ -264,7 +262,7 @@ namespace MoodReboot.Repositories
         /// <returns></returns>
         public async Task<int> InsertFileAsync(string name, string mimeType)
         {
-            int fileId = await this.GetMaxFile();
+            int fileId = await this.GetMaxFileAsync();
 
             await this.context.Files.AddAsync(new()
             {
@@ -287,7 +285,7 @@ namespace MoodReboot.Repositories
         /// <returns></returns>
         public async Task<int> InsertFileAsync(string name, string mimeType, int userId)
         {
-            int fileId = await this.GetMaxFile();
+            int fileId = await this.GetMaxFileAsync();
 
             AppFile file = new()
             {
@@ -304,7 +302,7 @@ namespace MoodReboot.Repositories
 
         public async Task UpdateFileAsync(int fileId, string fileName, string mimeType)
         {
-            AppFile? appFile = await this.FindFile(fileId);
+            AppFile? appFile = await this.FindFileAsync(fileId);
 
             if (appFile != null)
             {
@@ -316,7 +314,7 @@ namespace MoodReboot.Repositories
 
         public async Task UpdateFileAsync(int fileId, string fileName, string mimeType, int userId)
         {
-            AppFile? appFile = await this.FindFile(fileId);
+            AppFile? appFile = await this.FindFileAsync(fileId);
 
             if (appFile != null)
             {
@@ -332,7 +330,7 @@ namespace MoodReboot.Repositories
         /// </summary>
         /// <param name="fileId"></param>
         /// <returns></returns>
-        public async Task DeleteFile(int fileId)
+        public async Task DeleteFileAsync(int fileId)
         {
             AppFile? file = await this.context.Files.FirstOrDefaultAsync(x => x.Id == fileId);
 
@@ -347,14 +345,14 @@ namespace MoodReboot.Repositories
 
         #region MESSAGES
 
-        public async Task AddUsersToChat(int chatGroupId, List<int> userIds)
+        public async Task AddUsersToChatAsync(int chatGroupId, List<int> userIds)
         {
             // Create the chat group
             ChatGroup? chatGroup = await this.context.ChatGroups.FirstOrDefaultAsync(x => x.Id == chatGroupId);
 
             if (chatGroup != null)
             {
-                List<ChatUserModel> users = await this.GetChatGroupUsers(chatGroupId);
+                List<ChatUserModel> users = await this.GetChatGroupUsersAsync(chatGroupId);
                 List<int> alreadyUserIds = users.ConvertAll(x => x.UserID).ToList();
                 List<int> noDupsNewUsers = userIds.Distinct().ToList();
 
@@ -370,7 +368,7 @@ namespace MoodReboot.Repositories
                     }
                 }
 
-                int firstId = await this.GetMaxUserChatGroup();
+                int firstId = await this.GetMaxUserChatGroupAsync();
 
                 // Add users to the chat group
                 foreach (int userId in noDupsNewUsers)
@@ -393,19 +391,19 @@ namespace MoodReboot.Repositories
             }
         }
 
-        public async Task NewChatGroup(HashSet<int> userIdsNoDups)
+        public async Task NewChatGroupAsync(HashSet<int> userIdsNoDups)
         {
 
             // Create the chat group
             ChatGroup chatGroup = new()
             {
-                Id = await this.GetMaxChatGroup(),
+                Id = await this.GetMaxChatGroupAsync(),
                 Name = "PRIVATE",
             };
 
             await this.context.ChatGroups.AddAsync(chatGroup);
 
-            int firstId = await this.GetMaxUserChatGroup();
+            int firstId = await this.GetMaxUserChatGroupAsync();
 
             // Add users to the chat group
             foreach (int userId in userIdsNoDups)
@@ -427,9 +425,9 @@ namespace MoodReboot.Repositories
             await this.context.SaveChangesAsync();
         }
 
-        public async Task<int> NewChatGroup(HashSet<int> userIdsNoDups, int adminUserId, string chatGroupName)
+        public async Task<int> NewChatGroupAsync(HashSet<int> userIdsNoDups, int adminUserId, string chatGroupName)
         {
-            int newId = await this.GetMaxChatGroup();
+            int newId = await this.GetMaxChatGroupAsync();
 
             // Create the chat group
             ChatGroup chatGroup = new()
@@ -440,7 +438,7 @@ namespace MoodReboot.Repositories
 
             await this.context.ChatGroups.AddAsync(chatGroup);
 
-            int firstId = await this.GetMaxUserChatGroup();
+            int firstId = await this.GetMaxUserChatGroupAsync();
 
             // Add users to the chat group
             foreach (int userId in userIdsNoDups)
@@ -470,7 +468,7 @@ namespace MoodReboot.Repositories
             return newId;
         }
 
-        public async Task UpdateChatGroup(int chatGroupId, string name)
+        public async Task UpdateChatGroupAsync(int chatGroupId, string name)
         {
             ChatGroup? chatGroup = await this.context.ChatGroups.FirstOrDefaultAsync(x => x.Id == chatGroupId);
             if (chatGroup != null)
@@ -480,7 +478,7 @@ namespace MoodReboot.Repositories
             }
         }
 
-        public async Task RemoveChatGroup(int chatGroupId)
+        public async Task RemoveChatGroupAsync(int chatGroupId)
         {
             ChatGroup? chatGroup = await this.context.ChatGroups.FirstOrDefaultAsync(x => x.Id == chatGroupId);
             if (chatGroup != null)
@@ -490,7 +488,7 @@ namespace MoodReboot.Repositories
             }
         }
 
-        private async Task<int> GetMaxMessage()
+        private async Task<int> GetMaxMessageAsync()
         {
             if (!this.context.Messages.Any())
             {
@@ -501,11 +499,11 @@ namespace MoodReboot.Repositories
             return max;
         }
 
-        public async Task CreateMessage(int userId, int groupChatId, string userName, string? text = null, int? fileId = null)
+        public async Task CreateMessageAsync(int userId, int groupChatId, string userName, string? text = null, int? fileId = null)
         {
             Message message = new()
             {
-                MessageId = await this.GetMaxMessage(),
+                MessageId = await this.GetMaxMessageAsync(),
                 UserID = userId,
                 GroupId = groupChatId,
                 Text = text,
@@ -518,7 +516,7 @@ namespace MoodReboot.Repositories
             await this.context.SaveChangesAsync();
         }
 
-        public async Task DeleteMessage(int messageId)
+        public async Task DeleteMessageAsync(int messageId)
         {
             Message? message = await this.context.Messages.FirstOrDefaultAsync(x => x.MessageId == messageId);
 
@@ -529,7 +527,7 @@ namespace MoodReboot.Repositories
             }
         }
 
-        private async Task<int> GetMaxChatGroup()
+        private async Task<int> GetMaxChatGroupAsync()
         {
             if (!this.context.ChatGroups.Any())
             {
@@ -540,11 +538,11 @@ namespace MoodReboot.Repositories
             return max + 1;
         }
 
-        public async Task CreateChat(string name, string? image)
+        public async Task CreateChatAsync(string name, string? image)
         {
             ChatGroup chatGroup = new()
             {
-                Id = await this.GetMaxChatGroup(),
+                Id = await this.GetMaxChatGroupAsync(),
                 Name = name,
                 Image = image
             };
@@ -553,7 +551,7 @@ namespace MoodReboot.Repositories
             await this.context.SaveChangesAsync();
         }
 
-        private async Task<int> GetMaxUserChatGroup()
+        private async Task<int> GetMaxUserChatGroupAsync()
         {
             if (!this.context.UserChatGroups.Any())
             {
@@ -564,13 +562,13 @@ namespace MoodReboot.Repositories
             return max + 1;
         }
 
-        public async Task AddUsersToChat(HashSet<int> userIds, int chatGroupId)
+        public async Task AddUsersToChatAsync(HashSet<int> userIds, int chatGroupId)
         {
             List<UserChatGroup> userChatGroups = new();
 
             HashSet<int> usersNoDups = userIds;
 
-            int firstIndex = await this.GetMaxUserChatGroup();
+            int firstIndex = await this.GetMaxUserChatGroupAsync();
 
             foreach (int userId in usersNoDups)
             {
@@ -588,32 +586,32 @@ namespace MoodReboot.Repositories
             await this.context.SaveChangesAsync();
         }
 
-        public List<Message> GetMessagesByGroup(int chatGroupId)
+        public Task<List<Message>> GetMessagesByGroupAsync(int chatGroupId)
         {
-            return this.context.Messages.Where(x => x.GroupId == chatGroupId).ToList();
+            return this.context.Messages.Where(x => x.GroupId == chatGroupId).ToListAsync();
         }
 
-        public List<ChatGroup> GetUserChatGroups(int userId)
+        public Task<List<ChatGroup>> GetUserChatGroupsAsync(int userId)
         {
             var result = from g in context.ChatGroups
                          join ug in context.UserChatGroups on g.Id equals ug.GroupId
                          where ug.UserID == userId
                          select g;
 
-            return result.ToList();
+            return result.ToListAsync();
         }
 
-        public List<Message> GetUnseenMessages(int userId)
+        public Task<List<Message>> GetUnseenMessagesAsync(int userId)
         {
             var result = from ug in context.UserChatGroups
                          join m in context.Messages on ug.GroupId equals m.GroupId
                          where ug.UserID == userId && ug.LastSeen < m.DatePosted
                          select m;
 
-            return result.ToList();
+            return result.ToListAsync();
         }
 
-        public async Task UpdateChatLastSeen(int chatGroupId, int userId)
+        public async Task UpdateChatLastSeenAsync(int chatGroupId, int userId)
         {
             UserChatGroup? userChatGroup = await this.context.UserChatGroups.FirstOrDefaultAsync(x => x.UserID == userId && x.GroupId == chatGroupId);
             if (userChatGroup != null)
@@ -623,7 +621,7 @@ namespace MoodReboot.Repositories
             }
         }
 
-        public Task<List<ChatUserModel>> GetChatGroupUsers(int chatGroupId)
+        public Task<List<ChatUserModel>> GetChatGroupUsersAsync(int chatGroupId)
         {
             var result = from u in this.context.Users
                          join ug in this.context.UserChatGroups on u.Id equals ug.UserID
@@ -637,7 +635,7 @@ namespace MoodReboot.Repositories
             return result.ToListAsync();
         }
 
-        public async Task RemoveChatUser(int userId, int chatGroupId)
+        public async Task RemoveChatUserAsync(int userId, int chatGroupId)
         {
             UserChatGroup? userChat = await this.context.UserChatGroups.FirstOrDefaultAsync(x => x.GroupId == chatGroupId && x.UserID == userId);
 
