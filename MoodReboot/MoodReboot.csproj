@@ -7,17 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Models\Custom\**" />
-    <Compile Remove="Models\DbTables\**" />
-    <Content Remove="Models\Custom\**" />
-    <Content Remove="Models\DbTables\**" />
-    <EmbeddedResource Remove="Models\Custom\**" />
-    <EmbeddedResource Remove="Models\DbTables\**" />
-    <None Remove="Models\Custom\**" />
-    <None Remove="Models\DbTables\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="HtmlSanitizer" Version="8.0.645" />
     <PackageReference Include="Markdig" Version="0.31.0" />
     <PackageReference Include="Microsoft.AspNetCore.ResponseCaching" Version="2.2.0" />
