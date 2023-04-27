@@ -6,7 +6,9 @@ using Ganss.Xss;
 
 namespace APIMoodReboot.Controllers
 {
-    public class ContentController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ContentController : ControllerBase
     {
         private readonly IRepositoryContent repositoryContent;
         private readonly IRepositoryUsers repositoryUser;
@@ -21,15 +23,16 @@ namespace APIMoodReboot.Controllers
             this.helperFile = helperFile;
         }
 
-        public IActionResult DeleteContent(int contentId, int courseId)
+        [HttpGet]
+        public async Task<ActionResult> DeleteContent(int contentId)
         {
             // If using an asynchronous controller invokes 500 server error
-            this.repositoryContent.DeleteContentAsync(contentId).Wait();
-            return RedirectToAction("CourseDetails", "Courses", new { id = courseId });
+            await this.repositoryContent.DeleteContentAsync(contentId);
+            return Ok();
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddContent(int userId, int courseId, int groupId, string unsafeHtml, IFormFile hiddenFileInput)
+        public async Task<ActionResult> AddContent(int userId, int courseId, int groupId, string unsafeHtml, IFormFile hiddenFileInput)
         {
             if (hiddenFileInput != null)
             {
@@ -46,9 +49,7 @@ namespace APIMoodReboot.Controllers
 
                     if (path == null)
                     {
-                        ViewData["ERROR"] = "Error al subir archivo. Formatos soportados: .pdf, .xlsx, .jpeg, .jpg, .png, .webp. Tamaño máximo: 10MB.";
-                        return RedirectToAction("CourseDetails", "Courses", new { id = courseId });
-
+                        return Problem("Error al subir archivo. Formatos soportados: .pdf, .xlsx, .jpeg, .jpg, .png, .webp. Tamaño máximo: 10MB.");
                     }
                 }
                 if (path != null)
@@ -67,11 +68,11 @@ namespace APIMoodReboot.Controllers
                 await this.repositoryContent.CreateContentAsync(groupId, sanitized);
             }
 
-            return RedirectToAction("CourseDetails", "Courses", new { id = courseId });
+            return Ok();
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateContent(int userId, int courseId, int contentId, string unsafeHtml, IFormFile hiddenFileInput)
+        public async Task<ActionResult> UpdateContent(int userId, int courseId, int contentId, string unsafeHtml, IFormFile hiddenFileInput)
         {
             Content? content = await this.repositoryContent.FindContentAsync(contentId);
 
@@ -91,9 +92,7 @@ namespace APIMoodReboot.Controllers
 
                         if (path == null)
                         {
-                            ViewData["ERROR"] = "Error al subir archivo. Formatos soportados: .pdf, .xlsx, .jpeg, .jpg, .png, .webp. Tamaño máximo: 10MB.";
-                            return RedirectToAction("CourseDetails", "Courses", new { id = courseId });
-
+                            return Problem("Error al subir archivo. Formatos soportados: .pdf, .xlsx, .jpeg, .jpg, .png, .webp. Tamaño máximo: 10MB.");
                         }
                     }
 
@@ -124,7 +123,7 @@ namespace APIMoodReboot.Controllers
                 }
             }
 
-            return RedirectToAction("CourseDetails", "Courses", new { id = courseId });
+            return Ok();
         }
     }
 }
