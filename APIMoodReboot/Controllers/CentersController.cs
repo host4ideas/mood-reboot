@@ -44,17 +44,17 @@ namespace APIMoodReboot.Controllers
 
         ////[AuthorizeUsers]
         [HttpDelete("[action]/{userId}/{centerId}")]
-        public async Task<IActionResult> RemoveUserCenter(int userId, int centerId)
+        public async Task<ActionResult> RemoveUserCenter(int userId, int centerId)
         {
             await this.repositoryCenters.RemoveUserCenterAsync(userId, centerId);
             return Ok();
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> AddCenterEditors(int centerId, List<int> userIds)
+        public async Task<ActionResult> AddCenterEditors(int centerId, List<int> userIds)
         {
             await this.repositoryCenters.AddEditorsCenterAsync(centerId, userIds);
-            return RedirectToAction("DirectorView", new { centerId });
+            return Ok()
         }
 
         #endregion
@@ -79,67 +79,30 @@ namespace APIMoodReboot.Controllers
             return Ok();
         }
 
-        public async Task<IActionResult> DeleteCourse(int courseId)
+        [HttpGet("{courseId}")]
+        public async Task<ActionResult> DeleteCourse(int courseId)
         {
             await this.repositoryCourses.DeleteCourseAsync(courseId);
-            return RedirectToAction("EditorView");
+            return Ok();
         }
 
-        public async Task<IActionResult> CourseVisibility(int courseId)
+        [HttpGet("{courseId}")]
+        public async Task<ActionResult> CourseVisibility(int courseId)
         {
             await this.repositoryCourses.UpdateCourseVisibilityAsync(courseId);
-            return RedirectToAction("EditorView");
+            return Ok();
         }
 
-        [AcceptVerbs("GET", "POST")]
-        public async Task<IActionResult> VerifyCenter(int centerId)
+        [HttpPost("[action]/{centerId}")]
+        public async Task<ActionResult> VerifyCenter(int centerId)
         {
             Center? center = await this.repositoryCenters.FindCenterAsync(centerId);
             if (center == null)
             {
-                return Json("El centro no existe");
+                return Ok("El centro no existe");
             }
 
-            return Json(true);
-        }
-
-        #endregion
-
-        #region DIRECTOR VIEW
-
-        //[AuthorizeUsers]
-        public async Task<IActionResult> DirectorView(int centerId)
-        {
-            Center? center = await this.repositoryCenters.FindCenterAsync(centerId);
-            if (center == null)
-            {
-                return RedirectToAction("UserCenters", "Centers");
-            }
-
-            List<AppUser> users = await this.repositoryCenters.GetCenterEditorsAsync(centerId);
-            // Remove the current user from the list
-            users.RemoveAll(x => x.Id == int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)));
-            List<CourseListView> courses = await this.repositoryCourses.GetCenterCoursesAsync(centerId);
-            ViewData["COURSES"] = courses;
-            ViewData["CENTER"] = center;
-            return View(users);
-        }
-
-        //[AuthorizeUsers]
-        [HttpPost]
-        public async Task<IActionResult> DirectorView(int centerId, string centerEmail, string centerName, string centerAddress, string centerTelephone, IFormFile centerImage)
-        {
-            string fileName = "center_image_" + centerId;
-
-            string? path = await this.helperFile.UploadFileAsync(centerImage, Folders.CenterImages, FileTypes.Image, fileName);
-
-            if (path == null)
-            {
-                ViewData["ERROR"] = "Error al subir el archivo";
-                return RedirectToAction("DirectorView", new { centerId });
-            }
-            await this.repositoryCenters.UpdateCenterAsync(centerId, centerEmail, centerName, centerAddress, centerTelephone, path);
-            return RedirectToAction("DirectorView", new { centerId });
+            return Ok(true);
         }
 
         #endregion
@@ -147,14 +110,8 @@ namespace APIMoodReboot.Controllers
         #region CREATE CENTER
 
         //[AuthorizeUsers]
-        public IActionResult CenterRequest()
-        {
-            return View();
-        }
-
-        //[AuthorizeUsers]
-        [HttpPost]
-        public async Task<IActionResult> CenterRequest(string email, string centerEmail, string centerName, string centerAddress, string centerTelephone, IFormFile centerImage)
+        [HttpPost("[action]")]
+        public async Task<ActionResult> CenterRequest(string email, string centerEmail, string centerName, string centerAddress, string centerTelephone, IFormFile centerImage)
         {
             int director = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
 
@@ -166,8 +123,7 @@ namespace APIMoodReboot.Controllers
 
             if (path == null)
             {
-                ViewData["ERROR"] = "Error al subir archivo";
-                return View();
+                return BadRequest("Error al subir archivo");
             }
 
             await this.repositoryCenters.CreateCenterAsync(centerEmail, centerName, centerAddress, centerTelephone, path, director, false);
@@ -175,8 +131,7 @@ namespace APIMoodReboot.Controllers
             string domainName = HttpContext.Request.Host.Value.ToString();
             string baseUrl = protocol + domainName;
             await this.helperMail.SendMailAsync(email, "Aprobación de centro en curso", "Estamos en proceso de aprobar su solicitud de creación de centro. Por favor, si ha cometido algún error en los datos o quisiera cancelar la operación. Mande un correo a: moodreboot@gmail.com", baseUrl);
-            ViewData["MESSAGE"] = "Solicitud enviada";
-            return View();
+            return Ok();
         }
 
         #endregion
