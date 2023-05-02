@@ -23,29 +23,36 @@ namespace APIMoodReboot.Controllers
             this.helperFile = helperFile;
         }
 
-        [HttpGet]
+        [HttpDelete("{contentId}")]
         public async Task<ActionResult> DeleteContent(int contentId)
         {
-            // If using an asynchronous controller invokes 500 server error
             await this.repositoryContent.DeleteContentAsync(contentId);
-            return Ok();
+
+            var content = this.repositoryContent.FindContentAsync(contentId);
+            if (content == null)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddContent(int userId, int courseId, int groupId, string unsafeHtml, IFormFile hiddenFileInput)
+        public async Task<ActionResult> AddContent([FromBody] CreateContentModel createContent)
         {
-            if (hiddenFileInput != null)
+            if (createContent.File != null)
             {
-                string mimeType = hiddenFileInput.ContentType;
+                IFormFile attachment = createContent.File;
+                string mimeType = attachment.ContentType;
 
                 string fileName = "content_file_" + await this.repositoryUser.GetMaxFileAsync();
                 // Upload file
                 // Try with a document
-                string? path = await this.helperFile.UploadFileAsync(hiddenFileInput, Folders.ContentFiles, FileTypes.Document, fileName);
+                string? path = await this.helperFile.UploadFileAsync(attachment, Folders.ContentFiles, FileTypes.Document, fileName);
                 if (path == null)
                 {
                     // Try with an image
-                    path = await this.helperFile.UploadFileAsync(hiddenFileInput, Folders.ContentFiles, FileTypes.Image, fileName);
+                    path = await this.helperFile.UploadFileAsync(attachment, Folders.ContentFiles, FileTypes.Image, fileName);
 
                     if (path == null)
                     {
@@ -55,75 +62,77 @@ namespace APIMoodReboot.Controllers
                 if (path != null)
                 {
                     // Insert file in DB
-                    int fileId = await this.repositoryUser.InsertFileAsync(path, mimeType, userId);
+                    int fileId = await this.repositoryUser.InsertFileAsync(path, mimeType, createContent.UserId);
                     // Update Content
-                    await this.repositoryContent.CreateContentFileAsync(contentGroupId: groupId, fileId: fileId);
+                    await this.repositoryContent.CreateContentFileAsync(contentGroupId: createContent.GroupId, fileId: fileId);
                 }
             }
-            else if (unsafeHtml != null)
+            else if (createContent.UnsafeHtml != null)
             {
-                string html = unsafeHtml;
+                string html = createContent.UnsafeHtml;
                 string sanitized = this.sanitizer.Sanitize(html);
 
-                await this.repositoryContent.CreateContentAsync(groupId, sanitized);
+                await this.repositoryContent.CreateContentAsync(createContent.GroupId, sanitized);
             }
 
-            return Ok();
+            return CreatedAtAction(null, null);
         }
 
-        [HttpPost]
-        public async Task<ActionResult> UpdateContent(int userId, int courseId, int contentId, string unsafeHtml, IFormFile hiddenFileInput)
+        [HttpPut]
+        public async Task<ActionResult> UpdateContent([FromBody] UpdateContentModel updateContent)
         {
-            Content? content = await this.repositoryContent.FindContentAsync(contentId);
+            Content? content = await this.repositoryContent.FindContentAsync(updateContent.ContentId);
 
-            if (content != null)
+            if (content == null)
             {
-                if (hiddenFileInput != null)
-                {
-                    string mimeType = hiddenFileInput.ContentType;
-                    string fileName = "content_file_" + contentId;
-                    // Upload file                
-                    // Try with a document
-                    string? path = await this.helperFile.UploadFileAsync(hiddenFileInput, Folders.ContentFiles, FileTypes.Document, fileName);
-                    if (path == null)
-                    {
-                        // Try with an image
-                        path = await this.helperFile.UploadFileAsync(hiddenFileInput, Folders.ContentFiles, FileTypes.Image, fileName);
-
-                        if (path == null)
-                        {
-                            return Problem("Error al subir archivo. Formatos soportados: .pdf, .xlsx, .jpeg, .jpg, .png, .webp. Tamaño máximo: 10MB.");
-                        }
-                    }
-
-                    if (path != null)
-                    {
-                        if (content.FileId == null)
-                        {
-                            // Update DB
-                            int fileId = await this.repositoryUser.InsertFileAsync(path, mimeType, userId);
-                            // Update Content
-                            await this.repositoryContent.UpdateContentAsync(id: contentId, fileId: fileId);
-                        }
-                        else
-                        {
-                            // Update DB
-                            int fileId = content.FileId.Value;
-                            await this.repositoryUser.UpdateFileAsync(fileId, path, mimeType, userId);
-                            // Update Content
-                            await this.repositoryContent.UpdateContentAsync(id: contentId, fileId: fileId);
-                        }
-                    }
-                }
-                else if (unsafeHtml != null)
-                {
-                    string sanitized = this.sanitizer.Sanitize(unsafeHtml);
-
-                    await this.repositoryContent.UpdateContentAsync(id: contentId, text: sanitized);
-                }
+                return NotFound();
             }
 
-            return Ok();
+            if (updateContent.File != null)
+            {
+                string mimeType = updateContent.File.ContentType;
+                string fileName = "content_file_" + updateContent.ContentId;
+                // Upload file                
+                // Try with a document
+                string? path = await this.helperFile.UploadFileAsync(updateContent.File, Folders.ContentFiles, FileTypes.Document, fileName);
+                if (path == null)
+                {
+                    // Try with an image
+                    path = await this.helperFile.UploadFileAsync(updateContent.File, Folders.ContentFiles, FileTypes.Image, fileName);
+
+                    if (path == null)
+                    {
+                        return Problem("Error al subir archivo. Formatos soportados: .pdf, .xlsx, .jpeg, .jpg, .png, .webp. Tamaño máximo: 10MB.");
+                    }
+                }
+
+                if (path != null)
+                {
+                    if (content.FileId == null)
+                    {
+                        // Update DB
+                        int fileId = await this.repositoryUser.InsertFileAsync(path, mimeType, updateContent.UserId);
+                        // Update Content
+                        await this.repositoryContent.UpdateContentAsync(id: updateContent.ContentId, fileId: fileId);
+                    }
+                    else
+                    {
+                        // Update DB
+                        int fileId = content.FileId.Value;
+                        await this.repositoryUser.UpdateFileAsync(fileId, path, mimeType, updateContent.UserId);
+                        // Update Content
+                        await this.repositoryContent.UpdateContentAsync(id: updateContent.ContentId, fileId: fileId);
+                    }
+                }
+            }
+            else if (updateContent.UnsafeHtml != null)
+            {
+                string sanitized = this.sanitizer.Sanitize(updateContent.UnsafeHtml);
+
+                await this.repositoryContent.UpdateContentAsync(id: updateContent.ContentId, text: sanitized);
+            }
+
+            return NoContent();
         }
     }
 }

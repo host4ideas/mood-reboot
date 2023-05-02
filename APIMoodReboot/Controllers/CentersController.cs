@@ -47,14 +47,14 @@ namespace APIMoodReboot.Controllers
         public async Task<ActionResult> RemoveUserCenter(int userId, int centerId)
         {
             await this.repositoryCenters.RemoveUserCenterAsync(userId, centerId);
-            return Ok();
+            return NoContent();
         }
 
         [HttpPost("[action]")]
         public async Task<ActionResult> AddCenterEditors(int centerId, List<int> userIds)
         {
             await this.repositoryCenters.AddEditorsCenterAsync(centerId, userIds);
-            return Ok()
+            return NoContent();
         }
 
         #endregion
@@ -76,21 +76,21 @@ namespace APIMoodReboot.Controllers
                 return BadRequest("Error al crear el curso");
             }
 
-            return Ok();
+            return CreatedAtAction(null, null);
         }
 
         [HttpGet("{courseId}")]
         public async Task<ActionResult> DeleteCourse(int courseId)
         {
             await this.repositoryCourses.DeleteCourseAsync(courseId);
-            return Ok();
+            return NoContent();
         }
 
         [HttpGet("{courseId}")]
         public async Task<ActionResult> CourseVisibility(int courseId)
         {
             await this.repositoryCourses.UpdateCourseVisibilityAsync(courseId);
-            return Ok();
+            return NoContent();
         }
 
         [HttpPost("[action]/{centerId}")]
@@ -99,10 +99,10 @@ namespace APIMoodReboot.Controllers
             Center? center = await this.repositoryCenters.FindCenterAsync(centerId);
             if (center == null)
             {
-                return Ok("El centro no existe");
+                return NotFound("El centro no existe");
             }
 
-            return Ok(true);
+            return NoContent();
         }
 
         #endregion
@@ -131,7 +131,8 @@ namespace APIMoodReboot.Controllers
             string domainName = HttpContext.Request.Host.Value.ToString();
             string baseUrl = protocol + domainName;
             await this.helperMail.SendMailAsync(email, "Aprobación de centro en curso", "Estamos en proceso de aprobar su solicitud de creación de centro. Por favor, si ha cometido algún error en los datos o quisiera cancelar la operación. Mande un correo a: moodreboot@gmail.com", baseUrl);
-            return Ok();
+            
+            return NoContent();
         }
 
         #endregion

@@ -1,13 +1,11 @@
 using Ganss.Xss;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-using MoodReboot.Data;
-using MoodReboot.Helpers;
 using MoodReboot.Hubs;
-using MoodReboot.Interfaces;
-using MoodReboot.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddHttpClient();
 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
@@ -42,20 +40,6 @@ builder.Services.AddSignalR();
 
 string connectionString = builder.Configuration.GetConnectionString("SqlMoodReboot");
 
-// DB Context
-builder.Services.AddDbContext<MoodRebootContext>(options => options.UseSqlServer(connectionString));
-// Repositories
-builder.Services.AddTransient<IRepositoryCourses, RepositoryCoursesSql>();
-builder.Services.AddTransient<IRepositoryCenters, RepositoryCentersSql>();
-builder.Services.AddTransient<IRepositoryContent, RepositoryContentSql>();
-builder.Services.AddTransient<IRepositoryUsers, RepositoryUsersSql>();
-builder.Services.AddTransient<IRepositoryContentGroups, RepositoryCntGroupsSql>();
-// Helpers
-builder.Services.AddSingleton<HelperPath>();
-builder.Services.AddSingleton<HelperJsonSession>();
-builder.Services.AddSingleton<HelperMail>();
-builder.Services.AddTransient<HelperFile>();
-builder.Services.AddTransient<HelperCourse>();
 // Custom
 builder.Services.AddSingleton<HtmlSanitizer>();
 

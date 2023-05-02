@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using APIMoodReboot.Interfaces;
-using APIMoodReboot.Repositories;
+using NugetMoodReboot.Models;
 
 namespace APIMoodReboot.Controllers
 {
-    public class ContentGroupsController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ContentGroupsController : ControllerBase
     {
         private readonly IRepositoryContentGroups repo;
 
@@ -13,30 +15,31 @@ namespace APIMoodReboot.Controllers
             this.repo = repo;
         }
 
-        public async Task<IActionResult> DeleteContentGroup(int id, int courseId)
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteContentGroup(int id)
         {
             await this.repo.DeleteContentGroupAsync(id);
-            return RedirectToAction("CourseDetails", "Courses", new { id = courseId });
+            return NoContent();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateContentGroup(string name, int courseId, bool isVisible)
+        [HttpPost("[action]/{name}/{courseId}/{isVisible}")]
+        public async Task<ActionResult> CreateContentGroup(string name, int courseId, bool isVisible)
         {
             if (name != null && courseId >= 0)
             {
                 await this.repo.CreateContentGroupAsync(name, courseId, isVisible);
             }
-            return RedirectToAction("CourseDetails", "Courses", new { id = courseId });
+            return CreatedAtAction(null, null);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> UpdateContentGroup(int id, string name, int courseId, bool isVisible)
+        [HttpPut]
+        public async Task<ActionResult> UpdateContentGroup(ContentGroup contentGroup)
         {
-            if (name != null && courseId >= 0)
+            if (contentGroup.Name != null && contentGroup.Name.Any())
             {
-                await this.repo.UpdateContentGroupAsync(id, name, isVisible);
+                await this.repo.UpdateContentGroupAsync(contentGroup.ContentGroupId, contentGroup.Name, contentGroup.IsVisible);
             }
-            return RedirectToAction("CourseDetails", "Courses", new { id = courseId });
+            return NoContent();
         }
     }
 }

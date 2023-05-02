@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using APIMoodReboot.Interfaces;
-using APIMoodReboot.Models;
-using MvcCoreSeguridadEmpleados.Filters;
 using System.Security.Claims;
+using NugetMoodReboot.Models;
 
 namespace APIMoodReboot.Controllers
 {
-    [AuthorizeUsers]
+    //[AuthorizeUsers]
     public class MessagesController : Controller
     {
         private readonly IRepositoryUsers repositoryUsers;
@@ -16,81 +15,72 @@ namespace APIMoodReboot.Controllers
             this.repositoryUsers = repositoryUsers;
         }
 
-        public IActionResult ChatErrorPartial(string errorMessage)
+        [HttpGet("[action]")]
+        public async Task<ActionResult<List<Message>>> GetChatMessages(int chatGroupId)
         {
-            ViewData["ERROR"] = errorMessage;
-            return View();
+            return await this.repositoryUsers.GetMessagesByGroupAsync(chatGroupId);
         }
 
-        public IActionResult ChatWindowPartial(int userId)
+        [HttpGet("[action]")]
+        public async Task<ActionResult<List<Message>>> GetUnseenMessages(int userId)
         {
-            List<ChatGroup> groups = this.repositoryUsers.GetUserChatGroups(userId);
-            return PartialView("_ChatWindowPartial", groups);
+            return await this.repositoryUsers.GetUnseenMessagesAsync(userId);
         }
 
-        public IActionResult ChatNotificationsPartial(int userId)
-        {
-            List<Message> unseen = this.repositoryUsers.GetUnseenMessages(userId);
-            return PartialView("_ChatNotificationsPartial", unseen);
-        }
-
-        public List<Message> GetChatMessages(int chatGroupId)
-        {
-            List<Message> messages = this.repositoryUsers.GetMessagesByGroup(chatGroupId);
-            return messages;
-        }
-
-        public List<Message> GetUnseenMessages(int userId)
-        {
-            return this.repositoryUsers.GetUnseenMessages(userId);
-        }
-
-        public async Task UpdateChatLastSeen(int chatGroupId)
+        [HttpPut("[action]/{chatGroupId}")]
+        public async Task<ActionResult> UpdateChatLastSeen(int chatGroupId)
         {
             int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-            await this.repositoryUsers.UpdateChatLastSeen(chatGroupId, userId);
+            await this.repositoryUsers.UpdateChatLastSeenAsync(chatGroupId, userId);
+            return NoContent();
         }
 
-        public async Task CreateChatGroup(List<int> userIds, string? groupName = "NEW CHAT GROUP")
+        [HttpPost("[action]")]
+        public async Task<ActionResult> CreateChatGroup(CreateChatGroupModel createChatGroup)
         {
             // Add current user to the list of users
             int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-            userIds.Add(userId);
+            createChatGroup.UserIds.Add(userId);
 
             // List without duplicates
-            HashSet<int> userIdsNoDups = new(userIds);
+            HashSet<int> userIdsNoDups = new(createChatGroup.UserIds);
 
-            if (userIds.Count == 2)
+            if (createChatGroup.UserIds.Count == 2)
             {
-                await this.repositoryUsers.NewChatGroup(userIdsNoDups);
+                await this.repositoryUsers.NewChatGroupAsync(userIdsNoDups);
             }
-            else if (userIds.Count > 2)
+            else if (createChatGroup.UserIds.Count > 2)
             {
-                await this.repositoryUsers.NewChatGroup(userIdsNoDups, userId, groupName);
+                await this.repositoryUsers.NewChatGroupAsync(userIdsNoDups, userId, createChatGroup.GroupName);
             }
+
+            return NoContent();
         }
 
-        [HttpPost]
-        public Task AddUsersToChat(int chatGroupId, List<int> userIds)
+        [HttpPost("[action]/{chatGroupId}")]
+        public async Task<ActionResult> AddUsersToChat(int chatGroupId, [FromQuery] List<int> userIds)
         {
-            return this.repositoryUsers.AddUsersToChat(chatGroupId, userIds);
+            await this.repositoryUsers.AddUsersToChatAsync(chatGroupId, userIds);
+            return NoContent();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> UpdateChatGroup(ChatGroup chatGroup)
+        [HttpPost("[action]")]
+        public async Task<ActionResult> UpdateChatGroup(ChatGroup chatGroup)
         {
-            await this.repositoryUsers.UpdateChatGroup(chatGroup.Id, chatGroup.Name);
-            return RedirectToAction("Index", "Home");
+            await this.repositoryUsers.UpdateChatGroupAsync(chatGroup.Id, chatGroup.Name);
+            return NoContent();
         }
 
-        public async Task DeleteChatGroup(int chatGroupId)
+        public async Task<ActionResult> DeleteChatGroup(int chatGroupId)
         {
-            await this.repositoryUsers.RemoveChatGroup(chatGroupId);
+            await this.repositoryUsers.RemoveChatGroupAsync(chatGroupId);
+            return NoContent();
         }
 
-        public Task RemoveUserFromChat(int userId, int chatGroupId)
+        public async Task<ActionResult> RemoveUserFromChat(int userId, int chatGroupId)
         {
-            return this.repositoryUsers.RemoveChatUser(userId, chatGroupId);
+            await this.repositoryUsers.RemoveChatUserAsync(userId, chatGroupId);
+            return NoContent();
         }
     }
 }

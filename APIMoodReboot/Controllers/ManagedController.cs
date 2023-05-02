@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using APIMoodReboot.Extensions;
-using APIMoodReboot.Helpers;
 using APIMoodReboot.Interfaces;
-using APIMoodReboot.Models;
 using System.Security.Claims;
+using NugetMoodReboot.Models;
+using NugetMoodReboot.Helpers;
 
 namespace APIMoodReboot.Controllers
 {
@@ -22,21 +21,11 @@ namespace APIMoodReboot.Controllers
             this.helperMail = helperMail;
         }
 
-        public IActionResult AccessError()
-        {
-            return View();
-        }
-
-        public IActionResult Login()
-        {
-            return View();
-        }
-
         [HttpPost]
         public async Task<IActionResult> Login(string usernameOrEmail, string password)
         {
             // Pass to findUser the userId
-            AppUser? user = await this.repositoryUsers.LoginUser(usernameOrEmail, password);
+            AppUser? user = await this.repositoryUsers.LoginUserAsync(usernameOrEmail, password);
 
             if (user == null)
             {
@@ -45,7 +34,7 @@ namespace APIMoodReboot.Controllers
             }
             else if (user.Approved == false)
             {
-                string token = await this.repositoryUsers.CreateUserAction(user.Id);
+                string token = await this.repositoryUsers.CreateUserActionAsync(user.Id);
                 string resendUrl = Url.Action("ResendConfirmationEmail", "Managed", new { userId = user.Id, token });
                 ViewData["MESSAGE"] = $"Este usuario no ha sido validado, <a class='text-blue-700 hover:underline dark:text-blue-500' href='{resendUrl}'>Quiero recibir de nuevo la confirmación por correo</a>";
                 return View();
@@ -79,7 +68,7 @@ namespace APIMoodReboot.Controllers
 
         public async Task<IActionResult> ResendConfirmationEmail(int userId, string token)
         {
-            AppUser? user = await this.repositoryUsers.FindUser(userId);
+            AppUser? user = await this.repositoryUsers.FindUserAsync(userId);
 
             if (user != null)
             {
@@ -97,7 +86,7 @@ namespace APIMoodReboot.Controllers
                     Link = url
                 }
             };
-                await this.helperMail.SendMailAsync(user.Email, "Confirmación de cuenta", "Se ha solicitado una petición para crear una cuenta en APIMoodReboot con este correo electrónico. Pulsa el siguiente enlace para confirmarla. Si no has sido tu el solicitante no te procupes, la petición será cancelada en un período de 24hrs.", links, baseUrl);
+                await this.helperMail.SendMailAsync(user.Email, "Confirmación de cuenta", "Se ha solicitado una petición para crear una cuenta en MoodReboot con este correo electrónico. Pulsa el siguiente enlace para confirmarla. Si no has sido tu el solicitante no te procupes, la petición será cancelada en un período de 24hrs.", links, baseUrl);
 
                 ViewData["SUCCESS"] = "Correo de confirmación enviado";
                 return View("Login");
@@ -112,12 +101,6 @@ namespace APIMoodReboot.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        public IActionResult SignUp(bool noUserImage)
-        {
-            ViewData["NO_IMAGE"] = noUserImage;
-            return View();
-        }
-
         [HttpPost]
         public async Task<IActionResult> SignUp
             (string userName, string firstName, string lastName, string email, string password, IFormFile image)
@@ -127,7 +110,7 @@ namespace APIMoodReboot.Controllers
             // Upload profile image
             if (image != null)
             {
-                int maximo = await this.repositoryUsers.GetMaxUser();
+                int maximo = await this.repositoryUsers.GetMaxUserAsync();
 
                 string fileName = "image_" + maximo;
 
@@ -141,10 +124,10 @@ namespace APIMoodReboot.Controllers
             }
 
             // BBDD
-            int userId = await this.repositoryUsers.RegisterUser(userName, firstName, lastName, email, password, path);
+            int userId = await this.repositoryUsers.RegisterUserAsync(userName, firstName, lastName, email, password, path);
 
             // Confirmation token
-            string token = await this.repositoryUsers.CreateUserAction(userId);
+            string token = await this.repositoryUsers.CreateUserActionAsync(userId);
 
             // Confirmation mail
             string protocol = HttpContext.Request.IsHttps ? "https" : "http";
@@ -164,39 +147,6 @@ namespace APIMoodReboot.Controllers
 
             ViewData["SUCCESS"] = "Revisa tu correo electrónico";
             return View();
-        }
-
-        // Forms validations
-        [AcceptVerbs("GET", "POST")]
-        public async Task<IActionResult> EmailExists(string email)
-        {
-            if (await this.repositoryUsers.IsEmailAvailable(email) == false)
-            {
-                return Json(true);
-            }
-            return Json($"Email {email} no pertenece a ningún usuario de la plataforma.");
-        }
-
-        [AcceptVerbs("GET", "POST")]
-        public async Task<IActionResult> VerifyEmail(string email)
-        {
-            if (await this.repositoryUsers.IsEmailAvailable(email) == false)
-            {
-                return Json($"Email {email} ya está en uso.");
-            }
-
-            return Json(true);
-        }
-
-        [AcceptVerbs("GET", "POST")]
-        public async Task<IActionResult> VerifyUsername(string userName)
-        {
-            if (await this.repositoryUsers.IsUsernameAvailable(userName) == false)
-            {
-                return Json($"Nick {userName} ya está en uso.");
-            }
-
-            return Json(true);
         }
     }
 }

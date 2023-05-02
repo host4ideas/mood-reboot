@@ -19,33 +19,40 @@ namespace APIMoodReboot.Controllers
             this.helperMail = helperMail;
         }
 
-        public async Task<List<Tuple<string, int>>> SearchUsers(string pattern)
+        [HttpGet("[action]/{pattern}")]
+        public async Task<ActionResult<List<Tuple<string, int>>>> SearchUsers(string pattern)
         {
             return await this.repositoryUsers.SearchUsersAsync(pattern);
         }
 
         //[AuthorizeUsers]
-        public async Task<IActionResult> Profile()
+        [HttpGet("[action]")]
+        public async Task<ActionResult<AppUser>> Profile()
         {
             int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
             AppUser? user = await this.repositoryUsers.FindUserAsync(userId);
-            return View(user);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(user);
         }
 
         //[AuthorizeUsers]
-        [HttpPost]
-        public async Task<IActionResult> Profile(int userId, string userName, string firstName, string lastName, IFormFile image)
+        [HttpPut("[action]")]
+        public async Task<ActionResult> Profile(UpdateProfileModel updateProfile)
         {
-            if (image != null && image.Length > 0)
+            if (updateProfile.Image != null && updateProfile.Image.Length > 0)
             {
-                string fileName = "image_" + userId;
-                await this.helperFile.UploadFileAsync(image, Folders.ProfileImages, FileTypes.Image, fileName);
-                await this.repositoryUsers.UpdateUserBasicsAsync(userId, userName, firstName, lastName, fileName);
-                return RedirectToAction("Profile", new { userId });
+                string fileName = "image_" + updateProfile.UserId;
+                await this.helperFile.UploadFileAsync(updateProfile.Image, Folders.ProfileImages, FileTypes.Image, fileName);
+                await this.repositoryUsers.UpdateUserBasicsAsync(updateProfile.UserId, updateProfile.Username, updateProfile.FirstName, updateProfile.LastName, fileName);
+                return NoContent();
             }
 
-            await this.repositoryUsers.UpdateUserBasicsAsync(userId, userName, firstName, lastName);
-            return RedirectToAction("Profile", new { userId });
+            await this.repositoryUsers.UpdateUserBasicsAsync(updateProfile.UserId, updateProfile.Username, updateProfile.FirstName, updateProfile.LastName);
+            return NoContent();
         }
 
         /// <summary>

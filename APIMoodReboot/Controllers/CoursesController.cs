@@ -1,15 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using APIMoodReboot.Extensions;
 using APIMoodReboot.Interfaces;
-using APIMoodReboot.Models;
-using MvcCoreSeguridadEmpleados.Filters;
-using System.Collections.Generic;
 using System.Security.Claims;
+using NugetMoodReboot.Models;
 
 namespace APIMoodReboot.Controllers
 {
-    [AuthorizeUsers]
-    public class CoursesController : Controller
+    //[AuthorizeUsers]
+    [Route("api/[controller]")]
+    [ApiController]
+    public class CoursesController : ControllerBase
     {
         private readonly IRepositoryCourses repositoryCourses;
         private readonly IRepositoryContent repositoryContent;
@@ -24,203 +23,93 @@ namespace APIMoodReboot.Controllers
             this.repositoryUsers = repositoryUsers;
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-        public async Task<IActionResult> UserCourses()
+        [HttpGet]
+        public async Task<ActionResult> UserCourses()
         {
             int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-            List<CourseListView> courses = await this.repositoryCourses.GetUserCourses(userId);
-            return View("Index", courses);
+            List<CourseListView> courses = await this.repositoryCourses.GetUserCoursesAsync(userId);
+            return Ok(courses);
         }
 
-        public async Task<IActionResult> DeleteCourseUser(int courseId, int userId)
+        [HttpDelete("[action]/{courseId}/{userId}")]
+        public async Task<ActionResult> DeleteCourseUser(int courseId, int userId)
         {
-            Course? course = await this.repositoryCourses.FindCourse(courseId);
+            Course? course = await this.repositoryCourses.FindCourseAsync(courseId);
             if (course != null)
             {
                 await this.repositoryCourses.RemoveCourseUserAsync(courseId, userId);
                 if (course.GroupId.HasValue)
                 {
-                    await this.repositoryUsers.RemoveChatUser(userId, course.GroupId.Value);
+                    await this.repositoryUsers.RemoveChatUserAsync(userId, course.GroupId.Value);
                 }
             }
             return RedirectToAction("CourseDetails", new { id = courseId });
         }
 
-        public async Task<IActionResult> DeleteCourseEditor(int courseId, int userId)
+        [HttpDelete("[action]/{courseId}/{userId}")]
+        public async Task<ActionResult> DeleteCourseEditor(int courseId, int userId)
         {
             await this.repositoryCourses.RemoveCourseEditorAsync(courseId, userId);
-            return RedirectToAction("CourseDetails", new { id = courseId });
+            return NoContent();
         }
 
-        public async Task<IActionResult> AddCourseEditor(int courseId, int userId)
+        [HttpPost("[action]/{courseId}/{userId}")]
+        public async Task<ActionResult> AddCourseEditor(int courseId, int userId)
         {
             await this.repositoryCourses.AddCourseEditorAsync(courseId, userId);
-            return RedirectToAction("CourseDetails", new { id = courseId });
+            return CreatedAtAction(null, null);
         }
 
-        public async Task<IActionResult> UpdateCourse(int userId, int courseId, string description, string image, string name, bool isVisible)
+        [HttpPut]
+        public async Task<IActionResult> UpdateCourse(Course course)
         {
-            await this.repositoryCourses.UpdateCourse(courseId, description, image, name, isVisible);
-            return RedirectToAction("UserCourses", new { id = userId });
+            await this.repositoryCourses.UpdateCourseAsync(course.Id, course.Description, course.Image, course.Name, course.IsVisible);
+            return NoContent();
         }
 
-        public async Task<IActionResult> CenterCourses(int centerId)
+        [HttpGet("[action]/{centerId}")]
+        public async Task<ActionResult<List<CourseListView>>> CenterCourses(int centerId)
         {
-            List<CourseListView> courses = await this.repositoryCourses.GetCenterCourses(centerId);
-            return View("Index", courses);
+            return await this.repositoryCourses.GetCenterCoursesAsync(centerId);
         }
 
-        public async Task<IActionResult> GetAllCourses()
+        public async Task<ActionResult<List<Course>>> GetAllCourses()
         {
-            List<Course> courses = await this.repositoryCourses.GetAllCourses();
-            return View("Index", courses);
+            return await this.repositoryCourses.GetAllCoursesAsync();
         }
 
-        public async Task<IActionResult> CourseEnrollment(int courseId)
+        [HttpPost("[action]/{courseId}/{userId}/{password}/{isEditor}")]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> CourseEnrollment(int courseId, int userId, string password, bool isEditor = false)
         {
-            Course? course = await this.repositoryCourses.FindCourse(courseId);
+            Course? course = await this.repositoryCourses.FindCourseAsync(courseId);
 
-            // The course doesn't exist
             if (course == null)
             {
-                return RedirectToAction("UserCourses");
+                return NotFound();
             }
 
-            return View(course);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CourseEnrollment(int courseId, int userId, string password, bool isEditor = false)
-        {
-            Course? course = await this.repositoryCourses.FindCourse(courseId);
-
-            if (course != null)
+            // If the course doesn't have password, enroll the user in the course
+            if (course.Password == null)
             {
-                // If the course doesn't have password, enroll the user in the course
-                if (course.Password == null)
-                {
-                    await this.repositoryCourses.AddCourseUserAsync(courseId, userId, isEditor);
-                    return RedirectToAction("CourseDetails", new { courseId });
-                }
-                // If the course has password
-                bool added = await this.repositoryCourses.AddCourseUserAsync(courseId, userId, isEditor, password);
-                if (added == true)
-                {
-                    ViewData["ERROR"] = "Contraseña del curso incorrecta";
-                    return RedirectToAction("CourseEnrollment", new { courseId });
-                }
+                await this.repositoryCourses.AddCourseUserAsync(courseId, userId, isEditor);
+                return NoContent();
             }
-            // Fallback to user's courses
-            return RedirectToAction("UserCourses", new { id = courseId });
-        }
 
-        [AuthorizeUsers]
-        public async Task<IActionResult> CourseDetails(int courseId)
-        {
-            int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-
-            UserCourse? userCourse = await this.repositoryCourses.FindUserCourse(userId, courseId);
-
-            if (userCourse != null)
+            // If the course has password
+            bool added = await this.repositoryCourses.AddCourseUserAsync(courseId, userId, isEditor, password);
+            if (added == true)
             {
-                List<ContentGroup> contentGroups = this.repositoryContentGroups.GetCourseContentGroups(courseId);
-
-                foreach (ContentGroup group in contentGroups)
-                {
-                    List<Content> contentList = await this.repositoryContent.GetContentByGroup(group.ContentGroupId);
-                    List<ContentListModel> contentFileList = new();
-
-                    foreach (Content ctn in contentList)
-                    {
-                        ContentListModel contentFile = new()
-                        {
-                            ContentGroupId = ctn.ContentGroupId,
-                            Id = ctn.Id,
-                            Text = ctn.Text,
-                            FileId = ctn.FileId
-                        };
-
-                        if (ctn.FileId != null)
-                        {
-                            contentFile.File = await this.repositoryUsers.FindFile(ctn.FileId.Value);
-                        }
-
-                        contentFileList.Add(contentFile);
-                    }
-
-                    group.Contents = contentFileList;
-                }
-
-                Course? course = await this.repositoryCourses.FindCourse(courseId);
-
-                if (course == null || contentGroups == null)
-                {
-                    return RedirectToAction("UserCourses", new { userId });
-                }
-
-                // Add to last seen courses
-                List<LastSeenCourse>? lastSeenCourses = HttpContext.Session.GetObject<List<LastSeenCourse>>("LAST_COURSES");
-
-                if (lastSeenCourses == null)
-                {
-                    lastSeenCourses = new();
-                }
-                else if (lastSeenCourses.Count == 5)
-                {
-                    lastSeenCourses.RemoveAt(0);
-                }
-
-                lastSeenCourses.Add(new LastSeenCourse()
-                {
-                    Id = course.Id,
-                    Description = course.Description,
-                    Image = course.Image,
-                    Name = course.Name,
-                });
-
-                // Save without duplicates
-                HttpContext.Session.SetObject("LAST_COURSES", lastSeenCourses.DistinctBy(x => x.Id).ToList());
-
-                // Course users
-                List<CourseUsersModel> courseUsers = await this.repositoryCourses.GetCourseUsers(course.Id);
-
-                CourseDetailsModel details;
-
-                if (userCourse.IsEditor)
-                {
-                    details = new()
-                    {
-                        ContentGroups = contentGroups,
-                        Course = course,
-                        CourseUsers = courseUsers,
-                        IsEditor = true
-                    };
-                }
-                else
-                {
-                    details = new()
-                    {
-                        ContentGroups = contentGroups,
-                        Course = course,
-                        IsEditor = false
-                    };
-                }
-
-                return View(details);
+                return NoContent();
             }
-            // If the user is not already enrolled to the course
-            return RedirectToAction("CourseEnrollment", new { courseId });
+
+            return Problem("Contraseña del curso incorrecta");
         }
 
-        public IActionResult DeleteCourse(int id)
+        public async Task<ActionResult> DeleteCourse(int id)
         {
-            this.repositoryCourses.DeleteCourse(id);
-            return RedirectToAction("UserCourses");
+            await this.repositoryCourses.DeleteCourseAsync(id);
+            return NoContent();
         }
     }
 }

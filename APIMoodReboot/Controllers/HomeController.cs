@@ -1,10 +1,6 @@
-﻿using Markdig;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using APIMoodReboot.Models;
-using APIMoodReboot.Helpers;
-using APIMoodReboot.Extensions;
-using Microsoft.AspNetCore.Http;
+using NugetMoodReboot.Models;
 
 namespace APIMoodReboot.Controllers
 {

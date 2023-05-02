@@ -6,60 +6,82 @@ namespace NugetMoodReboot.Helpers
     public class HelperApi
     {
         private readonly string _urlApi;
-        private readonly HttpClient _httpClient;
+        private IHttpClientFactory HttpClientFactory { get; }
 
-        public HelperApi(string urlApi)
+        public HelperApi(string urlApi, IHttpClientFactory httpClientFactory)
         {
-            _urlApi = urlApi;
-            _httpClient = new HttpClient
-            {
-                BaseAddress = new Uri(_urlApi)
-            };
-            _httpClient.DefaultRequestHeaders.Clear();
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            this._urlApi = urlApi;
+            this.HttpClientFactory = httpClientFactory;
+            using var message = new HttpRequestMessage();
         }
 
-        public HelperApi(string urlApi, HttpRequestHeaders headers)
+        public async Task<T?> GetAsync<T>(string request, List<KeyValuePair<string, IEnumerable<string>>>? additionalHeaders)
         {
-            _urlApi = urlApi;
-            _httpClient = new HttpClient
+            using HttpClient httpClient = HttpClientFactory.CreateClient();
+            httpClient.BaseAddress = new Uri(this._urlApi);
+            httpClient.DefaultRequestHeaders.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            if (additionalHeaders != null)
             {
-                BaseAddress = new Uri(_urlApi)
-            };
-            _httpClient.DefaultRequestHeaders.Clear();
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            foreach (var header in headers)
-            {
-                _httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
+                foreach (var header in additionalHeaders)
+                {
+                    httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
+                }
             }
+            return await httpClient.GetFromJsonAsync<T>(new Uri(request));
         }
 
-        public async Task<T?> GetAsync<T>(string request)
+        public async Task<HttpResponseMessage> DeleteAsync(string request, List<KeyValuePair<string, IEnumerable<string>>>? additionalHeaders)
         {
-            return await _httpClient.GetFromJsonAsync<T>(request);
+            using HttpClient httpClient = HttpClientFactory.CreateClient();
+            httpClient.BaseAddress = new Uri(this._urlApi);
+            httpClient.DefaultRequestHeaders.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            foreach (var header in additionalHeaders)
+            {
+                httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
+            }
+            return await httpClient.DeleteAsync(request);
         }
 
-        public async Task<HttpResponseMessage> DeleteAsync(string request)
+        public async Task<HttpResponseMessage> PutAsync<T>(string request, T? body, List<KeyValuePair<string, IEnumerable<string>>>? additionalHeaders)
         {
-            return await _httpClient.DeleteAsync(request);
-        }
-
-        public async Task<HttpResponseMessage> PutAsync<T>(string request, T? body)
-        {
+            using HttpClient httpClient = HttpClientFactory.CreateClient();
+            httpClient.BaseAddress = new Uri(this._urlApi);
+            httpClient.DefaultRequestHeaders.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            if (additionalHeaders != null)
+            {
+                foreach (var header in additionalHeaders)
+                {
+                    httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
+                }
+            }
             if (body == null)
             {
-                return await _httpClient.PutAsync(request, null);
+                return await httpClient.PutAsync(request, null);
             }
-            return await _httpClient.PutAsJsonAsync(request, body);
+            return await httpClient.PutAsJsonAsync(request, body);
         }
 
-        public async Task<HttpResponseMessage> PostAsync<T>(string request, T? body)
+        public async Task<HttpResponseMessage> PostAsync<T>(string request, T? body, List<KeyValuePair<string, IEnumerable<string>>>? additionalHeaders)
         {
+            using HttpClient httpClient = HttpClientFactory.CreateClient();
+            httpClient.BaseAddress = new Uri(this._urlApi);
+            httpClient.DefaultRequestHeaders.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            if (additionalHeaders != null)
+            {
+                foreach (var header in additionalHeaders)
+                {
+                    httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
+                }
+            }
             if (body == null)
             {
-                return await _httpClient.PostAsync(request, null);
+                return await httpClient.PostAsync(request, null);
             }
-            return await _httpClient.PostAsJsonAsync(request, body);
+            return await httpClient.PostAsJsonAsync(request, body);
         }
     }
 }

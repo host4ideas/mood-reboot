@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using APIMoodReboot.Data;
 using APIMoodReboot.Interfaces;
-using APIMoodReboot.Models;
+using NugetMoodReboot.Models;
 
 namespace APIMoodReboot.Repositories
 {
@@ -53,7 +53,7 @@ namespace APIMoodReboot.Repositories
 
         public async Task UpdateContentGroupAsync(int id, string name, Boolean isVisible)
         {
-            ContentGroup? contentGroup = this.FindContentGroup(id);
+            ContentGroup? contentGroup = await this.FindContentGroupAsync(id);
             if (contentGroup != null)
             {
                 contentGroup.Name = name;
@@ -64,13 +64,12 @@ namespace APIMoodReboot.Repositories
 
         public async Task DeleteContentGroupAsync(int id)
         {
-            ContentGroup? group = this.FindContentGroup(id);
+            ContentGroup? group = await this.FindContentGroupAsync(id);
             if (group != null)
             {
                 this.context.ContentGroups.Remove(group);
                 await this.context.SaveChangesAsync();
             }
         }
-
     }
 }
