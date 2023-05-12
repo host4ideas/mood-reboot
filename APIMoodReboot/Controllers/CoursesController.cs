@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using APIMoodReboot.Interfaces;
 using System.Security.Claims;
 using NugetMoodReboot.Models;
+using Microsoft.AspNetCore.Authorization;
+using NugetMoodReboot.Interfaces;
 
 namespace APIMoodReboot.Controllers
 {
-    //[AuthorizeUsers]
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class CoursesController : ControllerBase
     {
         private readonly IRepositoryCourses repositoryCourses;
@@ -31,7 +32,7 @@ namespace APIMoodReboot.Controllers
             return Ok(courses);
         }
 
-        [HttpDelete("[action]/{courseId}/{userId}")]
+        [HttpDelete("{courseId}/{userId}")]
         public async Task<ActionResult> DeleteCourseUser(int courseId, int userId)
         {
             Course? course = await this.repositoryCourses.FindCourseAsync(courseId);
@@ -46,14 +47,14 @@ namespace APIMoodReboot.Controllers
             return RedirectToAction("CourseDetails", new { id = courseId });
         }
 
-        [HttpDelete("[action]/{courseId}/{userId}")]
+        [HttpDelete("{courseId}/{userId}")]
         public async Task<ActionResult> DeleteCourseEditor(int courseId, int userId)
         {
             await this.repositoryCourses.RemoveCourseEditorAsync(courseId, userId);
             return NoContent();
         }
 
-        [HttpPost("[action]/{courseId}/{userId}")]
+        [HttpPost("{courseId}/{userId}")]
         public async Task<ActionResult> AddCourseEditor(int courseId, int userId)
         {
             await this.repositoryCourses.AddCourseEditorAsync(courseId, userId);
@@ -67,18 +68,19 @@ namespace APIMoodReboot.Controllers
             return NoContent();
         }
 
-        [HttpGet("[action]/{centerId}")]
+        [HttpGet("{centerId}")]
         public async Task<ActionResult<List<CourseListView>>> CenterCourses(int centerId)
         {
             return await this.repositoryCourses.GetCenterCoursesAsync(centerId);
         }
 
+        [HttpGet]
         public async Task<ActionResult<List<Course>>> GetAllCourses()
         {
             return await this.repositoryCourses.GetAllCoursesAsync();
         }
 
-        [HttpPost("[action]/{courseId}/{userId}/{password}/{isEditor}")]
+        [HttpPost("{courseId}/{userId}/{password}/{isEditor}")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> CourseEnrollment(int courseId, int userId, string password, bool isEditor = false)
         {
@@ -106,6 +108,7 @@ namespace APIMoodReboot.Controllers
             return Problem("Contraseña del curso incorrecta");
         }
 
+        [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteCourse(int id)
         {
             await this.repositoryCourses.DeleteCourseAsync(id);

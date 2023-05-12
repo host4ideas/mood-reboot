@@ -1,29 +1,25 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using APIMoodReboot.Helpers;
-using APIMoodReboot.Interfaces;
 using System.Security.Claims;
-using NugetMoodReboot.Helpers;
 using NugetMoodReboot.Models;
-using APIMoodReboot.Models;
+using Microsoft.AspNetCore.Authorization;
+using Newtonsoft.Json;
+using NugetMoodReboot.Interfaces;
 
 namespace APIMoodReboot.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class CentersController : ControllerBase
     {
         private readonly IRepositoryCenters repositoryCenters;
         private readonly IRepositoryCourses repositoryCourses;
-        private readonly HelperFile helperFile;
-        private readonly HelperMail helperMail;
         private readonly HelperCourse helperCourse;
 
-        public CentersController(IRepositoryCenters repositoryCenters, IRepositoryCourses repositoryCourses, HelperFile helperFile, HelperMail helperMail, HelperCourse helperCourse)
+        public CentersController(IRepositoryCenters repositoryCenters, IRepositoryCourses repositoryCourses, HelperCourse helperCourse)
         {
             this.repositoryCenters = repositoryCenters;
             this.repositoryCourses = repositoryCourses;
-            this.helperFile = helperFile;
-            this.helperMail = helperMail;
             this.helperCourse = helperCourse;
         }
 
@@ -35,23 +31,28 @@ namespace APIMoodReboot.Controllers
 
         #region CENTER USER
 
-        ////[AuthorizeUsers]
-        [HttpGet("[action]/{userId}")]
-        public async Task<ActionResult<List<CenterListView>>> UserCenters(int userId)
+        [Authorize]
+        [HttpGet]
+        public async Task<ActionResult<List<CenterListView>>> UserCenters()
         {
-            return await this.repositoryCenters.GetUserCentersAsync(userId);
+            Claim claim = HttpContext.User.Claims.SingleOrDefault(x => x.Type == "UserData");
+            string jsonUser = claim.Value;
+            AppUser user = JsonConvert.DeserializeObject<AppUser>(jsonUser);
+
+            return await this.repositoryCenters.GetUserCentersAsync(user.Id);
         }
 
-        ////[AuthorizeUsers]
-        [HttpDelete("[action]/{userId}/{centerId}")]
+        [Authorize]
+        [HttpDelete("{userId}/{centerId}")]
         public async Task<ActionResult> RemoveUserCenter(int userId, int centerId)
         {
             await this.repositoryCenters.RemoveUserCenterAsync(userId, centerId);
             return NoContent();
         }
 
-        [HttpPost("[action]")]
-        public async Task<ActionResult> AddCenterEditors(int centerId, List<int> userIds)
+        [Authorize]
+        [HttpPost("{centerId}")]
+        public async Task<ActionResult> AddCenterEditors(int centerId, [FromQuery] List<int> userIds)
         {
             await this.repositoryCenters.AddEditorsCenterAsync(centerId, userIds);
             return NoContent();
@@ -61,9 +62,9 @@ namespace APIMoodReboot.Controllers
 
         #region EDITOR VIEW
 
-        //[AuthorizeUsers]
-        [HttpPost("[action]")]
-        public async Task<ActionResult> CreateCourse(CreateCourseModel newCourse)
+        [Authorize]
+        [HttpPost]
+        public async Task<ActionResult> CreateCourse(CreateCourseApiModel newCourse)
         {
             int firstEditorId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
 
@@ -79,6 +80,7 @@ namespace APIMoodReboot.Controllers
             return CreatedAtAction(null, null);
         }
 
+        [Authorize]
         [HttpGet("{courseId}")]
         public async Task<ActionResult> DeleteCourse(int courseId)
         {
@@ -86,6 +88,7 @@ namespace APIMoodReboot.Controllers
             return NoContent();
         }
 
+        [Authorize]
         [HttpGet("{courseId}")]
         public async Task<ActionResult> CourseVisibility(int courseId)
         {
@@ -93,7 +96,8 @@ namespace APIMoodReboot.Controllers
             return NoContent();
         }
 
-        [HttpPost("[action]/{centerId}")]
+        [Authorize]
+        [HttpPost("{centerId}")]
         public async Task<ActionResult> VerifyCenter(int centerId)
         {
             Center? center = await this.repositoryCenters.FindCenterAsync(centerId);
@@ -109,29 +113,14 @@ namespace APIMoodReboot.Controllers
 
         #region CREATE CENTER
 
-        //[AuthorizeUsers]
-        [HttpPost("[action]")]
-        public async Task<ActionResult> CenterRequest(string email, string centerEmail, string centerName, string centerAddress, string centerTelephone, IFormFile centerImage)
+        [Authorize]
+        [HttpPost]
+        public async Task<ActionResult> CenterRequest(Center center)
         {
             int director = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-            int maximo = await this.repositoryCenters.GetMaxCenterAsync();
+            await this.repositoryCenters.CreateCenterAsync(center.Email, center.Name, center.Address, center.Telephone, center.Image, director, false);
 
-            string fileName = "center_image_" + maximo;
-
-            string? path = await this.helperFile.UploadFileAsync(centerImage, Folders.CenterImages, FileTypes.Image, fileName);
-
-            if (path == null)
-            {
-                return BadRequest("Error al subir archivo");
-            }
-
-            await this.repositoryCenters.CreateCenterAsync(centerEmail, centerName, centerAddress, centerTelephone, path, director, false);
-            string protocol = HttpContext.Request.IsHttps ? "https" : "http";
-            string domainName = HttpContext.Request.Host.Value.ToString();
-            string baseUrl = protocol + domainName;
-            await this.helperMail.SendMailAsync(email, "Aprobación de centro en curso", "Estamos en proceso de aprobar su solicitud de creación de centro. Por favor, si ha cometido algún error en los datos o quisiera cancelar la operación. Mande un correo a: moodreboot@gmail.com", baseUrl);
-            
             return NoContent();
         }
 

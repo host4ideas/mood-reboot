@@ -1,53 +1,46 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using APIMoodReboot.Interfaces;
 using System.Security.Claims;
-using NugetMoodReboot.Helpers;
 using NugetMoodReboot.Models;
+using Microsoft.AspNetCore.Authorization;
+using Newtonsoft.Json;
+using NugetMoodReboot.Interfaces;
 
 namespace APIMoodReboot.Controllers
 {
-    public class UsersController : Controller
+    [Route("api/[controller]/[action]")]
+    [ApiController]
+    [Authorize]
+    public class UsersController : ControllerBase
     {
         private readonly IRepositoryUsers repositoryUsers;
-        private readonly HelperFile helperFile;
-        private readonly HelperMail helperMail;
 
-        public UsersController(IRepositoryUsers repositoryUsers, HelperFile helperFile, HelperMail helperMail)
+        public UsersController(IRepositoryUsers repositoryUsers)
         {
             this.repositoryUsers = repositoryUsers;
-            this.helperFile = helperFile;
-            this.helperMail = helperMail;
         }
 
-        [HttpGet("[action]/{pattern}")]
+        [HttpGet("{pattern}")]
         public async Task<ActionResult<List<Tuple<string, int>>>> SearchUsers(string pattern)
         {
             return await this.repositoryUsers.SearchUsersAsync(pattern);
         }
 
-        //[AuthorizeUsers]
-        [HttpGet("[action]")]
-        public async Task<ActionResult<AppUser>> Profile()
+        [HttpGet]
+        public ActionResult<AppUser> Profile()
         {
-            int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-            AppUser? user = await this.repositoryUsers.FindUserAsync(userId);
-            if (user == null)
-            {
-                return NotFound();
-            }
+            Claim claim = HttpContext.User.Claims.SingleOrDefault(x => x.Type == "UserData");
+            string jsonUser = claim.Value;
+            AppUser user = JsonConvert.DeserializeObject<AppUser>(jsonUser);
 
             return Ok(user);
         }
 
-        //[AuthorizeUsers]
-        [HttpPut("[action]")]
-        public async Task<ActionResult> Profile(UpdateProfileModel updateProfile)
+        [HttpPut]
+        public async Task<ActionResult> Profile(UpdateProfileApiModel updateProfile)
         {
-            if (updateProfile.Image != null && updateProfile.Image.Length > 0)
+            if (updateProfile.Image != null)
             {
-                string fileName = "image_" + updateProfile.UserId;
-                await this.helperFile.UploadFileAsync(updateProfile.Image, Folders.ProfileImages, FileTypes.Image, fileName);
-                await this.repositoryUsers.UpdateUserBasicsAsync(updateProfile.UserId, updateProfile.Username, updateProfile.FirstName, updateProfile.LastName, fileName);
+                await this.repositoryUsers.UpdateUserBasicsAsync(updateProfile.UserId, updateProfile.Username, updateProfile.FirstName, updateProfile.LastName, updateProfile.Image.Name);
                 return NoContent();
             }
 
@@ -55,20 +48,14 @@ namespace APIMoodReboot.Controllers
             return NoContent();
         }
 
-        /// <summary>
-        /// Approve user register request
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public async Task<IActionResult> ApproveUserEmail(int userId, string token)
+        [HttpPut("{userId}/{token}")]
+        public async Task<ActionResult> ApproveUserEmail(int userId, string token)
         {
             UserAction? userAction = await this.repositoryUsers.FindUserActionAsync(userId, token);
 
             if (userAction != null)
             {
                 DateTime limitDate = userAction.RequestDate.AddHours(24);
-                // Expired request - passed 24hrs
                 if (DateTime.Now > limitDate)
                 {
                     await this.repositoryUsers.RemoveUserActionAsync(userAction);
@@ -79,30 +66,13 @@ namespace APIMoodReboot.Controllers
                     await this.repositoryUsers.ApproveUserAsync(userId);
                 }
             }
-            return RedirectToAction("Logout", "Managed");
+            return NoContent();
         }
 
         #region CHANGE EMAIL
 
-        public async Task<IActionResult> ChangeEmail(int userId, string token)
-        {
-            AppUser? user = await this.repositoryUsers.FindUserAsync(userId);
-
-            if (user != null)
-            {
-                ViewData["ERROR"] = "Petición invalida";
-            }
-            else
-            {
-                ViewData["TOKEN"] = token;
-                ViewData["USERID"] = userId;
-            }
-
-            return View(user);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> ChangeEmail(int userId, string token, string email)
+        [HttpPost("{userId}/{token}/{email}")]
+        public async Task<ActionResult> ChangeEmail(int userId, string token, string email)
         {
             UserAction? userAction = await this.repositoryUsers.FindUserActionAsync(userId, token);
 
@@ -113,8 +83,7 @@ namespace APIMoodReboot.Controllers
                 if (DateTime.Now > limitDate)
                 {
                     await this.repositoryUsers.RemoveUserActionAsync(userAction);
-                    ViewData["ERROR"] = "Petición ha expirado";
-                    return View();
+                    return NoContent();
                 }
                 else
                 {
@@ -122,52 +91,26 @@ namespace APIMoodReboot.Controllers
                     await this.repositoryUsers.UpdateUserEmailAsync(userId, email);
                 }
             }
-            return RedirectToAction("Logout", "Managed");
+            return NoContent();
         }
 
-        //[AuthorizeUsers]
-        public async Task RequestChangeEmail(int userId, string email)
+        [HttpPost]
+        public async Task<ActionResult> RequestChangeEmail()
         {
-            string token = await this.repositoryUsers.CreateUserActionAsync(userId);
-            string url = Url.Action("ChangeEmail", "Users", new { userId, token })!;
+            Claim claim = HttpContext.User.Claims.SingleOrDefault(x => x.Type == "UserData");
+            string jsonUser = claim.Value;
+            AppUser user = JsonConvert.DeserializeObject<AppUser>(jsonUser);
 
-            List<MailLink> links = new()
-            {
-                new MailLink()
-                {
-                    LinkText = "Confirmar cambio email",
-                    Link = url
-                }
-            };
-            string protocol = HttpContext.Request.IsHttps ? "https" : "http";
-            string domainName = HttpContext.Request.Host.Value.ToString();
-            string baseUrl = protocol + domainName;
-            await this.helperMail.SendMailAsync(email, "Cambio de datos", "Se ha solicitado una petición para cambiar el correo electrónico de la cuenta asociada. Pulsa el siguiente enlace para confirmarla. Una vez cambiada deberás de iniciar sesión con el nuevo correo electónico, si surge cualquier problema o tienes alguna duda, contáctanos a: moodreboot@gmail.com. <br/><br/> Si no eres solicitante no te procupes, la petición será cancelada en un período de 24hrs.", links, baseUrl);
+            string token = await this.repositoryUsers.CreateUserActionAsync(user.Id);
+            return Ok(token);
         }
 
         #endregion
 
         #region CHANGE PASSWORD
 
-        public async Task<IActionResult> ChangePassword(int userId, string token)
-        {
-            AppUser? user = await this.repositoryUsers.FindUserAsync(userId);
-
-            if (user != null)
-            {
-                ViewData["ERROR"] = "Petición invalida";
-            }
-            else
-            {
-                ViewData["TOKEN"] = token;
-                ViewData["USERID"] = userId;
-            }
-
-            return View(user);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> ChangePassword(int userId, string token, string password)
+        [HttpPost("{userId}/{token}/{password}")]
+        public async Task<ActionResult> ChangePassword(int userId, string token, string password)
         {
             UserAction? userAction = await this.repositoryUsers.FindUserActionAsync(userId, token);
 
@@ -178,8 +121,7 @@ namespace APIMoodReboot.Controllers
                 if (DateTime.Now > limitDate)
                 {
                     await this.repositoryUsers.RemoveUserActionAsync(userAction);
-                    ViewData["ERROR"] = "Petición ha expirado";
-                    return View();
+                    return NoContent();
                 }
                 else
                 {
@@ -187,28 +129,19 @@ namespace APIMoodReboot.Controllers
                     await this.repositoryUsers.UpdateUserPasswordAsync(userId, password);
                 }
             }
-            return RedirectToAction("Logout", "Managed");
+            return NoContent();
         }
 
         //[AuthorizeUsers]
         [HttpPost]
-        public async Task RequestChangePassword(int userId, string email)
+        public async Task<ActionResult> RequestChangePassword()
         {
-            string token = await this.repositoryUsers.CreateUserActionAsync(userId);
-            string url = Url.Action("ChangePassword", "Users", new { userId, token })!;
+            Claim claim = HttpContext.User.Claims.SingleOrDefault(x => x.Type == "UserData");
+            string jsonUser = claim.Value;
+            AppUser user = JsonConvert.DeserializeObject<AppUser>(jsonUser);
 
-            List<MailLink> links = new()
-            {
-                new MailLink()
-                {
-                    LinkText = "Confirmar cambio de contraseña",
-                    Link = url
-                }
-            };
-            string protocol = HttpContext.Request.IsHttps ? "https" : "http";
-            string domainName = HttpContext.Request.Host.Value.ToString();
-            string baseUrl = protocol + domainName;
-            await this.helperMail.SendMailAsync(email, "Cambio de datos", "Se ha solicitado una petición para cambiar la contraseña de la cuenta asociada. Pulsa el siguiente enlace para confirmarla. Una vez cambiada deberás de iniciar sesión con el nuevo correo electónico, si surge cualquier problema o tienes alguna duda, contáctanos a: moodreboot@gmail.com. <br/><br/> Si no eres solicitante no te procupes, la petición será cancelada en un período de 24hrs.", links, baseUrl);
+            string token = await this.repositoryUsers.CreateUserActionAsync(user.Id);
+            return Ok(token);
         }
 
         #endregion

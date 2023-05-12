@@ -1,8 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using APIMoodReboot.Data;
-using APIMoodReboot.Interfaces;
-using APIMoodReboot.Models;
 using NugetMoodReboot.Models;
+using NugetMoodReboot.Interfaces;
 
 namespace APIMoodReboot.Repositories
 {

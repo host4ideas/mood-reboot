@@ -6,7 +6,8 @@
 		<Nullable>enable</Nullable>
 		<Authors>Felix Martinez</Authors>
 		<Title>Mood Reboot nuget library</Title>
-		<Version>1.7.1</Version>
+		<Version>3.0.0</Version>
+		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
 	</PropertyGroup>
 
 	<ItemGroup>

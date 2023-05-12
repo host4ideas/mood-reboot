@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MoodReboot.Helpers;
-using MoodReboot.Interfaces;
-using MoodReboot.Models;
 using MvcCoreSeguridadEmpleados.Filters;
+using NugetMoodReboot.Helpers;
+using NugetMoodReboot.Interfaces;
 using NugetMoodReboot.Models;
 using System.Security.Claims;
 
@@ -14,15 +13,13 @@ namespace MoodReboot.Controllers
         private readonly IRepositoryCourses repositoryCourses;
         private readonly HelperFile helperFile;
         private readonly HelperMail helperMail;
-        private readonly HelperCourse helperCourse;
 
-        public CentersController(IRepositoryCenters repositoryCenters, IRepositoryCourses repositoryCourses, HelperFile helperFile, HelperMail helperMail, HelperCourse helperCourse)
+        public CentersController(IRepositoryCenters repositoryCenters, IRepositoryCourses repositoryCourses, HelperFile helperFile, HelperMail helperMail)
         {
             this.repositoryCenters = repositoryCenters;
             this.repositoryCourses = repositoryCourses;
             this.helperFile = helperFile;
             this.helperMail = helperMail;
-            this.helperCourse = helperCourse;
         }
 
         public async Task<IActionResult> Index()

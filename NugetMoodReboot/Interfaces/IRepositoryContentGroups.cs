@@ -1,6 +1,6 @@
 ﻿using NugetMoodReboot.Models;
 
-namespace APIMoodReboot.Interfaces
+namespace NugetMoodReboot.Interfaces
 {
     public interface IRepositoryContentGroups
     {

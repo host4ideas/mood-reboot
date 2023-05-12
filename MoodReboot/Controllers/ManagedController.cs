@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using MoodReboot.Extensions;
-using MoodReboot.Helpers;
-using MoodReboot.Interfaces;
-using MoodReboot.Models;
+using NugetMoodReboot.Helpers;
+using NugetMoodReboot.Interfaces;
 using System.Security.Claims;
 
 namespace MoodReboot.Controllers

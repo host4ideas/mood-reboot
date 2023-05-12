@@ -1,8 +1,8 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using APIMoodReboot.Data;
-using APIMoodReboot.Interfaces;
 using NugetMoodReboot.Models;
+using NugetMoodReboot.Interfaces;
 
 namespace APIMoodReboot.Repositories
 {

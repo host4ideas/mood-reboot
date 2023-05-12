@@ -1,8 +1,6 @@
-﻿using Microsoft.Data.SqlClient;
-using APIMoodReboot.Data;
-using APIMoodReboot.Interfaces;
-using APIMoodReboot.Models;
-using System.IO;
+﻿using APIMoodReboot.Data;
+using NugetMoodReboot.Interfaces;
+using NugetMoodReboot.Models;
 
 namespace APIMoodReboot.Helpers
 {
@@ -11,35 +9,26 @@ namespace APIMoodReboot.Helpers
         private readonly MoodRebootContext context;
         private readonly IRepositoryCourses repositoryCourses;
         private readonly IRepositoryUsers repositoryUsers;
-        private readonly HelperFile helperFile;
 
-        public HelperCourse(MoodRebootContext context, IRepositoryCourses repositoryCourses, IRepositoryUsers repositoryUsers, HelperFile helperFile)
+        public HelperCourse(MoodRebootContext context, IRepositoryCourses repositoryCourses, IRepositoryUsers repositoryUsers)
         {
             this.context = context;
             this.repositoryCourses = repositoryCourses;
             this.repositoryUsers = repositoryUsers;
-            this.helperFile = helperFile;
         }
 
-        public async Task<bool> CreateCourse(int centerId, int firstEditorId, string name, bool isVisible, IFormFile? image, string? description, string? password)
+        public async Task<bool> CreateCourse(int centerId, int firstEditorId, string name, bool isVisible, string? path, string? description, string? password)
         {
             // Chat group name max 40 characters
             string chatGroupName = "FORO " + name;
             // Create chat group
-            int chatGroupId = await repositoryUsers.NewChatGroup(new HashSet<int> { firstEditorId }, firstEditorId, chatGroupName);
+            int chatGroupId = await repositoryUsers.NewChatGroupAsync(new HashSet<int> { firstEditorId }, firstEditorId, chatGroupName);
 
-            int newCourseId = await repositoryCourses.GetMaxCourse();
+            int newCourseId = await repositoryCourses.GetMaxCourseAsync();
 
-            string? path = "default_course_image.jpeg";
-            // If the user wants an image
-            if (image != null && image.Length > 0)
+            if (path == null)
             {
-                string fileName = "course_image_" + newCourseId;
-                path = await helperFile.UploadFileAsync(image, Folders.CourseImages, FileTypes.Image, fileName);
-                if (path == null)
-                {
-                    return false;
-                }
+                path = "default_course_image.jpeg";
             }
 
             // Create the course

@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Headers;
+﻿using Microsoft.Extensions.Configuration;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
 namespace NugetMoodReboot.Helpers
@@ -8,14 +9,22 @@ namespace NugetMoodReboot.Helpers
         private readonly string _urlApi;
         private IHttpClientFactory HttpClientFactory { get; }
 
-        public HelperApi(string urlApi, IHttpClientFactory httpClientFactory)
+        public HelperApi(IConfiguration configuration, IHttpClientFactory httpClientFactory)
         {
-            this._urlApi = urlApi;
+            this._urlApi = configuration.GetConnectionString("ApiMoodReboot");
             this.HttpClientFactory = httpClientFactory;
-            using var message = new HttpRequestMessage();
         }
 
-        public async Task<T?> GetAsync<T>(string request, List<KeyValuePair<string, IEnumerable<string>>>? additionalHeaders)
+        public async Task<T?> GetAsync<T>(string request)
+        {
+            using HttpClient httpClient = HttpClientFactory.CreateClient();
+            httpClient.BaseAddress = new Uri(this._urlApi);
+            httpClient.DefaultRequestHeaders.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            return await httpClient.GetFromJsonAsync<T>(new Uri(request));
+        }
+
+        public async Task<T?> GetAsync<T>(string request, List<KeyValuePair<string, IEnumerable<string>>> additionalHeaders)
         {
             using HttpClient httpClient = HttpClientFactory.CreateClient();
             httpClient.BaseAddress = new Uri(this._urlApi);
@@ -31,7 +40,16 @@ namespace NugetMoodReboot.Helpers
             return await httpClient.GetFromJsonAsync<T>(new Uri(request));
         }
 
-        public async Task<HttpResponseMessage> DeleteAsync(string request, List<KeyValuePair<string, IEnumerable<string>>>? additionalHeaders)
+        public async Task<HttpResponseMessage> DeleteAsync(string request)
+        {
+            using HttpClient httpClient = HttpClientFactory.CreateClient();
+            httpClient.BaseAddress = new Uri(this._urlApi);
+            httpClient.DefaultRequestHeaders.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            return await httpClient.DeleteAsync(request);
+        }
+
+        public async Task<HttpResponseMessage> DeleteAsync(string request, List<KeyValuePair<string, IEnumerable<string>>> additionalHeaders)
         {
             using HttpClient httpClient = HttpClientFactory.CreateClient();
             httpClient.BaseAddress = new Uri(this._urlApi);
@@ -44,7 +62,20 @@ namespace NugetMoodReboot.Helpers
             return await httpClient.DeleteAsync(request);
         }
 
-        public async Task<HttpResponseMessage> PutAsync<T>(string request, T? body, List<KeyValuePair<string, IEnumerable<string>>>? additionalHeaders)
+        public async Task<HttpResponseMessage> PutAsync<T>(string request, T? body)
+        {
+            using HttpClient httpClient = HttpClientFactory.CreateClient();
+            httpClient.BaseAddress = new Uri(this._urlApi);
+            httpClient.DefaultRequestHeaders.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            if (body == null)
+            {
+                return await httpClient.PutAsync(request, null);
+            }
+            return await httpClient.PutAsJsonAsync(request, body);
+        }
+
+        public async Task<HttpResponseMessage> PutAsync<T>(string request, T? body, List<KeyValuePair<string, IEnumerable<string>>> additionalHeaders)
         {
             using HttpClient httpClient = HttpClientFactory.CreateClient();
             httpClient.BaseAddress = new Uri(this._urlApi);
@@ -64,7 +95,20 @@ namespace NugetMoodReboot.Helpers
             return await httpClient.PutAsJsonAsync(request, body);
         }
 
-        public async Task<HttpResponseMessage> PostAsync<T>(string request, T? body, List<KeyValuePair<string, IEnumerable<string>>>? additionalHeaders)
+        public async Task<HttpResponseMessage> PostAsync<T>(string request, T? body)
+        {
+            using HttpClient httpClient = HttpClientFactory.CreateClient();
+            httpClient.BaseAddress = new Uri(this._urlApi);
+            httpClient.DefaultRequestHeaders.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            if (body == null)
+            {
+                return await httpClient.PostAsync(request, null);
+            }
+            return await httpClient.PostAsJsonAsync(request, body);
+        }
+
+        public async Task<HttpResponseMessage> PostAsync<T>(string request, T? body, List<KeyValuePair<string, IEnumerable<string>>> additionalHeaders)
         {
             using HttpClient httpClient = HttpClientFactory.CreateClient();
             httpClient.BaseAddress = new Uri(this._urlApi);

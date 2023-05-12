@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using APIMoodReboot.Interfaces;
 using System.Security.Claims;
 using NugetMoodReboot.Models;
+using Microsoft.AspNetCore.Authorization;
+using NugetMoodReboot.Interfaces;
 
 namespace APIMoodReboot.Controllers
 {
-    //[AuthorizeUsers]
-    public class MessagesController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    [Authorize]
+    public class MessagesController : ControllerBase
     {
         private readonly IRepositoryUsers repositoryUsers;
 
@@ -15,13 +18,13 @@ namespace APIMoodReboot.Controllers
             this.repositoryUsers = repositoryUsers;
         }
 
-        [HttpGet("[action]")]
+        [HttpGet("[action]/{chatGroupId}")]
         public async Task<ActionResult<List<Message>>> GetChatMessages(int chatGroupId)
         {
             return await this.repositoryUsers.GetMessagesByGroupAsync(chatGroupId);
         }
 
-        [HttpGet("[action]")]
+        [HttpGet("[action]/{userId}")]
         public async Task<ActionResult<List<Message>>> GetUnseenMessages(int userId)
         {
             return await this.repositoryUsers.GetUnseenMessagesAsync(userId);
@@ -71,12 +74,14 @@ namespace APIMoodReboot.Controllers
             return NoContent();
         }
 
+        [HttpDelete("[action]/{chatGroupId}")]
         public async Task<ActionResult> DeleteChatGroup(int chatGroupId)
         {
             await this.repositoryUsers.RemoveChatGroupAsync(chatGroupId);
             return NoContent();
         }
 
+        [HttpDelete("[action]/{userId}/{chatGroupId}")]
         public async Task<ActionResult> RemoveUserFromChat(int userId, int chatGroupId)
         {
             await this.repositoryUsers.RemoveChatUserAsync(userId, chatGroupId);

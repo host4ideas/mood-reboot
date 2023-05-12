@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using APIMoodReboot.Interfaces;
 using NugetMoodReboot.Models;
+using Microsoft.AspNetCore.Authorization;
+using NugetMoodReboot.Interfaces;
 
 namespace APIMoodReboot.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class ContentGroupsController : ControllerBase
     {
         private readonly IRepositoryContentGroups repo;
@@ -22,7 +24,7 @@ namespace APIMoodReboot.Controllers
             return NoContent();
         }
 
-        [HttpPost("[action]/{name}/{courseId}/{isVisible}")]
+        [HttpPost("{name}/{courseId}/{isVisible}")]
         public async Task<ActionResult> CreateContentGroup(string name, int courseId, bool isVisible)
         {
             if (name != null && courseId >= 0)

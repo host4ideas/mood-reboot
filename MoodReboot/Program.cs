@@ -2,10 +2,21 @@ using Ganss.Xss;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using MoodReboot.Hubs;
+using MoodReboot.Services;
+using NugetMoodReboot.Helpers;
+using NugetMoodReboot.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpClient();
+
+builder.Services.AddTransient<IRepositoryCenters, ServiceApiCenters>();
+builder.Services.AddTransient<IRepositoryContent, ServiceApiContents>();
+builder.Services.AddTransient<IRepositoryContentGroups, ServiceApiContentGroups>();
+builder.Services.AddTransient<IRepositoryCourses, ServiceApiCourses>();
+builder.Services.AddTransient<IRepositoryUsers, ServiceApiUsers>();
+
+builder.Services.AddSingleton<HelperApi>();
 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
