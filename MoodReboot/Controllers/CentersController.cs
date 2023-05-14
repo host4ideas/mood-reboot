@@ -1,42 +1,46 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MoodReboot.Helpers;
+using MoodReboot.Models;
+using MoodReboot.Services;
 using MvcCoreSeguridadEmpleados.Filters;
+using MvcLogicApps.Services;
 using NugetMoodReboot.Helpers;
-using NugetMoodReboot.Interfaces;
 using NugetMoodReboot.Models;
+using System.ComponentModel;
 using System.Security.Claims;
 
 namespace MoodReboot.Controllers
 {
     public class CentersController : Controller
     {
-        private readonly IRepositoryCenters repositoryCenters;
-        private readonly IRepositoryCourses repositoryCourses;
-        private readonly HelperFile helperFile;
-        private readonly HelperMail helperMail;
+        private readonly ServiceApiCenters serviceCenters;
+        private readonly ServiceApiCourses serviceCourses;
+        private readonly ServiceLogicApps serviceLogicApps;
+        private readonly HelperFileAzure helperFile;
 
-        public CentersController(IRepositoryCenters repositoryCenters, IRepositoryCourses repositoryCourses, HelperFile helperFile, HelperMail helperMail)
+        public CentersController(ServiceApiCourses serviceCourses, ServiceApiCenters serviceCenters, ServiceLogicApps serviceLogicApps, HelperFileAzure helperFile)
         {
-            this.repositoryCenters = repositoryCenters;
-            this.repositoryCourses = repositoryCourses;
+            this.serviceCenters = serviceCenters;
+            this.serviceCourses = serviceCourses;
+            this.serviceLogicApps = serviceLogicApps;
             this.helperFile = helperFile;
-            this.helperMail = helperMail;
         }
 
         public async Task<IActionResult> Index()
         {
-            List<CenterListView> centers = await this.repositoryCenters.GetAllCenters();
+            List<CenterListView> centers = await this.serviceCenters.GetAllCentersAsync();
             return View(centers);
         }
 
         public async Task<IActionResult> CenterDetails(int id)
         {
-            Center? center = await this.repositoryCenters.FindCenter(id);
+            Center? center = await this.serviceCenters.FindCenterAsync(id);
             bool isEditor = false;
 
             if (HttpContext.User.Identity.IsAuthenticated == true)
             {
                 int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-                List<AppUser> users = await this.repositoryCenters.GetCenterEditorsAsync(id);
+                List<AppUser> users = await this.serviceCenters.GetCenterEditorsAsync(id);
 
                 foreach (AppUser user in users)
                 {
@@ -52,7 +56,7 @@ namespace MoodReboot.Controllers
                 return RedirectToAction("UserCenters", "Centers");
             }
 
-            List<CourseListView> courses = await this.repositoryCourses.CenterCoursesListView(id);
+            List<CourseListView> courses = await this.serviceCourses.CenterCoursesListViewAsync(id);
 
             ViewData["IS_EDITOR"] = isEditor;
             ViewData["CENTER"] = center;
@@ -63,21 +67,21 @@ namespace MoodReboot.Controllers
         public async Task<IActionResult> UserCenters()
         {
             int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-            List<CenterListView> centers = await this.repositoryCenters.GetUserCentersAsync(userId);
+            List<CenterListView> centers = await this.serviceCenters.GetUserCentersAsync(userId);
             return View("Index", centers);
         }
 
         [AuthorizeUsers]
         public async Task<IActionResult> RemoveUserCenter(int userId, int centerId)
         {
-            await this.repositoryCenters.RemoveUserCenter(userId, centerId);
+            await this.serviceCenters.RemoveUserCenterAsync(userId, centerId);
             return RedirectToAction("DirectorView", new { centerId });
         }
 
         [HttpPost]
         public async Task<IActionResult> AddCenterEditors(int centerId, List<int> userIds)
         {
-            await this.repositoryCenters.AddEditorsCenter(centerId, userIds);
+            await this.serviceCenters.AddEditorsCenterAsync(centerId, userIds);
             return RedirectToAction("DirectorView", new { centerId });
         }
 
@@ -86,7 +90,7 @@ namespace MoodReboot.Controllers
         [AuthorizeUsers]
         public async Task<IActionResult> EditorView(int centerId)
         {
-            Center? center = await this.repositoryCenters.FindCenter(centerId);
+            Center? center = await this.serviceCenters.FindCenterAsync(centerId);
             if (center == null)
             {
                 return RedirectToAction("UserCenters", "Centers");
@@ -94,7 +98,7 @@ namespace MoodReboot.Controllers
 
             // Center editor courses where it's editor
             int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-            ViewData["COURSES"] = await this.repositoryCourses.GetEditorCenterCourses(userId, centerId);
+            ViewData["COURSES"] = await this.serviceCourses.GetEditorCenterCoursesAsync(userId, centerId);
 
             ViewData["CENTER"] = center;
             return View(new CreateCourseModel());
@@ -106,7 +110,9 @@ namespace MoodReboot.Controllers
         {
             int firstEditorId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-            bool result = await this.helperCourse.CreateCourse(centerId, firstEditorId, name, isVisible, image, description, password);
+            string path = "";
+
+            bool result = await this.serviceCenters.CreateCourseAsync(centerId, name, isVisible, path, description, password);
 
             if (!result)
             {
@@ -118,20 +124,20 @@ namespace MoodReboot.Controllers
 
         public async Task<IActionResult> DeleteCourse(int courseId)
         {
-            await this.repositoryCourses.DeleteCourse(courseId);
+            await this.serviceCourses.DeleteCourseAsync(courseId);
             return RedirectToAction("EditorView");
         }
 
         public async Task<IActionResult> CourseVisibility(int courseId)
         {
-            await this.repositoryCourses.UpdateCourseVisibility(courseId);
+            await this.serviceCourses.UpdateCourseVisibilityAsync(courseId);
             return RedirectToAction("EditorView");
         }
 
         [AcceptVerbs("GET", "POST")]
         public async Task<IActionResult> VerifyCenter(int centerId)
         {
-            Center? center = await this.repositoryCenters.FindCenter(centerId);
+            Center? center = await this.serviceCenters.FindCenterAsync(centerId);
             if (center == null)
             {
                 return Json("El centro no existe");
@@ -147,16 +153,16 @@ namespace MoodReboot.Controllers
         [AuthorizeUsers]
         public async Task<IActionResult> DirectorView(int centerId)
         {
-            Center? center = await this.repositoryCenters.FindCenter(centerId);
+            Center? center = await this.serviceCenters.FindCenterAsync(centerId);
             if (center == null)
             {
                 return RedirectToAction("UserCenters", "Centers");
             }
 
-            List<AppUser> users = await this.repositoryCenters.GetCenterEditorsAsync(centerId);
+            List<AppUser> users = await this.serviceCenters.GetCenterEditorsAsync(centerId);
             // Remove the current user from the list
             users.RemoveAll(x => x.Id == int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)));
-            List<CourseListView> courses = await this.repositoryCourses.GetCenterCourses(centerId);
+            List<CourseListView> courses = await this.serviceCourses.GetCenterCoursesAsync(centerId);
             ViewData["COURSES"] = courses;
             ViewData["CENTER"] = center;
             return View(users);
@@ -168,14 +174,14 @@ namespace MoodReboot.Controllers
         {
             string fileName = "center_image_" + centerId;
 
-            string? path = await this.helperFile.UploadFileAsync(centerImage, Folders.CenterImages, FileTypes.Image, fileName);
+            bool isUploaded = await this.helperFile.UploadFileAsync(centerImage, Containers.PrivateContent, FileTypes.Image, fileName);
 
-            if (path == null)
+            if (isUploaded == false)
             {
                 ViewData["ERROR"] = "Error al subir el archivo";
                 return RedirectToAction("DirectorView", new { centerId });
             }
-            await this.repositoryCenters.UpdateCenter(centerId, centerEmail, centerName, centerAddress, centerTelephone, path);
+            await this.serviceCenters.UpdateCenterAsync(centerId, centerEmail, centerName, centerAddress, centerTelephone, fileName);
             return RedirectToAction("DirectorView", new { centerId });
         }
 
@@ -195,23 +201,23 @@ namespace MoodReboot.Controllers
         {
             int director = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-            int maximo = await this.repositoryCenters.GetMaxCenter();
+            int maximo = await this.serviceCenters.GetMaxCenterAsync();
 
             string fileName = "center_image_" + maximo;
 
-            string? path = await this.helperFile.UploadFileAsync(centerImage, Folders.CenterImages, FileTypes.Image, fileName);
+            bool isUploaded = await this.helperFile.UploadFileAsync(centerImage, Containers.PrivateContent, FileTypes.Image, fileName);
 
-            if (path == null)
+            if (isUploaded == false)
             {
                 ViewData["ERROR"] = "Error al subir archivo";
                 return View();
             }
 
-            await this.repositoryCenters.CreateCenter(centerEmail, centerName, centerAddress, centerTelephone, path, director, false);
+            await this.serviceCenters.CreateCenterAsync(centerEmail, centerName, centerAddress, centerTelephone, fileName, director, false);
             string protocol = HttpContext.Request.IsHttps ? "https" : "http";
             string domainName = HttpContext.Request.Host.Value.ToString();
             string baseUrl = protocol + domainName;
-            await this.helperMail.SendMailAsync(email, "Aprobación de centro en curso", "Estamos en proceso de aprobar su solicitud de creación de centro. Por favor, si ha cometido algún error en los datos o quisiera cancelar la operación. Mande un correo a: moodreboot@gmail.com", baseUrl);
+            await this.serviceLogicApps.SendMailAsync(email, "Aprobación de centro en curso", "Estamos en proceso de aprobar su solicitud de creación de centro. Por favor, si ha cometido algún error en los datos o quisiera cancelar la operación. Mande un correo a: moodreboot@gmail.com", baseUrl);
             ViewData["MESSAGE"] = "Solicitud enviada";
             return View();
         }

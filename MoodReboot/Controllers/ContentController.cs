@@ -1,23 +1,23 @@
 ﻿using Ganss.Xss;
 using Microsoft.AspNetCore.Mvc;
 using MoodReboot.Helpers;
-using MoodReboot.Interfaces;
-using MoodReboot.Models;
-using System.Security.Claims;
+using MoodReboot.Services;
+using NugetMoodReboot.Helpers;
+using NugetMoodReboot.Models;
 
 namespace MoodReboot.Controllers
 {
     public class ContentController : Controller
     {
-        private readonly IRepositoryContent repositoryContent;
-        private readonly IRepositoryUsers repositoryUser;
+        private readonly ServiceApiContents serviceContents;
+        private readonly ServiceApiUsers serviceUsers;
         private readonly HtmlSanitizer sanitizer;
-        private readonly HelperFile helperFile;
+        private readonly HelperFileAzure helperFile;
 
-        public ContentController(IRepositoryContent repositoryContent, IRepositoryUsers repositoryUser, HtmlSanitizer sanitizer, HelperFile helperFile)
+        public ContentController(ServiceApiContents serviceContents, ServiceApiUsers serviceUsers, HtmlSanitizer sanitizer, HelperFileAzure helperFile)
         {
-            this.repositoryContent = repositoryContent;
-            this.repositoryUser = repositoryUser;
+            this.serviceContents = serviceContents;
+            this.serviceUsers = serviceUsers;
             this.sanitizer = sanitizer;
             this.helperFile = helperFile;
         }
@@ -25,7 +25,7 @@ namespace MoodReboot.Controllers
         public IActionResult DeleteContent(int contentId, int courseId)
         {
             // If using an asynchronous controller invokes 500 server error
-            this.repositoryContent.DeleteContent(contentId).Wait();
+            this.serviceContents.DeleteContentAsync(contentId).Wait();
             return RedirectToAction("CourseDetails", "Courses", new { id = courseId });
         }
 
@@ -36,28 +36,29 @@ namespace MoodReboot.Controllers
             {
                 string mimeType = hiddenFileInput.ContentType;
 
-                string fileName = "content_file_" + await this.repositoryUser.GetMaxFile();
+                string fileName = "content_file_" + await this.serviceUsers.GetMaxFileAsync();
                 // Upload file
                 // Try with a document
-                string? path = await this.helperFile.UploadFileAsync(hiddenFileInput, Folders.ContentFiles, FileTypes.Document, fileName);
-                if (path == null)
+                bool isUploaded = await this.helperFile.UploadFileAsync(hiddenFileInput, Containers.PrivateContent, FileTypes.Document, fileName);
+
+                if (isUploaded == false)
                 {
                     // Try with an image
-                    path = await this.helperFile.UploadFileAsync(hiddenFileInput, Folders.ContentFiles, FileTypes.Image, fileName);
+                    isUploaded = await this.helperFile.UploadFileAsync(hiddenFileInput, Containers.PrivateContent, FileTypes.Image, fileName);
 
-                    if (path == null)
+                    if (isUploaded == false)
                     {
                         ViewData["ERROR"] = "Error al subir archivo. Formatos soportados: .pdf, .xlsx, .jpeg, .jpg, .png, .webp. Tamaño máximo: 10MB.";
                         return RedirectToAction("CourseDetails", "Courses", new { id = courseId });
 
                     }
                 }
-                if (path != null)
+                if (isUploaded == true)
                 {
                     // Insert file in DB
-                    int fileId = await this.repositoryUser.InsertFileAsync(path, mimeType, userId);
+                    int fileId = await this.serviceUsers.InsertFileAsync(fileName, mimeType, userId);
                     // Update Content
-                    await this.repositoryContent.CreateContentFile(contentGroupId: groupId, fileId: fileId);
+                    await this.serviceContents.CreateContentFileAsync(contentGroupId: groupId, fileId: fileId);
                 }
             }
             else if (unsafeHtml != null)
@@ -65,7 +66,7 @@ namespace MoodReboot.Controllers
                 string html = unsafeHtml;
                 string sanitized = this.sanitizer.Sanitize(html);
 
-                await this.repositoryContent.CreateContent(groupId, sanitized);
+                await this.serviceContents.CreateContentAsync(groupId, sanitized);
             }
 
             return RedirectToAction("CourseDetails", "Courses", new { id = courseId });
@@ -74,7 +75,7 @@ namespace MoodReboot.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateContent(int userId, int courseId, int contentId, string unsafeHtml, IFormFile hiddenFileInput)
         {
-            Content? content = await this.repositoryContent.FindContent(contentId);
+            Content? content = await this.serviceContents.FindContentAsync(contentId);
 
             if (content != null)
             {
@@ -84,13 +85,14 @@ namespace MoodReboot.Controllers
                     string fileName = "content_file_" + contentId;
                     // Upload file                
                     // Try with a document
-                    string? path = await this.helperFile.UploadFileAsync(hiddenFileInput, Folders.ContentFiles, FileTypes.Document, fileName);
-                    if (path == null)
+                    bool isUploaded = await this.helperFile.UploadFileAsync(hiddenFileInput, Containers.PrivateContent, FileTypes.Document, fileName);
+
+                    if (isUploaded == false)
                     {
                         // Try with an image
-                        path = await this.helperFile.UploadFileAsync(hiddenFileInput, Folders.ContentFiles, FileTypes.Image, fileName);
+                        isUploaded = await this.helperFile.UploadFileAsync(hiddenFileInput, Containers.PrivateContent, FileTypes.Image, fileName);
 
-                        if (path == null)
+                        if (isUploaded == false)
                         {
                             ViewData["ERROR"] = "Error al subir archivo. Formatos soportados: .pdf, .xlsx, .jpeg, .jpg, .png, .webp. Tamaño máximo: 10MB.";
                             return RedirectToAction("CourseDetails", "Courses", new { id = courseId });
@@ -98,22 +100,22 @@ namespace MoodReboot.Controllers
                         }
                     }
 
-                    if (path != null)
+                    if (isUploaded == true)
                     {
                         if (content.FileId == null)
                         {
                             // Update DB
-                            int fileId = await this.repositoryUser.InsertFileAsync(path, mimeType, userId);
+                            int fileId = await this.serviceUsers.InsertFileAsync(fileName, mimeType, userId);
                             // Update Content
-                            await this.repositoryContent.UpdateContent(id: contentId, fileId: fileId);
+                            await this.serviceContents.UpdateContentAsync(id: contentId, fileId: fileId);
                         }
                         else
                         {
                             // Update DB
                             int fileId = content.FileId.Value;
-                            await this.repositoryUser.UpdateFileAsync(fileId, path, mimeType, userId);
+                            await this.serviceUsers.UpdateFileUserAsync(fileId, fileName, mimeType, userId);
                             // Update Content
-                            await this.repositoryContent.UpdateContent(id: contentId, fileId: fileId);
+                            await this.serviceContents.UpdateContentAsync(id: contentId, fileId: fileId);
                         }
                     }
                 }
@@ -121,7 +123,7 @@ namespace MoodReboot.Controllers
                 {
                     string sanitized = this.sanitizer.Sanitize(unsafeHtml);
 
-                    await this.repositoryContent.UpdateContent(id: contentId, text: sanitized);
+                    await this.serviceContents.UpdateContentAsync(id: contentId, text: sanitized);
                 }
             }
 

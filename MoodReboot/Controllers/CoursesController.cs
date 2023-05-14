@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MoodReboot.Extensions;
-using MoodReboot.Interfaces;
-using MoodReboot.Models;
+using MoodReboot.Services;
 using MvcCoreSeguridadEmpleados.Filters;
-using System.Collections.Generic;
+using NugetMoodReboot.Models;
 using System.Security.Claims;
 
 namespace MoodReboot.Controllers
@@ -11,17 +10,17 @@ namespace MoodReboot.Controllers
     [AuthorizeUsers]
     public class CoursesController : Controller
     {
-        private readonly IRepositoryCourses repositoryCourses;
-        private readonly IRepositoryContent repositoryContent;
-        private readonly IRepositoryContentGroups repositoryContentGroups;
-        private readonly IRepositoryUsers repositoryUsers;
+        private readonly ServiceApiCourses serviceCourses;
+        private readonly ServiceApiContents serviceContents;
+        private readonly ServiceApiContentGroups serviceCtnGroups;
+        private readonly ServiceApiUsers serviceUsers;
 
-        public CoursesController(IRepositoryCourses repositoryCourses, IRepositoryContent repositoryContent, IRepositoryContentGroups repositoryContentGroups, IRepositoryUsers repositoryUsers)
+        public CoursesController(ServiceApiCourses serviceCourses, ServiceApiContents serviceContents, ServiceApiContentGroups serviceCtnGroups, ServiceApiUsers serviceUsers)
         {
-            this.repositoryCourses = repositoryCourses;
-            this.repositoryContent = repositoryContent;
-            this.repositoryContentGroups = repositoryContentGroups;
-            this.repositoryUsers = repositoryUsers;
+            this.serviceCourses = serviceCourses;
+            this.serviceContents = serviceContents;
+            this.serviceCtnGroups = serviceCtnGroups;
+            this.serviceUsers = serviceUsers;
         }
 
         public IActionResult Index()
@@ -32,19 +31,19 @@ namespace MoodReboot.Controllers
         public async Task<IActionResult> UserCourses()
         {
             int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-            List<CourseListView> courses = await this.repositoryCourses.GetUserCourses(userId);
+            List<CourseListView> courses = await this.serviceCourses.GetUserCoursesAsync(userId);
             return View("Index", courses);
         }
 
         public async Task<IActionResult> DeleteCourseUser(int courseId, int userId)
         {
-            Course? course = await this.repositoryCourses.FindCourse(courseId);
+            Course? course = await this.serviceCourses.FindCourseAsync(courseId);
             if (course != null)
             {
-                await this.repositoryCourses.RemoveCourseUserAsync(courseId, userId);
+                await this.serviceCourses.RemoveCourseUserAsync(courseId, userId);
                 if (course.GroupId.HasValue)
                 {
-                    await this.repositoryUsers.RemoveChatUser(userId, course.GroupId.Value);
+                    await this.serviceUsers.RemoveChatUserAsync(userId, course.GroupId.Value);
                 }
             }
             return RedirectToAction("CourseDetails", new { id = courseId });
@@ -52,37 +51,37 @@ namespace MoodReboot.Controllers
 
         public async Task<IActionResult> DeleteCourseEditor(int courseId, int userId)
         {
-            await this.repositoryCourses.RemoveCourseEditorAsync(courseId, userId);
+            await this.serviceCourses.RemoveCourseEditorAsync(courseId, userId);
             return RedirectToAction("CourseDetails", new { id = courseId });
         }
 
         public async Task<IActionResult> AddCourseEditor(int courseId, int userId)
         {
-            await this.repositoryCourses.AddCourseEditorAsync(courseId, userId);
+            await this.serviceCourses.AddCourseEditorAsync(courseId, userId);
             return RedirectToAction("CourseDetails", new { id = courseId });
         }
 
         public async Task<IActionResult> UpdateCourse(int userId, int courseId, string description, string image, string name, bool isVisible)
         {
-            await this.repositoryCourses.UpdateCourse(courseId, description, image, name, isVisible);
+            await this.serviceCourses.UpdateCourseAsync(courseId, description, image, name, isVisible);
             return RedirectToAction("UserCourses", new { id = userId });
         }
 
         public async Task<IActionResult> CenterCourses(int centerId)
         {
-            List<CourseListView> courses = await this.repositoryCourses.GetCenterCourses(centerId);
+            List<CourseListView> courses = await this.serviceCourses.GetCenterCoursesAsync(centerId);
             return View("Index", courses);
         }
 
         public async Task<IActionResult> GetAllCourses()
         {
-            List<Course> courses = await this.repositoryCourses.GetAllCourses();
+            List<Course> courses = await this.serviceCourses.GetAllCoursesAsync();
             return View("Index", courses);
         }
 
         public async Task<IActionResult> CourseEnrollment(int courseId)
         {
-            Course? course = await this.repositoryCourses.FindCourse(courseId);
+            Course? course = await this.serviceCourses.FindCourseAsync(courseId);
 
             // The course doesn't exist
             if (course == null)
@@ -97,18 +96,18 @@ namespace MoodReboot.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CourseEnrollment(int courseId, int userId, string password, bool isEditor = false)
         {
-            Course? course = await this.repositoryCourses.FindCourse(courseId);
+            Course? course = await this.serviceCourses.FindCourseAsync(courseId);
 
             if (course != null)
             {
                 // If the course doesn't have password, enroll the user in the course
                 if (course.Password == null)
                 {
-                    await this.repositoryCourses.AddCourseUserAsync(courseId, userId, isEditor);
+                    await this.serviceCourses.AddCourseUserAsync(courseId, userId, isEditor);
                     return RedirectToAction("CourseDetails", new { courseId });
                 }
                 // If the course has password
-                bool added = await this.repositoryCourses.AddCourseUserAsync(courseId, userId, isEditor, password);
+                bool added = await this.serviceCourses.AddCourseUserAsync(courseId, userId, isEditor, password);
                 if (added == true)
                 {
                     ViewData["ERROR"] = "Contraseña del curso incorrecta";
@@ -124,15 +123,15 @@ namespace MoodReboot.Controllers
         {
             int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-            UserCourse? userCourse = await this.repositoryCourses.FindUserCourse(userId, courseId);
+            UserCourse? userCourse = await this.serviceCourses.FindUserCourseAsync(userId, courseId);
 
             if (userCourse != null)
             {
-                List<ContentGroup> contentGroups = this.repositoryContentGroups.GetCourseContentGroups(courseId);
+                List<ContentGroup> contentGroups = await this.serviceCtnGroups.GetCourseContentGroupsAsync(courseId);
 
                 foreach (ContentGroup group in contentGroups)
                 {
-                    List<Content> contentList = await this.repositoryContent.GetContentByGroup(group.ContentGroupId);
+                    List<Content> contentList = await this.serviceContents.GetContentByGroupAsync(group.ContentGroupId);
                     List<ContentListModel> contentFileList = new();
 
                     foreach (Content ctn in contentList)
@@ -147,7 +146,7 @@ namespace MoodReboot.Controllers
 
                         if (ctn.FileId != null)
                         {
-                            contentFile.File = await this.repositoryUsers.FindFile(ctn.FileId.Value);
+                            contentFile.File = await this.serviceUsers.FindFileAsync(ctn.FileId.Value);
                         }
 
                         contentFileList.Add(contentFile);
@@ -156,7 +155,7 @@ namespace MoodReboot.Controllers
                     group.Contents = contentFileList;
                 }
 
-                Course? course = await this.repositoryCourses.FindCourse(courseId);
+                Course? course = await this.serviceCourses.FindCourseAsync(courseId);
 
                 if (course == null || contentGroups == null)
                 {
@@ -187,7 +186,7 @@ namespace MoodReboot.Controllers
                 HttpContext.Session.SetObject("LAST_COURSES", lastSeenCourses.DistinctBy(x => x.Id).ToList());
 
                 // Course users
-                List<CourseUsersModel> courseUsers = await this.repositoryCourses.GetCourseUsers(course.Id);
+                List<CourseUsersModel> courseUsers = await this.serviceCourses.GetCourseUsersAsync(course.Id);
 
                 CourseDetailsModel details;
 
@@ -219,7 +218,7 @@ namespace MoodReboot.Controllers
 
         public IActionResult DeleteCourse(int id)
         {
-            this.repositoryCourses.DeleteCourse(id);
+            this.serviceCourses.DeleteCourseAsync(id);
             return RedirectToAction("UserCourses");
         }
     }

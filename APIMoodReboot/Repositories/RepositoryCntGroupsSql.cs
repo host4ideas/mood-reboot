@@ -20,12 +20,12 @@ namespace APIMoodReboot.Repositories
             return await this.context.ContentGroups.FindAsync(id);
         }
 
-        public List<ContentGroup> GetCourseContentGroups(int courseId)
+        public Task<List<ContentGroup>> GetCourseContentGroupsAsync(int courseId)
         {
             var consulta = from datos in this.context.ContentGroups
                            where datos.CourseID == courseId
                            select datos;
-            return consulta.ToList();
+            return consulta.ToListAsync();
         }
 
         public Task CreateContentGroupAsync(string name, int courseId, bool isVisible = false)

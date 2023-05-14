@@ -1,18 +1,32 @@
-﻿using NugetMoodReboot.Interfaces;
+﻿using APIMoodReboot.Utils;
+using NugetMoodReboot.Helpers;
+using NugetMoodReboot.Interfaces;
 using NugetMoodReboot.Models;
 
 namespace MoodReboot.Services
 {
-    public class ServiceApiContentGroups : IRepositoryContentGroups
+    public class ServiceApiContentGroups
     {
-        public Task CreateContentGroupAsync(string name, int courseId, bool isVisible = false)
+        private readonly HelperApi helperApi;
+
+        public ServiceApiContentGroups(HelperApi helperApi)
         {
-            throw new NotImplementedException();
+            this.helperApi = helperApi;
         }
 
-        public Task DeleteContentGroupAsync(int id)
+        public async Task CreateContentGroupAsync(string name, int courseId, bool isVisible = false)
         {
-            throw new NotImplementedException();
+            await this.helperApi.PostAsync(Consts.ApiContentGroups + $"/createcontentgroup/{name}/{courseId}/{isVisible}", null);
+        }
+
+        public async Task<List<ContentGroup>?> GetCourseContentGroupsAsync(int courseId)
+        {
+            return await this.helperApi.GetAsync<List<ContentGroup>>(Consts.ApiContentGroups + "/GetCourseContentGroups/" + courseId);
+        }
+
+        public async Task DeleteContentGroupAsync(int id)
+        {
+            await this.helperApi.DeleteAsync(Consts.ApiContentGroups + "/deletecontentgroup/" + id);
         }
 
         public Task<ContentGroup?> FindContentGroupAsync(int id)
@@ -20,9 +34,9 @@ namespace MoodReboot.Services
             throw new NotImplementedException();
         }
 
-        public Task UpdateContentGroupAsync(int id, string name, bool isVisible)
+        public async Task UpdateContentGroupAsync(int id, string name, bool isVisible)
         {
-            throw new NotImplementedException();
+            await this.helperApi.PutAsync(Consts.ApiContentGroups + $"/updatecontentgroup/{id}/{name}/{isVisible}", null);
         }
     }
 }

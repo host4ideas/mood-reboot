@@ -25,6 +25,30 @@ namespace APIMoodReboot.Controllers
             return await this.repositoryUsers.SearchUsersAsync(pattern);
         }
 
+        [HttpPost]
+        public async Task<int> RegisterUser(SignUpModel model)
+        {
+            return await this.repositoryUsers.RegisterUserAsync(model.Username, model.FirstName, model.LastName, model.Email, model.Password, model.Path);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<int>> GetMaxUser()
+        {
+            return await this.repositoryUsers.GetMaxUserAsync();
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<bool>> IsEmailAvailable(string email)
+        {
+            return await this.repositoryUsers.IsEmailAvailableAsync(email);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<bool>> IsUsernameAvailable(string username)
+        {
+            return await this.repositoryUsers.IsUsernameAvailableAsync(username);
+        }
+
         [HttpGet]
         public ActionResult<AppUser> Profile()
         {
@@ -95,7 +119,7 @@ namespace APIMoodReboot.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> RequestChangeEmail()
+        public async Task<ActionResult> RequestChangeData()
         {
             Claim claim = HttpContext.User.Claims.SingleOrDefault(x => x.Type == "UserData");
             string jsonUser = claim.Value;
@@ -130,18 +154,6 @@ namespace APIMoodReboot.Controllers
                 }
             }
             return NoContent();
-        }
-
-        //[AuthorizeUsers]
-        [HttpPost]
-        public async Task<ActionResult> RequestChangePassword()
-        {
-            Claim claim = HttpContext.User.Claims.SingleOrDefault(x => x.Type == "UserData");
-            string jsonUser = claim.Value;
-            AppUser user = JsonConvert.DeserializeObject<AppUser>(jsonUser);
-
-            string token = await this.repositoryUsers.CreateUserActionAsync(user.Id);
-            return Ok(token);
         }
 
         #endregion

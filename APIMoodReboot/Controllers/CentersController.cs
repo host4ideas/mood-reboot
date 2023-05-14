@@ -51,10 +51,10 @@ namespace APIMoodReboot.Controllers
         }
 
         [Authorize]
-        [HttpPost("{centerId}")]
-        public async Task<ActionResult> AddCenterEditors(int centerId, [FromQuery] List<int> userIds)
+        [HttpPost]
+        public async Task<ActionResult> AddCenterEditors(AddCenterEditorsApiModel model)
         {
-            await this.repositoryCenters.AddEditorsCenterAsync(centerId, userIds);
+            await this.repositoryCenters.AddEditorsCenterAsync(model.CenterId, model.UserIds);
             return NoContent();
         }
 
@@ -68,9 +68,7 @@ namespace APIMoodReboot.Controllers
         {
             int firstEditorId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-            bool isVisible = Convert.ToBoolean(newCourse.IsVisible);
-
-            bool result = await this.helperCourse.CreateCourse(newCourse.CenterId, firstEditorId, newCourse.Name, isVisible, newCourse.Image, newCourse.Description, newCourse.Password);
+            bool result = await this.helperCourse.CreateCourse(newCourse.CenterId, firstEditorId, newCourse.Name, newCourse.IsVisible, newCourse.Image, newCourse.Description, newCourse.Password);
 
             if (!result)
             {

@@ -1,43 +1,96 @@
-﻿using NugetMoodReboot.Interfaces;
+﻿using AngleSharp.Io;
+using APIMoodReboot.Utils;
+using Newtonsoft.Json.Linq;
+using NugetMoodReboot.Helpers;
+using NugetMoodReboot.Interfaces;
 using NugetMoodReboot.Models;
+using System.IO;
 
 namespace MoodReboot.Services
 {
-    public class ServiceApiUsers : IRepositoryUsers
+    public class ServiceApiUsers
     {
-        public Task AddUsersToChatAsync(int chatGroupId, List<int> userIds)
+        private readonly HelperApi helperApi;
+        private readonly HttpContextAccessor httpContextAccessor;
+
+        public ServiceApiUsers(HelperApi helperApi, HttpContextAccessor httpContextAccessor)
         {
-            throw new NotImplementedException();
+            this.helperApi = helperApi;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
-        public Task ApproveUserAsync(AppUser user)
+        public async Task AddUsersToChatAsync(int chatGroupId, List<int> userIds)
         {
-            throw new NotImplementedException();
+            AddUsersChatApiModel model = new()
+            {
+                ChatGroupId = chatGroupId,
+                UserIds = userIds
+            };
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            await this.helperApi.PostAsync(Consts.ApiMessages + "/AddUsersToChat/", model, token);
         }
 
-        public Task ApproveUserAsync(int userId)
+        public async Task ApproveUserAsync(int userId)
         {
-            throw new NotImplementedException();
+            string tokenAuth = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            await this.helperApi.PutAsync(
+                request: Consts.ApiAdmin + "/ApproveUser/" + userId,
+                body: null,
+                token: tokenAuth
+                );
         }
 
-        public Task CreateMessageAsync(int userId, int groupChatId, string userName, string? text = null, int? fileId = null)
+        public async Task ApproveUserAsync(int userId, string token)
         {
-            throw new NotImplementedException();
+            string tokenAuth = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            await this.helperApi.PutAsync(
+                request: Consts.ApiUsers + "/ApproveUserEmail/" + userId + "/" + token,
+                body: null,
+                token: tokenAuth
+                );
         }
 
-        public Task<string> CreateUserActionAsync(int userId)
+        public async Task CreateMessageAsync(int groupChatId, string userName, string? text = null, int? fileId = null)
         {
-            throw new NotImplementedException();
+            CreateChatMessageApiModel model = new()
+            {
+                GroupChatId = groupChatId,
+                UserName = userName,
+                Text = text,
+                FileId = fileId
+            };
+
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            await this.helperApi.PostAsync(
+                request: Consts.ApiMessages + "/CreateMessage/",
+                body: model,
+                token: token
+                );
         }
 
-        public Task DeactivateUserAsync(int userId)
+        public async Task ChangeEmailAsync(int userId, string token, string email)
         {
-            throw new NotImplementedException();
+            await this.helperApi.PostAsync(Consts.ApiUsers + $"/ChangeEmail/{userId}/{token}/{email}", null, token);
         }
 
-        public Task DeleteFileAsync(int fileId)
+        public async Task<string> RequestChangeDataAsync()
         {
-            throw new NotImplementedException();
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            return await this.helperApi.PostAsync<string>(
+                request: Consts.ApiUsers + "/RequestChangeData",
+                body: null,
+                token: token);
+        }
+
+        public async Task ChangePasswordAsync(int userId, string token, string password)
+        {
+            await this.helperApi.PostAsync(Consts.ApiUsers + $"/ChangePassword/{userId}/{token}/{password}", null, token);
+        }
+
+        public async Task DeleteFileAsync(int fileId)
+        {
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            await this.helperApi.DeleteAsync(request: Consts.ApiFiles + "/DeleteFile/" + fileId, token: token);
         }
 
         public Task DeleteMessageAsync(int id)
@@ -52,7 +105,8 @@ namespace MoodReboot.Services
 
         public Task<AppFile?> FindFileAsync(int fileId)
         {
-            throw new NotImplementedException();
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            return this.helperApi.GetAsync<AppFile>(Consts.ApiFiles + "/FindFile/" + fileId, token);
         }
 
         public Task<UserAction?> FindUserActionAsync(int userId, string token)
@@ -62,12 +116,14 @@ namespace MoodReboot.Services
 
         public Task<AppUser?> FindUserAsync(int userId)
         {
-            throw new NotImplementedException();
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            return this.helperApi.GetAsync<AppUser>(Consts.ApiUsers + "/Profile", token);
         }
 
         public Task<List<AppUser>> GetAllUsersAsync()
         {
-            throw new NotImplementedException();
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            return this.helperApi.GetAsync<List<AppUser>>(Consts.ApiAdmin + "/Users" + token);
         }
 
         public Task<List<ChatUserModel>> GetChatGroupUsersAsync(int chatGroupId)
@@ -82,122 +138,185 @@ namespace MoodReboot.Services
 
         public Task<int> GetMaxUserAsync()
         {
-            throw new NotImplementedException();
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            return this.helperApi.GetAsync<int>(Consts.ApiUsers + "/GetMaxUser/", token);
         }
 
-        public Task<List<Message>> GetMessagesByGroupAsync(int chatGroupId)
+        public async Task<List<Message>> GetMessagesByGroupAsync(int chatGroupId)
         {
-            throw new NotImplementedException();
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            return await this.helperApi.GetAsync<List<Message>>(Consts.ApiFiles + "/GetChatMessages/" + chatGroupId, token);
         }
 
-        public Task<List<AppUser>> GetPendingUsersAsync()
+        public async Task<List<AppUser>> GetPendingUsersAsync()
         {
-            throw new NotImplementedException();
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            return await this.helperApi.GetAsync<List<AppUser>>(Consts.ApiAdmin + "/UserRequests", token);
         }
 
-        public Task<List<Message>> GetUnseenMessagesAsync(int userId)
+        public async Task<List<Message>> GetUnseenMessagesAsync(int userId)
         {
-            throw new NotImplementedException();
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            return await this.helperApi.GetAsync<List<Message>>(Consts.ApiMessages + "/GetUnseenMessages/" + userId);
         }
 
-        public Task<List<ChatGroup>> GetUserChatGroupsAsync(int userId)
+        public async Task<List<ChatGroup>> GetUserChatGroupsAsync(int userId)
         {
-            throw new NotImplementedException();
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            return await this.helperApi.GetAsync<List<ChatGroup>>(Consts.ApiMessages + "/GetUserChatGroups/", token);
         }
 
-        public Task<int> InsertFileAsync(string name, string mimeType)
+        public async Task<HttpResponseMessage> InsertFileAsync(string name, string mimeType)
         {
-            throw new NotImplementedException();
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            return await this.helperApi.PostAsync(
+                request: Consts.ApiFiles + $"/InsertFile/${name}/${mimeType}",
+                body: null,
+            token: token);
         }
 
-        public Task<int> InsertFileAsync(string name, string mimeType, int userId)
+        public async Task UpdateFileAsync(int fileId, string path, string mimeType)
         {
-            throw new NotImplementedException();
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            await this.helperApi.PutAsync(Consts.ApiFiles + $"/UpdateFile/{fileId}/{path}/{mimeType}", null, token);
         }
 
-        public Task<bool> IsEmailAvailableAsync(string email)
+        public async Task UpdateFileUserAsync(int fileId, string path, string mimeType, int userId)
         {
-            throw new NotImplementedException();
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            await this.helperApi.PutAsync(Consts.ApiFiles + $"/UpdateFile/{fileId}/{path}/{mimeType}/{userId}", null, token);
         }
 
-        public Task<bool> IsUsernameAvailableAsync(string userName)
+        public async Task<int> InsertFileAsync(string name, string mimeType, int userId)
         {
-            throw new NotImplementedException();
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            return await this.helperApi.PostAsync<int>(
+                request: Consts.ApiFiles + $"/InsertFileUser/${name}/${mimeType}/{userId}",
+                body: null,
+                token: token);
         }
 
-        public Task<AppUser?> LoginUserAsync(string email, string password)
+        public async Task<bool> IsEmailAvailableAsync(string email)
         {
-            throw new NotImplementedException();
+            return await this.helperApi.GetAsync<bool>(Consts.ApiUsers + "/IsEmailAvailable/" + email);
         }
 
-        public Task NewChatGroupAsync(HashSet<int> userIdsNoDups)
+        public async Task<bool> IsUsernameAvailableAsync(string username)
         {
-            throw new NotImplementedException();
+            return await this.helperApi.GetAsync<bool>(Consts.ApiUsers + "/IsUsernameAvailable/" + username);
         }
 
-        public Task<int> NewChatGroupAsync(HashSet<int> userIdsNoDups, int adminUserId, string chatGroupName)
+
+        public async Task<string?> GetTokenAsync(string username, string password)
         {
-            throw new NotImplementedException();
+            LoginModel model = new()
+            {
+                Password = password,
+                Username = username,
+            };
+
+            return await this.helperApi.PostAsync<string>(Consts.ApiAuth + "/login", model);
         }
 
-        public Task<int> RegisterUserAsync(string nombre, string firstName, string lastName, string email, string password, string image)
+        public async Task<Tuple<string, AppUser>> LoginUserAsync(string email, string password)
         {
-            throw new NotImplementedException();
+            string? token = await this.GetTokenAsync(email, password);
+            AppUser? user = await this.helperApi.GetAsync<AppUser>(Consts.ApiUsers + "/profile" + token);
+
+            if (token != null && user != null)
+                return Tuple.Create(token, user);
+
+            return null;
         }
 
-        public Task RemoveChatGroupAsync(int chatGroupId)
+        public async Task NewChatGroupAsync(List<int> userIds, string chatGroupName)
         {
-            throw new NotImplementedException();
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+
+            CreateChatGroupModel model = new()
+            {
+                GroupName = chatGroupName,
+                UserIds = userIds,
+            };
+
+            await this.helperApi.PostAsync(Consts.ApiMessages + "/CreateChatGroup", model, token);
         }
 
-        public Task RemoveChatUserAsync(int userId, int chatGroupId)
+        public async Task<int> RegisterUserAsync(string nombre, string firstName, string lastName, string email, string password, string image)
         {
-            throw new NotImplementedException();
+            SignUpModel model = new()
+            {
+                Email = email,
+                Password = password,
+                FirstName = firstName,
+                LastName = lastName,
+                Path = image,
+                Username = nombre
+            };
+
+            return await this.helperApi.PostAsync<int>(Consts.ApiUsers + "/RegisterUser", model);
         }
 
-        public Task RemoveUserActionAsync(UserAction userAction)
+        public async Task RemoveChatGroupAsync(int chatGroupId)
         {
-            throw new NotImplementedException();
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            await this.helperApi.DeleteAsync(Consts.ApiMessages + "/DeleteChatGroup/" + chatGroupId, token);
         }
 
-        public Task<List<Tuple<string, int>>> SearchUsersAsync(string pattern)
+        public async Task RemoveChatUserAsync(int userId, int chatGroupId)
         {
-            throw new NotImplementedException();
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            await this.helperApi.DeleteAsync(Consts.ApiMessages + $"/RemoveUserFromChat/{userId}/{chatGroupId}", token);
         }
 
-        public Task UpdateChatGroupAsync(int chatGroupId, string name)
+        public async Task<List<Tuple<string, int>>> SearchUsersAsync(string pattern)
         {
-            throw new NotImplementedException();
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            return await this.helperApi.GetAsync<List<Tuple<string, int>>>(Consts.ApiUsers + "/SearchUsers/" + pattern, token);
         }
 
-        public Task UpdateChatLastSeenAsync(int chatGroupId, int userId)
+        public async Task UpdateChatGroupAsync(int chatGroupId, string name)
         {
-            throw new NotImplementedException();
+            ChatGroup model = new()
+            {
+                Id = chatGroupId,
+                Name = name
+            };
+
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            await this.helperApi.PutAsync(Consts.ApiMessages + "/UpdateChatGroup", model, token);
         }
 
-        public Task UpdateFileAsync(int fileId, string fileName, string mimeType)
+        public async Task UpdateChatLastSeenAsync(int chatGroupId)
         {
-            throw new NotImplementedException();
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            await this.helperApi.PutAsync(Consts.ApiMessages + "/UpdateChatLastSeen/" + chatGroupId, null, token);
         }
 
-        public Task UpdateFileAsync(int fileId, string fileName, string mimeType, int userId)
+        public async Task UpdateUserBasicsAsync(string userName, string firstName, string lastName, string? image = null)
         {
-            throw new NotImplementedException();
+            UpdateProfileApiModel model = new()
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                Image = image,
+                Username = userName
+            };
+
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            await this.helperApi.PutAsync(Consts.ApiUsers + "/Profile", model, token);
         }
 
-        public Task UpdateUserBasicsAsync(int userId, string userName, string firstName, string lastName, string? image = null)
+        public async Task UpdateUserEmailAsync(int userId, string email)
         {
-            throw new NotImplementedException();
+            string tokenAuth = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            await this.helperApi.PostAsync(Consts.ApiUsers + $"/ChangeEmail/{userId}/{email}", null, tokenAuth);
         }
 
-        public Task UpdateUserEmailAsync(int userId, string email)
+        public async Task UpdateUserPasswordAsync(int userId, string password)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task UpdateUserPasswordAsync(int userId, string password)
-        {
-            throw new NotImplementedException();
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            await this.helperApi.PostAsync(Consts.ApiUsers + $"/ChangePassword/{userId}", null, token);
         }
     }
 }

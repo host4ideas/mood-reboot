@@ -273,7 +273,7 @@ namespace NugetMoodReboot.Helpers
             return smtpClient;
         }
 
-        private string BuildMailTemplate(string asunto, string mensaje, string baseUrl, List<MailLink>? links = null)
+        public string BuildMailTemplate(string asunto, string mensaje, string baseUrl, List<MailLink>? links = null)
         {
             string nuevoEmail = this.MRBaseMail;
             nuevoEmail = nuevoEmail.Replace("%SUBJECT%", asunto);

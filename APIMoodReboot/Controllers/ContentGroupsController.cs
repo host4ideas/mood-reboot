@@ -17,6 +17,12 @@ namespace APIMoodReboot.Controllers
             this.repo = repo;
         }
 
+        [HttpGet("{courseId}")]
+        public async Task<ActionResult<List<ContentGroup>>> CourseContentGroups(int courseId)
+        {
+            return await this.repo.GetCourseContentGroupsAsync(courseId);
+        }
+
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteContentGroup(int id)
         {
@@ -34,12 +40,12 @@ namespace APIMoodReboot.Controllers
             return CreatedAtAction(null, null);
         }
 
-        [HttpPut]
-        public async Task<ActionResult> UpdateContentGroup(ContentGroup contentGroup)
+        [HttpPut("{id}/{name}/isVisible}")]
+        public async Task<ActionResult> UpdateContentGroup(int id, string name, bool isVisible)
         {
-            if (contentGroup.Name != null && contentGroup.Name.Any())
+            if (name != null && name.Any())
             {
-                await this.repo.UpdateContentGroupAsync(contentGroup.ContentGroupId, contentGroup.Name, contentGroup.IsVisible);
+                await this.repo.UpdateContentGroupAsync(id, name, isVisible);
             }
             return NoContent();
         }

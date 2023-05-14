@@ -1,8 +1,8 @@
 ﻿namespace NugetMoodReboot.Models
 {
-    public class CreateCourseApiModel
+    public class UpdateCourseApiModel
     {
-        public int CenterId { get; set; }
+        public int Id { get; set; }
         public string? Description { get; set; }
         public string? Image { get; set; }
         public string Name { get; set; }

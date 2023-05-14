@@ -1,16 +1,15 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MoodReboot.Services;
+using NugetMoodReboot.Helpers;
 
-namespace NugetMoodReboot.Helpers
+namespace MoodReboot.Helpers
 {
-    public enum FileTypes { Image, Document, Excel, Pdf }
-
-    public class HelperFile
+    public class HelperFileAzure
     {
-        private readonly HelperPath helperPath;
+        private readonly ServiceStorageBlob serviceStorage;
 
-        public HelperFile(HelperPath helperPath)
+        public HelperFileAzure(ServiceStorageBlob serviceStorage)
         {
-            this.helperPath = helperPath;
+            this.serviceStorage = serviceStorage;
         }
 
         public Task DeleteFile(int fileId)
@@ -54,15 +53,7 @@ namespace NugetMoodReboot.Helpers
             }
         }
 
-        /// <summary>
-        /// Returns the file's fileName if the file was correctly uploaded, otherwise returns null
-        /// </summary>
-        /// <param name="file"></param>
-        /// <param name="folder"></param>
-        /// <param name="fileType"></param>
-        /// <param name="fileName"></param>
-        /// <returns></returns>
-        public async Task<string?> UploadFileAsync(IFormFile file, Folders folder, FileTypes fileType, string? fileName = null)
+        public async Task<bool> UploadFileAsync(IFormFile file, Containers container, FileTypes fileType, string fileName)
         {
             string mimeType = file.ContentType;
 
@@ -70,7 +61,7 @@ namespace NugetMoodReboot.Helpers
 
             if (file == null || file.Length == 0)
             {
-                return null;
+                return false;
             }
 
             long maxImageSize = 1024 * 1024 * 5;
@@ -80,14 +71,14 @@ namespace NugetMoodReboot.Helpers
             {
                 if (file.Length > maxDocumentSize)
                 {
-                    return null;
+                    return false;
                 }
             }
             else if (fileType == FileTypes.Image)
             {
                 if (file.Length > maxImageSize)
                 {
-                    return null;
+                    return false;
                 }
             }
 
@@ -124,42 +115,15 @@ namespace NugetMoodReboot.Helpers
 
             if (isValid)
             {
-                if (fileName == null)
-                {
-                    fileName = file.FileName;
-                }
-                else
-                {
-                    fileName = fileName + Path.GetExtension(file.FileName);
-                }
+                string containerBlob = HelperPathAzure.MapContainerPath(container);
 
-                string path = this.helperPath.MapPath(fileName, folder);
+                using Stream stream = file.OpenReadStream();
+                await this.serviceStorage.UploadBlobAsync(containerBlob, fileName, stream);
 
-                using (Stream stream = new FileStream(path, FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                    return fileName;
-                }
+                return true;
             }
-            return null;
-        }
 
-        public async Task<List<string>> UploadFilesAsync(List<IFormFile> files, Folders folder)
-        {
-            List<string> paths = new();
-
-            foreach (IFormFile file in files)
-            {
-                string fileName = file.FileName;
-                string path = this.helperPath.MapPath(fileName, folder);
-                paths.Add(path);
-
-                using (Stream stream = new FileStream(path, FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                }
-            }
-            return paths;
+            return false;
         }
     }
 }

@@ -1,18 +1,17 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using MoodReboot.Extensions;
-using MoodReboot.Interfaces;
-using MoodReboot.Models;
+using MoodReboot.Services;
+using NugetMoodReboot.Models;
 using System.Security.Claims;
 
 namespace MoodReboot.Hubs
 {
     public class ChatHub : Hub
     {
-        private readonly IRepositoryUsers repositoryUsers;
+        private readonly ServiceApiUsers serviceUsers;
 
-        public ChatHub(IRepositoryUsers repositoryUsers)
+        public ChatHub(ServiceApiUsers serviceUsers)
         {
-            this.repositoryUsers = repositoryUsers;
+            this.serviceUsers = serviceUsers;
         }
 
         public async Task SendMessage(int userId, int groupChatId, string userName, string text, string fileId)
@@ -31,8 +30,7 @@ namespace MoodReboot.Hubs
                 text);
 
             // Store the mesage in the DDBB
-            await this.repositoryUsers.CreateMessage(
-                userId: int.Parse(userId),
+            await this.serviceUsers.CreateMessageAsync(
                 groupChatId: int.Parse(groupChatId),
                 userName: userName,
                 text: text);
@@ -61,7 +59,7 @@ namespace MoodReboot.Hubs
                 string userName = Context.User.FindFirstValue(ClaimTypes.Name);
 
                 // If the user is logged in add it to its chat groups
-                List<ChatGroup> groups = this.repositoryUsers.GetUserChatGroups(userId);
+                List<ChatGroup> groups = this.serviceUsers.GetUserChatGroupsAsync(userId).Result;
 
                 foreach (ChatGroup group in groups)
                 {

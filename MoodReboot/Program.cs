@@ -1,20 +1,31 @@
+using Azure.Storage.Blobs;
 using Ganss.Xss;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using MoodReboot.Hubs;
 using MoodReboot.Services;
 using NugetMoodReboot.Helpers;
-using NugetMoodReboot.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// IHttpClientFactory
 builder.Services.AddHttpClient();
 
-builder.Services.AddTransient<IRepositoryCenters, ServiceApiCenters>();
-builder.Services.AddTransient<IRepositoryContent, ServiceApiContents>();
-builder.Services.AddTransient<IRepositoryContentGroups, ServiceApiContentGroups>();
-builder.Services.AddTransient<IRepositoryCourses, ServiceApiCourses>();
-builder.Services.AddTransient<IRepositoryUsers, ServiceApiUsers>();
+// SignalR
+string signalrCnn = builder.Configuration.GetConnectionString("SignalR");
+builder.Services.AddSignalR().AddAzureSignalR(signalrCnn);
+
+// Azure storage blobs
+string azureKeys = builder.Configuration.GetValue<string>("AzureKeys:StorageAccount");
+BlobServiceClient blobServiceClient = new(azureKeys);
+builder.Services.AddSingleton(blobServiceClient);
+builder.Services.AddTransient<ServiceStorageBlob>();
+
+builder.Services.AddTransient<ServiceApiCenters>();
+builder.Services.AddTransient<ServiceApiContents>();
+builder.Services.AddTransient<ServiceApiContentGroups>();
+builder.Services.AddTransient<ServiceApiCourses>();
+builder.Services.AddTransient<ServiceApiUsers>();
 
 builder.Services.AddSingleton<HelperApi>();
 
@@ -45,9 +56,6 @@ builder.Services.AddAuthentication(options =>
 
 // Sessions
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-// SignalR
-builder.Services.AddSignalR();
 
 string connectionString = builder.Configuration.GetConnectionString("SqlMoodReboot");
 
@@ -87,6 +95,8 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
+
+app.MapHub<ChatHub>("/chatHub");
 
 app.UseMvc(routes =>
 {

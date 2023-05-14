@@ -1,21 +1,20 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MoodReboot.Interfaces;
-using MoodReboot.Repositories;
+using MoodReboot.Services;
 
 namespace MoodReboot.Controllers
 {
     public class ContentGroupsController : Controller
     {
-        private readonly IRepositoryContentGroups repo;
+        private readonly ServiceApiContentGroups serviceCtnGroups;
 
-        public ContentGroupsController(IRepositoryContentGroups repo)
+        public ContentGroupsController(ServiceApiContentGroups serviceCtnGroups)
         {
-            this.repo = repo;
+            this.serviceCtnGroups = serviceCtnGroups;
         }
 
         public async Task<IActionResult> DeleteContentGroup(int id, int courseId)
         {
-            await this.repo.DeleteContentGroupAsync(id);
+            await this.serviceCtnGroups.DeleteContentGroupAsync(id);
             return RedirectToAction("CourseDetails", "Courses", new { id = courseId });
         }
 
@@ -24,7 +23,7 @@ namespace MoodReboot.Controllers
         {
             if (name != null && courseId >= 0)
             {
-                await this.repo.CreateContentGroupAsync(name, courseId, isVisible);
+                await this.serviceCtnGroups.CreateContentGroupAsync(name, courseId, isVisible);
             }
             return RedirectToAction("CourseDetails", "Courses", new { id = courseId });
         }
@@ -34,7 +33,7 @@ namespace MoodReboot.Controllers
         {
             if (name != null && courseId >= 0)
             {
-                await this.repo.UpdateContentGroupAsync(id, name, isVisible);
+                await this.serviceCtnGroups.UpdateContentGroupAsync(id, name, isVisible);
             }
             return RedirectToAction("CourseDetails", "Courses", new { id = courseId });
         }

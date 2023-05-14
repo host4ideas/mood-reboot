@@ -29,7 +29,7 @@ namespace APIMoodReboot.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> UserRequests()
+        public async Task<ActionResult> UserRequests()
         {
             List<AppUser> users = await this.repositoryUsers.GetPendingUsersAsync();
             return Ok(users);
@@ -53,8 +53,10 @@ namespace APIMoodReboot.Controllers
             if (user != null)
             {
                 await this.repositoryUsers.ApproveUserAsync(user);
+                return NoContent();
             }
-            return Ok();
+
+            return NotFound();
         }
 
         [HttpGet]

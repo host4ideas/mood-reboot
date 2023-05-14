@@ -6,7 +6,7 @@ using NugetMoodReboot.Interfaces;
 
 namespace APIMoodReboot.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     [Authorize]
     public class MessagesController : ControllerBase
@@ -18,19 +18,26 @@ namespace APIMoodReboot.Controllers
             this.repositoryUsers = repositoryUsers;
         }
 
-        [HttpGet("[action]/{chatGroupId}")]
+        [HttpGet("{chatGroupId}")]
         public async Task<ActionResult<List<Message>>> GetChatMessages(int chatGroupId)
         {
             return await this.repositoryUsers.GetMessagesByGroupAsync(chatGroupId);
         }
 
-        [HttpGet("[action]/{userId}")]
+        [HttpGet]
+        public async Task<ActionResult<List<ChatGroup>>> GetUserChatGroups()
+        {
+            int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+            return await this.repositoryUsers.GetUserChatGroupsAsync(userId);
+        }
+
+        [HttpGet("{userId}")]
         public async Task<ActionResult<List<Message>>> GetUnseenMessages(int userId)
         {
             return await this.repositoryUsers.GetUnseenMessagesAsync(userId);
         }
 
-        [HttpPut("[action]/{chatGroupId}")]
+        [HttpPut("{chatGroupId}")]
         public async Task<ActionResult> UpdateChatLastSeen(int chatGroupId)
         {
             int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
@@ -38,10 +45,18 @@ namespace APIMoodReboot.Controllers
             return NoContent();
         }
 
-        [HttpPost("[action]")]
+        [HttpPost]
+        public async Task<ActionResult> CreateMessage(CreateChatMessageApiModel model)
+        {
+            int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+            await this.repositoryUsers.CreateMessageAsync(userId, model.GroupChatId, model.UserName, model.Text, model.FileId);
+            return CreatedAtAction(null, null);
+        }
+
+        [HttpPost]
         public async Task<ActionResult> CreateChatGroup(CreateChatGroupModel createChatGroup)
         {
-            // Add current user to the list of users
+            // Add current user to the list of users and set it as admin
             int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
             createChatGroup.UserIds.Add(userId);
 
@@ -57,31 +72,31 @@ namespace APIMoodReboot.Controllers
                 await this.repositoryUsers.NewChatGroupAsync(userIdsNoDups, userId, createChatGroup.GroupName);
             }
 
-            return NoContent();
+            return CreatedAtAction(null, null);
         }
 
-        [HttpPost("[action]/{chatGroupId}")]
-        public async Task<ActionResult> AddUsersToChat(int chatGroupId, [FromQuery] List<int> userIds)
+        [HttpPost]
+        public async Task<ActionResult> AddUsersToChat(AddUsersChatApiModel model)
         {
-            await this.repositoryUsers.AddUsersToChatAsync(chatGroupId, userIds);
+            await this.repositoryUsers.AddUsersToChatAsync(model.ChatGroupId, model.UserIds);
             return NoContent();
         }
 
-        [HttpPost("[action]")]
+        [HttpPost]
         public async Task<ActionResult> UpdateChatGroup(ChatGroup chatGroup)
         {
             await this.repositoryUsers.UpdateChatGroupAsync(chatGroup.Id, chatGroup.Name);
             return NoContent();
         }
 
-        [HttpDelete("[action]/{chatGroupId}")]
+        [HttpDelete("{chatGroupId}")]
         public async Task<ActionResult> DeleteChatGroup(int chatGroupId)
         {
             await this.repositoryUsers.RemoveChatGroupAsync(chatGroupId);
             return NoContent();
         }
 
-        [HttpDelete("[action]/{userId}/{chatGroupId}")]
+        [HttpDelete("{userId}/{chatGroupId}")]
         public async Task<ActionResult> RemoveUserFromChat(int userId, int chatGroupId)
         {
             await this.repositoryUsers.RemoveChatUserAsync(userId, chatGroupId);

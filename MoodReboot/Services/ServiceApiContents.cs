@@ -1,23 +1,51 @@
-﻿using NugetMoodReboot.Interfaces;
+﻿using APIMoodReboot.Utils;
+using NugetMoodReboot.Helpers;
 using NugetMoodReboot.Models;
 
 namespace MoodReboot.Services
 {
-    public class ServiceApiContents : IRepositoryContent
+    public class ServiceApiContents
     {
-        public Task CreateContentAsync(int contentGroupId, string text)
+        private readonly HelperApi helperApi;
+        private HttpContextAccessor httpContextAccessor;
+
+        public ServiceApiContents(HelperApi helperApi, HttpContextAccessor httpContextAccessor)
         {
-            throw new NotImplementedException();
+            this.helperApi = helperApi;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
-        public Task CreateContentFileAsync(int contentGroupId, int fileId)
+        public async Task CreateContentAsync(int contentGroupId, string text)
         {
-            throw new NotImplementedException();
+            CreateContentModelApi model = new()
+            {
+                GroupId = contentGroupId,
+                UnsafeHtml = text,
+            };
+
+            await this.helperApi.PostAsync(Consts.ApiContent + "/addcontent/", model);
         }
 
-        public Task DeleteContentAsync(int id)
+        public async Task CreateContentFileAsync(int contentGroupId, int fileId)
         {
-            throw new NotImplementedException();
+            // Find file in BBDD
+            AppFile? file = await this.helperApi.GetAsync<AppFile>(Consts.ApiFiles + "/FindFile/" + fileId);
+
+            if (file != null)
+            {
+                CreateContentModelApi model = new()
+                {
+                    GroupId = contentGroupId,
+                    File = file
+                };
+
+                await this.helperApi.PostAsync(Consts.ApiContent + "/AddContent", model);
+            }
+        }
+
+        public async Task DeleteContentAsync(int id)
+        {
+            await this.helperApi.DeleteAsync(Consts.ApiContent + "/DeleteContent/" + id);
         }
 
         public Task<Content?> FindContentAsync(int id)
@@ -27,17 +55,38 @@ namespace MoodReboot.Services
 
         public Task<List<Content>> GetContentByGroupAsync(int groupId)
         {
-            throw new NotImplementedException();
+            return this.helperApi.GetAsync<List<Content>>(Consts.ApiContent + "/GetContentByGroup/" + groupId);
         }
 
         public Task<int> GetMaxContentAsync()
         {
-            throw new NotImplementedException();
+            return this.helperApi.GetAsync<int>(Consts.ApiContent + "/GetMaxContent/");
         }
 
-        public Task UpdateContentAsync(int id, string? text = null, int? fileId = null)
+        public async Task UpdateContentAsync(int id, string? text = null, int? fileId = null)
         {
-            throw new NotImplementedException();
+            if (fileId != null)
+            {
+                // Find file in BBDD
+                AppFile? file = await this.helperApi.GetAsync<AppFile>(Consts.ApiFiles + "/FindFile/" + fileId);
+
+                UpdateContentApiModel model = new()
+                {
+                    ContentId = id,
+                    File = file,
+                };
+                await this.helperApi.PutAsync(Consts.ApiContent + "/UpdateContent", model);
+            }
+
+            if (text != null)
+            {
+                UpdateContentApiModel model = new()
+                {
+                    ContentId = id,
+                    UnsafeHtml = text,
+                };
+                await this.helperApi.PutAsync(Consts.ApiContent + "/UpdateContent", model);
+            }
         }
     }
 }

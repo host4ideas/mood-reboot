@@ -3,6 +3,8 @@ using NugetMoodReboot.Models;
 using Ganss.Xss;
 using Microsoft.AspNetCore.Authorization;
 using NugetMoodReboot.Interfaces;
+using Newtonsoft.Json;
+using System.Security.Claims;
 
 namespace APIMoodReboot.Controllers
 {
@@ -22,6 +24,18 @@ namespace APIMoodReboot.Controllers
             this.sanitizer = sanitizer;
         }
 
+        [HttpGet]
+        public async Task<ActionResult<int>> GetMaxContent()
+        {
+            return await this.repositoryContent.GetMaxContentAsync();
+        }
+
+        [HttpGet("{groupId}")]
+        public async Task<ActionResult<List<Content>>> GetContentByGroup(int groupId)
+        {
+            return await this.repositoryContent.GetContentByGroupAsync(groupId);
+        }
+
         [HttpDelete("{contentId}")]
         public async Task<ActionResult> DeleteContent(int contentId)
         {
@@ -39,10 +53,14 @@ namespace APIMoodReboot.Controllers
         [HttpPost]
         public async Task<ActionResult> AddContent([FromBody] CreateContentModelApi createContent)
         {
+            Claim claim = HttpContext.User.Claims.SingleOrDefault(x => x.Type == "UserData");
+            string jsonUser = claim.Value;
+            AppUser user = JsonConvert.DeserializeObject<AppUser>(jsonUser);
+
             if (createContent.File != null)
             {
                 // Insert file in DB
-                int fileId = await this.repositoryUser.InsertFileAsync(createContent.File.Name, createContent.File.MimeType, createContent.UserId);
+                int fileId = await this.repositoryUser.InsertFileAsync(createContent.File.Name, createContent.File.MimeType, user.Id);
                 // Update Content
                 await this.repositoryContent.CreateContentFileAsync(contentGroupId: createContent.GroupId, fileId: fileId);
             }
@@ -62,6 +80,10 @@ namespace APIMoodReboot.Controllers
         {
             Content? content = await this.repositoryContent.FindContentAsync(updateContent.ContentId);
 
+            Claim claim = HttpContext.User.Claims.SingleOrDefault(x => x.Type == "UserData");
+            string jsonUser = claim.Value;
+            AppUser user = JsonConvert.DeserializeObject<AppUser>(jsonUser);
+
             if (content == null)
             {
                 return NotFound();
@@ -72,7 +94,7 @@ namespace APIMoodReboot.Controllers
                 if (content.FileId == null)
                 {
                     // Update DB
-                    int fileId = await this.repositoryUser.InsertFileAsync(updateContent.File.Name, updateContent.File.MimeType, updateContent.UserId);
+                    int fileId = await this.repositoryUser.InsertFileAsync(updateContent.File.Name, updateContent.File.MimeType, user.Id);
                     // Update Content
                     await this.repositoryContent.UpdateContentAsync(id: updateContent.ContentId, fileId: fileId);
                 }
@@ -80,7 +102,7 @@ namespace APIMoodReboot.Controllers
                 {
                     // Update DB
                     int fileId = content.FileId.Value;
-                    await this.repositoryUser.UpdateFileAsync(fileId, updateContent.File.Name, updateContent.File.MimeType, updateContent.UserId);
+                    await this.repositoryUser.UpdateFileAsync(fileId, updateContent.File.Name, updateContent.File.MimeType, user.Id);
                     // Update Content
                     await this.repositoryContent.UpdateContentAsync(id: updateContent.ContentId, fileId: fileId);
                 }

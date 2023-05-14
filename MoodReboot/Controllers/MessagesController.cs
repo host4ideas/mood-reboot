@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MoodReboot.Interfaces;
-using MoodReboot.Models;
+using MoodReboot.Services;
 using MvcCoreSeguridadEmpleados.Filters;
+using NugetMoodReboot.Models;
 using System.Security.Claims;
 
 namespace MoodReboot.Controllers
@@ -9,11 +9,11 @@ namespace MoodReboot.Controllers
     [AuthorizeUsers]
     public class MessagesController : Controller
     {
-        private readonly IRepositoryUsers repositoryUsers;
+        private readonly ServiceApiUsers serviceUsers;
 
-        public MessagesController(IRepositoryUsers repositoryUsers)
+        public MessagesController(ServiceApiUsers serviceUsers)
         {
-            this.repositoryUsers = repositoryUsers;
+            this.serviceUsers = serviceUsers;
         }
 
         public IActionResult ChatErrorPartial(string errorMessage)
@@ -22,75 +22,61 @@ namespace MoodReboot.Controllers
             return View();
         }
 
-        public IActionResult ChatWindowPartial(int userId)
+        public async Task<IActionResult> ChatWindowPartial(int userId)
         {
-            List<ChatGroup> groups = this.repositoryUsers.GetUserChatGroups(userId);
+            List<ChatGroup> groups = await this.serviceUsers.GetUserChatGroupsAsync(userId);
             return PartialView("_ChatWindowPartial", groups);
         }
 
-        public IActionResult ChatNotificationsPartial(int userId)
+        public async Task<IActionResult> ChatNotificationsPartial(int userId)
         {
-            List<Message> unseen = this.repositoryUsers.GetUnseenMessages(userId);
+            List<Message> unseen = await this.serviceUsers.GetUnseenMessagesAsync(userId);
             return PartialView("_ChatNotificationsPartial", unseen);
         }
 
-        public List<Message> GetChatMessages(int chatGroupId)
+        public async Task<List<Message>> GetChatMessages(int chatGroupId)
         {
-            List<Message> messages = this.repositoryUsers.GetMessagesByGroup(chatGroupId);
+            List<Message> messages = await this.serviceUsers.GetMessagesByGroupAsync(chatGroupId);
             return messages;
         }
 
-        public List<Message> GetUnseenMessages(int userId)
+        public async Task<List<Message>> GetUnseenMessages(int userId)
         {
-            return this.repositoryUsers.GetUnseenMessages(userId);
+            return await this.serviceUsers.GetUnseenMessagesAsync(userId);
         }
 
         public async Task UpdateChatLastSeen(int chatGroupId)
         {
             int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-            await this.repositoryUsers.UpdateChatLastSeen(chatGroupId, userId);
+            await this.serviceUsers.UpdateChatLastSeenAsync(chatGroupId);
         }
 
         public async Task CreateChatGroup(List<int> userIds, string? groupName = "NEW CHAT GROUP")
         {
-            // Add current user to the list of users
-            int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-            userIds.Add(userId);
-
-            // List without duplicates
-            HashSet<int> userIdsNoDups = new(userIds);
-
-            if (userIds.Count == 2)
-            {
-                await this.repositoryUsers.NewChatGroup(userIdsNoDups);
-            }
-            else if (userIds.Count > 2)
-            {
-                await this.repositoryUsers.NewChatGroup(userIdsNoDups, userId, groupName);
-            }
+            await this.serviceUsers.NewChatGroupAsync(userIds, groupName);
         }
 
         [HttpPost]
         public Task AddUsersToChat(int chatGroupId, List<int> userIds)
         {
-            return this.repositoryUsers.AddUsersToChat(chatGroupId, userIds);
+            return this.serviceUsers.AddUsersToChatAsync(chatGroupId, userIds);
         }
 
         [HttpPost]
         public async Task<IActionResult> UpdateChatGroup(ChatGroup chatGroup)
         {
-            await this.repositoryUsers.UpdateChatGroup(chatGroup.Id, chatGroup.Name);
+            await this.serviceUsers.UpdateChatGroupAsync(chatGroup.Id, chatGroup.Name);
             return RedirectToAction("Index", "Home");
         }
 
         public async Task DeleteChatGroup(int chatGroupId)
         {
-            await this.repositoryUsers.RemoveChatGroup(chatGroupId);
+            await this.serviceUsers.RemoveChatGroupAsync(chatGroupId);
         }
 
         public Task RemoveUserFromChat(int userId, int chatGroupId)
         {
-            return this.repositoryUsers.RemoveChatUser(userId, chatGroupId);
+            return this.serviceUsers.RemoveChatUserAsync(userId, chatGroupId);
         }
     }
 }
