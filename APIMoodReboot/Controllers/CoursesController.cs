@@ -3,6 +3,7 @@ using System.Security.Claims;
 using NugetMoodReboot.Models;
 using Microsoft.AspNetCore.Authorization;
 using NugetMoodReboot.Interfaces;
+using Newtonsoft.Json;
 
 namespace APIMoodReboot.Controllers
 {
@@ -23,15 +24,21 @@ namespace APIMoodReboot.Controllers
         [HttpGet("{courseId}")]
         public async Task<ActionResult<UserCourse?>> FindUserCourse(int courseId)
         {
-            int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-            return await this.repositoryCourses.FindUserCourseAsync(userId, courseId);
+            Claim claim = HttpContext.User.Claims.SingleOrDefault(x => x.Type == "UserData");
+            string jsonUser = claim.Value;
+            AppUser user = JsonConvert.DeserializeObject<AppUser>(jsonUser);
+
+            return await this.repositoryCourses.FindUserCourseAsync(user.Id, courseId);
         }
 
         [HttpGet]
         public async Task<ActionResult> UserCourses()
         {
-            int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-            List<CourseListView> courses = await this.repositoryCourses.GetUserCoursesAsync(userId);
+                        Claim claim = HttpContext.User.Claims.SingleOrDefault(x => x.Type == "UserData");
+            string jsonUser = claim.Value;
+            AppUser user = JsonConvert.DeserializeObject<AppUser>(jsonUser);
+
+            List<CourseListView> courses = await this.repositoryCourses.GetUserCoursesAsync(user.Id);
             return Ok(courses);
         }
 

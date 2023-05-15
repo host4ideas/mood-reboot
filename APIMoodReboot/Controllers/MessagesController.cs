@@ -3,6 +3,7 @@ using System.Security.Claims;
 using NugetMoodReboot.Models;
 using Microsoft.AspNetCore.Authorization;
 using NugetMoodReboot.Interfaces;
+using Newtonsoft.Json;
 
 namespace APIMoodReboot.Controllers
 {
@@ -33,30 +34,42 @@ namespace APIMoodReboot.Controllers
         [HttpGet]
         public async Task<ActionResult<List<ChatGroup>>> GetUserChatGroups()
         {
-            int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-            return await this.repositoryUsers.GetUserChatGroupsAsync(userId);
+            Claim claim = HttpContext.User.Claims.SingleOrDefault(x => x.Type == "UserData");
+            string jsonUser = claim.Value;
+            AppUser user = JsonConvert.DeserializeObject<AppUser>(jsonUser);
+
+            return await this.repositoryUsers.GetUserChatGroupsAsync(user.Id);
         }
 
         [HttpGet]
         public async Task<ActionResult<List<Message>>> GetUnseenMessages()
         {
-            int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-            return await this.repositoryUsers.GetUnseenMessagesAsync(userId);
+            Claim claim = HttpContext.User.Claims.SingleOrDefault(x => x.Type == "UserData");
+            string jsonUser = claim.Value;
+            AppUser user = JsonConvert.DeserializeObject<AppUser>(jsonUser);
+
+            return await this.repositoryUsers.GetUnseenMessagesAsync(user.Id);
         }
 
         [HttpPut("{chatGroupId}")]
         public async Task<ActionResult> UpdateChatLastSeen(int chatGroupId)
         {
-            int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-            await this.repositoryUsers.UpdateChatLastSeenAsync(chatGroupId, userId);
+            Claim claim = HttpContext.User.Claims.SingleOrDefault(x => x.Type == "UserData");
+            string jsonUser = claim.Value;
+            AppUser user = JsonConvert.DeserializeObject<AppUser>(jsonUser);
+
+            await this.repositoryUsers.UpdateChatLastSeenAsync(chatGroupId, user.Id);
             return NoContent();
         }
 
         [HttpPost]
         public async Task<ActionResult> CreateMessage(CreateChatMessageApiModel model)
         {
-            int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-            await this.repositoryUsers.CreateMessageAsync(userId, model.GroupChatId, model.UserName, model.Text, model.FileId);
+            Claim claim = HttpContext.User.Claims.SingleOrDefault(x => x.Type == "UserData");
+            string jsonUser = claim.Value;
+            AppUser user = JsonConvert.DeserializeObject<AppUser>(jsonUser);
+
+            await this.repositoryUsers.CreateMessageAsync(user.Id, model.GroupChatId, model.UserName, model.Text, model.FileId);
             return CreatedAtAction(null, null);
         }
 
@@ -64,8 +77,11 @@ namespace APIMoodReboot.Controllers
         public async Task<ActionResult> CreateChatGroup(CreateChatGroupModel createChatGroup)
         {
             // Add current user to the list of users and set it as admin
-            int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-            createChatGroup.UserIds.Add(userId);
+            Claim claim = HttpContext.User.Claims.SingleOrDefault(x => x.Type == "UserData");
+            string jsonUser = claim.Value;
+            AppUser user = JsonConvert.DeserializeObject<AppUser>(jsonUser);
+
+            createChatGroup.UserIds.Add(user.Id);
 
             // List without duplicates
             HashSet<int> userIdsNoDups = new(createChatGroup.UserIds);
@@ -76,7 +92,7 @@ namespace APIMoodReboot.Controllers
             }
             else if (createChatGroup.UserIds.Count > 2)
             {
-                await this.repositoryUsers.NewChatGroupAsync(userIdsNoDups, userId, createChatGroup.GroupName);
+                await this.repositoryUsers.NewChatGroupAsync(userIdsNoDups, user.Id, createChatGroup.GroupName);
             }
 
             return CreatedAtAction(null, null);

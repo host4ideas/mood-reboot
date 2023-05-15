@@ -146,13 +146,18 @@ namespace MoodReboot.Services
         public async Task<List<Message>> GetUnseenMessagesAsync()
         {
             string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
-            return await this.helperApi.GetAsync<List<Message>>(Consts.ApiMessages + "/GetUnseenMessages/", token);
+            return await this.helperApi.GetAsync<List<Message>>(Consts.ApiMessages + "/GetUnseenMessages", token);
         }
 
         public async Task<List<ChatGroup>> GetUserChatGroupsAsync()
         {
             string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
-            return await this.helperApi.GetAsync<List<ChatGroup>>(Consts.ApiMessages + "/GetUserChatGroups/", token);
+            return await this.helperApi.GetAsync<List<ChatGroup>>(Consts.ApiMessages + "/GetUserChatGroups", token);
+        }
+
+        public async Task<List<ChatGroup>> GetUserChatGroupsAsync(string token)
+        {
+            return await this.helperApi.GetAsync<List<ChatGroup>>(Consts.ApiMessages + "/GetUserChatGroups");
         }
 
         public async Task<HttpResponseMessage> InsertFileAsync(string name, string mimeType)
@@ -195,7 +200,6 @@ namespace MoodReboot.Services
             return await this.helperApi.GetAsync<bool>(Consts.ApiUsers + "/IsUsernameAvailable/" + username);
         }
 
-
         public async Task<string?> GetTokenAsync(string username, string password)
         {
             LoginModel model = new()
@@ -210,7 +214,7 @@ namespace MoodReboot.Services
         public async Task<Tuple<string, AppUser>?> LoginUserAsync(string email, string password)
         {
             string? token = await this.GetTokenAsync(email, password);
-            AppUser? user = await this.helperApi.GetAsync<AppUser>(Consts.ApiUsers + "/profile" + token);
+            AppUser? user = await this.helperApi.GetAsync<AppUser>(Consts.ApiUsers + "/profile", token);
 
             if (token != null && user != null)
                 return Tuple.Create(token, user);

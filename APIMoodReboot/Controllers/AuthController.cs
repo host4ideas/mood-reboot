@@ -53,10 +53,7 @@ namespace APIMoodReboot.Controllers
                             signingCredentials: credentials,
                             expires: DateTime.UtcNow.AddMinutes(30),
                             notBefore: DateTime.UtcNow);
-            return Ok(new
-            {
-                response = new JwtSecurityTokenHandler().WriteToken(token),
-            });
+            return Ok(new JwtSecurityTokenHandler().WriteToken(token));
         }
 
         [HttpPost]

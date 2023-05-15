@@ -8,10 +8,12 @@ namespace MoodReboot.Hubs
     public class ChatHub : Hub
     {
         private readonly ServiceApiUsers serviceUsers;
+        private IHttpContextAccessor httpContextAccessor;
 
-        public ChatHub(ServiceApiUsers serviceUsers)
+        public ChatHub(ServiceApiUsers serviceUsers, IHttpContextAccessor httpContextAccessor)
         {
             this.serviceUsers = serviceUsers;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         public async Task SendMessage(int userId, int groupChatId, string userName, string text, string fileId)
@@ -57,13 +59,14 @@ namespace MoodReboot.Hubs
             {
                 string userName = Context.User.FindFirstValue(ClaimTypes.Name);
 
-                // If the user is logged in add it to its chat groups
-                List<ChatGroup> groups = this.serviceUsers.GetUserChatGroupsAsync().Result;
+                //string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+                //// If the user is logged in add it to its chat groups
+                //List<ChatGroup> groups = this.serviceUsers.GetUserChatGroupsAsync(token).Result;
 
-                foreach (ChatGroup group in groups)
-                {
-                    this.AddToGroup(group.Id.ToString(), userName).Wait();
-                }
+                //foreach (ChatGroup group in groups)
+                //{
+                //    this.AddToGroup(group.Id.ToString(), userName).Wait();
+                //}
             }
 
             return base.OnConnectedAsync();
