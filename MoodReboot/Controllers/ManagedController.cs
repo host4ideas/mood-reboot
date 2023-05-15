@@ -39,7 +39,7 @@ namespace MoodReboot.Controllers
             // Pass to findUser the userId
             var tokenUser = await this.serviceUsers.LoginUserAsync(usernameOrEmail, password);
 
-            AppUser user = tokenUser.Item2;
+            AppUser? user = tokenUser?.Item2;
 
             if (user == null)
             {
@@ -70,8 +70,12 @@ namespace MoodReboot.Controllers
             Claim claimRole = new(ClaimTypes.Role, user.Role);
             identity.AddClaim(claimRole);
 
-            Claim claimImage = new("IMAGE", user.Image);
+            string imageUrl = await this.helperFile.GetBlobUriAsync(Containers.ProfileImages, user.Image);
+            Claim claimImage = new("IMAGE", imageUrl);
             identity.AddClaim(claimImage);
+
+            Claim claimToken = new("TOKEN", tokenUser.Item1);
+            identity.AddClaim(claimToken);
 
             ClaimsPrincipal userPrincipal = new(identity);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal);
@@ -149,7 +153,7 @@ namespace MoodReboot.Controllers
             int userId = await this.serviceUsers.RegisterUserAsync(userName, firstName, lastName, email, password, fileName);
 
             // Confirmation token
-            string token = await this.serviceUsers.RequestChangeDataAsync();
+            string token = await this.serviceUsers.RequestChangeDataAsync(userId);
 
             // Confirmation mail
             string protocol = HttpContext.Request.IsHttps ? "https" : "http";

@@ -140,6 +140,7 @@ namespace APIMoodReboot.Controllers
 
             // If the course has password
             bool added = await this.repositoryCourses.AddCourseUserAsync(model.CourseId, model.UserId, model.IsEditor, model.Password);
+
             if (added == true)
             {
                 return NoContent();

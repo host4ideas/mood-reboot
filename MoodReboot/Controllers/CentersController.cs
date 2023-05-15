@@ -108,15 +108,22 @@ namespace MoodReboot.Controllers
         [HttpPost]
         public async Task<IActionResult> EditorView(int centerId, string name, bool isVisible, string description, IFormFile image, string password)
         {
-            int firstEditorId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+            string fileName = "course_image_" + await this.serviceCourses.GetMaxCourseAsync();
 
-            string path = "";
+            bool uploaded = await this.helperFile.UploadFileAsync(image, Containers.PrivateContent, FileTypes.Image, fileName);
 
-            bool result = await this.serviceCenters.CreateCourseAsync(centerId, name, isVisible, path, description, password);
-
-            if (!result)
+            if (!uploaded)
             {
                 ViewData["ERROR"] = "Error al subir el archivo";
+            }
+            else
+            {
+                bool result = await this.serviceCenters.CreateCourseAsync(centerId, name, isVisible, fileName, description, password);
+
+                if (!result)
+                {
+                    ViewData["ERROR"] = "Error al crear el curso";
+                }
             }
 
             return RedirectToAction("EditorView");

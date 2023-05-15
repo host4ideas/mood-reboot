@@ -1,4 +1,7 @@
 ﻿using APIMoodReboot.Utils;
+using Microsoft.AspNetCore.Connections;
+using Microsoft.AspNetCore.SignalR;
+using MoodReboot.Hubs;
 using NugetMoodReboot.Helpers;
 using NugetMoodReboot.Models;
 
@@ -56,15 +59,13 @@ namespace MoodReboot.Services
 
         public async Task ApproveUserAsync(int userId, string token)
         {
-            string tokenAuth = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
             await this.helperApi.PutAsync(
                 request: Consts.ApiUsers + "/ApproveUserEmail/" + userId + "/" + token,
-                body: null,
-                token: tokenAuth
+                body: null
                 );
         }
 
-        public async Task CreateMessageAsync(int groupChatId, string userName, string? text = null, int? fileId = null)
+        public async Task CreateMessageAsync(string token, int groupChatId, string userName, string? text = null, int? fileId = null)
         {
             CreateChatMessageApiModel model = new()
             {
@@ -74,7 +75,6 @@ namespace MoodReboot.Services
                 FileId = fileId
             };
 
-            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
             await this.helperApi.PostAsync(
                 request: Consts.ApiMessages + "/CreateMessage/",
                 body: model,
@@ -93,7 +93,16 @@ namespace MoodReboot.Services
             return await this.helperApi.PostAsync<string>(
                 request: Consts.ApiUsers + "/RequestChangeData",
                 body: null,
-                token: token);
+                token: token
+                );
+        }
+
+        public async Task<string> RequestChangeDataAsync(int userId)
+        {
+            return await this.helperApi.PostAsync<string>(
+                request: Consts.ApiUsers + "/RequestChangeData/" + userId,
+                body: null
+                );
         }
 
         public async Task ChangePasswordAsync(int userId, string token, string password)
@@ -127,14 +136,13 @@ namespace MoodReboot.Services
 
         public Task<int> GetMaxUserAsync()
         {
-            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
-            return this.helperApi.GetAsync<int>(Consts.ApiUsers + "/GetMaxUser/", token);
+            return this.helperApi.GetAsync<int>(Consts.ApiUsers + "/GetMaxUser");
         }
 
         public async Task<List<Message>> GetMessagesByGroupAsync(int chatGroupId)
         {
             string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
-            return await this.helperApi.GetAsync<List<Message>>(Consts.ApiFiles + "/GetChatMessages/" + chatGroupId, token);
+            return await this.helperApi.GetAsync<List<Message>>(Consts.ApiMessages + "/GetChatMessages/" + chatGroupId, token);
         }
 
         public async Task<List<AppUser>> GetPendingUsersAsync()
@@ -157,37 +165,19 @@ namespace MoodReboot.Services
 
         public async Task<List<ChatGroup>> GetUserChatGroupsAsync(string token)
         {
-            return await this.helperApi.GetAsync<List<ChatGroup>>(Consts.ApiMessages + "/GetUserChatGroups");
+            return await this.helperApi.GetAsync<List<ChatGroup>>(Consts.ApiMessages + "/GetUserChatGroups", token);
         }
 
-        public async Task<HttpResponseMessage> InsertFileAsync(string name, string mimeType)
+        public async Task UpdateFileAsync(UpdateFileApiModel model)
         {
             string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
-            return await this.helperApi.PostAsync(
-                request: Consts.ApiFiles + $"/InsertFile/${name}/${mimeType}",
-                body: null,
-            token: token);
+            await this.helperApi.PutAsync(Consts.ApiFiles + "/UpdateFile", model, token);
         }
 
-        public async Task UpdateFileAsync(int fileId, string path, string mimeType)
+        public async Task<int> InsertFileAsync(CreateFileApiModel model)
         {
             string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
-            await this.helperApi.PutAsync(Consts.ApiFiles + $"/UpdateFile/{fileId}/{path}/{mimeType}", null, token);
-        }
-
-        public async Task UpdateFileUserAsync(int fileId, string path, string mimeType, int userId)
-        {
-            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
-            await this.helperApi.PutAsync(Consts.ApiFiles + $"/UpdateFile/{fileId}/{path}/{mimeType}/{userId}", null, token);
-        }
-
-        public async Task<int> InsertFileAsync(string name, string mimeType, int userId)
-        {
-            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
-            return await this.helperApi.PostAsync<int>(
-                request: Consts.ApiFiles + $"/InsertFileUser/${name}/${mimeType}/{userId}",
-                body: null,
-                token: token);
+            return await this.helperApi.PostAsync<int>(Consts.ApiFiles + "/InsertFile", model, token);
         }
 
         public async Task<bool> IsEmailAvailableAsync(string email)
@@ -197,7 +187,7 @@ namespace MoodReboot.Services
 
         public async Task<bool> IsUsernameAvailableAsync(string username)
         {
-            return await this.helperApi.GetAsync<bool>(Consts.ApiUsers + "/IsUsernameAvailable/" + username);
+            return await this.helperApi.GetAsync<bool>(Consts.ApiUsers + $"/IsUsernameAvailable/'{username}'");
         }
 
         public async Task<string?> GetTokenAsync(string username, string password)

@@ -1,7 +1,6 @@
-﻿using APIMoodReboot.Repositories;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NugetMoodReboot.Interfaces;
 using NugetMoodReboot.Models;
 
 namespace APIMoodReboot.Controllers
@@ -11,9 +10,9 @@ namespace APIMoodReboot.Controllers
     [Authorize]
     public class FilesController : ControllerBase
     {
-        private readonly RepositoryUsersSql repositoryUsers;
+        private readonly IRepositoryUsers repositoryUsers;
 
-        public FilesController(RepositoryUsersSql repositoryUsers)
+        public FilesController(IRepositoryUsers repositoryUsers)
         {
             this.repositoryUsers = repositoryUsers;
         }
@@ -24,17 +23,15 @@ namespace APIMoodReboot.Controllers
             return await this.repositoryUsers.GetMaxFileAsync();
         }
 
-        [HttpPut("{fileId}/{fileName}/{mimeType}")]
-        public async Task<ActionResult> UpdateFile(int fileId, string fileName, string mimeType)
+        [HttpPut]
+        public async Task<ActionResult> UpdateFile(UpdateFileApiModel model)
         {
-            await this.repositoryUsers.UpdateFileAsync(fileId, fileName, mimeType);
-            return NoContent();
-        }
-
-        [HttpPut("{fileId}/{fileName}/{mimeType}/{userId}")]
-        public async Task<ActionResult> UpdateFileUser(int fileId, string fileName, string mimeType, int userId)
-        {
-            await this.repositoryUsers.UpdateFileAsync(fileId, fileName, mimeType, userId);
+            if (model.UserId.HasValue)
+            {
+                await this.repositoryUsers.UpdateFileAsync(model.FileId, model.FileName, model.MimeType, model.UserId.Value);
+                return NoContent();
+            }
+            await this.repositoryUsers.UpdateFileAsync(model.FileId, model.FileName, model.MimeType);
             return NoContent();
         }
 
@@ -44,16 +41,14 @@ namespace APIMoodReboot.Controllers
             return await this.repositoryUsers.FindFileAsync(fileId);
         }
 
-        [HttpPost("{name}/{mimeType}/{userId}")]
-        public async Task<ActionResult<int>> InsertFileUser(string name, string mimeType, int userId)
+        [HttpPost]
+        public async Task<ActionResult<int>> InsertFile(CreateFileApiModel model)
         {
-            return await this.repositoryUsers.InsertFileAsync(name, mimeType, userId);
-        }
-
-        [HttpPost("{name}/{mimeType}")]
-        public async Task<ActionResult<int>> InsertFile(string name, string mimeType)
-        {
-            return await this.repositoryUsers.InsertFileAsync(name, mimeType);
+            if (model.UserId.HasValue)
+            {
+                return await this.repositoryUsers.InsertFileAsync(model.FileName, model.MimeType, model.UserId.Value);
+            }
+            return await this.repositoryUsers.InsertFileAsync(model.FileName, model.MimeType);
         }
 
         [HttpDelete("{fileId}")]

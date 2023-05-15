@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MoodReboot.Extensions;
+using MoodReboot.Helpers;
 using MoodReboot.Services;
 using MvcCoreSeguridadEmpleados.Filters;
 using NugetMoodReboot.Models;
@@ -14,13 +15,15 @@ namespace MoodReboot.Controllers
         private readonly ServiceApiContents serviceContents;
         private readonly ServiceApiContentGroups serviceCtnGroups;
         private readonly ServiceApiUsers serviceUsers;
+        private readonly HelperFileAzure helperFileAzure;
 
-        public CoursesController(ServiceApiCourses serviceCourses, ServiceApiContents serviceContents, ServiceApiContentGroups serviceCtnGroups, ServiceApiUsers serviceUsers)
+        public CoursesController(ServiceApiCourses serviceCourses, ServiceApiContents serviceContents, ServiceApiContentGroups serviceCtnGroups, ServiceApiUsers serviceUsers, HelperFileAzure helperFileAzure)
         {
             this.serviceCourses = serviceCourses;
             this.serviceContents = serviceContents;
             this.serviceCtnGroups = serviceCtnGroups;
             this.serviceUsers = serviceUsers;
+            this.helperFileAzure = helperFileAzure;
         }
 
         public IActionResult Index()
@@ -147,6 +150,9 @@ namespace MoodReboot.Controllers
                         if (ctn.FileId != null)
                         {
                             contentFile.File = await this.serviceUsers.FindFileAsync(ctn.FileId.Value);
+
+                            // Transform the name of the file to the URI of it
+                            contentFile.File.Name = await this.helperFileAzure.GetBlobUriAsync(Containers.PrivateContent, contentFile.File.Name);
                         }
 
                         contentFileList.Add(contentFile);

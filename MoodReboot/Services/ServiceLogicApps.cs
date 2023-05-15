@@ -45,9 +45,9 @@ namespace MvcLogicApps.Services
             string nuevoEmail = this.helperMail.BuildMailTemplate(asunto, mensaje, baseUrl);
             var model = new
             {
-                para,
+                email = para,
                 asunto,
-                nuevoEmail
+                mensaje = nuevoEmail
             };
 
             using HttpClient client = _httpClientFactory.CreateClient();
@@ -63,9 +63,9 @@ namespace MvcLogicApps.Services
             string nuevoEmail = this.helperMail.BuildMailTemplate(asunto, mensaje, baseUrl, links);
             var model = new
             {
-                para,
+                email = para,
                 asunto,
-                nuevoEmail
+                mensaje = nuevoEmail
             };
 
             using HttpClient client = _httpClientFactory.CreateClient();

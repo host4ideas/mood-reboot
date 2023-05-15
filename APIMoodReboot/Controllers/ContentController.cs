@@ -51,7 +51,7 @@ namespace APIMoodReboot.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddContent([FromBody] CreateContentModelApi createContent)
+        public async Task<ActionResult> AddContent(CreateContentModelApi createContent)
         {
             Claim claim = HttpContext.User.Claims.SingleOrDefault(x => x.Type == "UserData");
             string jsonUser = claim.Value;
@@ -73,6 +73,12 @@ namespace APIMoodReboot.Controllers
             }
 
             return CreatedAtAction(null, null);
+        }
+
+        [HttpGet("{contentId}")]
+        public async Task<ActionResult<Content?>> FindContent(int contentId)
+        {
+            return await this.repositoryContent.FindContentAsync(contentId);
         }
 
         [HttpPut]

@@ -213,7 +213,7 @@
                                             if (content.File.MimeType == "image/webp" || content.File.MimeType == "image/jpeg" || content.File.MimeType == "image/png" || content.File.MimeType == "image/gif")
                                             {
                                                 <article id="@content.Id" class="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
-                                                    <img src="~/uploads/content_files/@content.File.Name" class="mx-auto" width="400" />
+                                                    <img src="@content.File.Name" class="mx-auto" width="400" />
                                                 </article>
                                             }
                                             else if (content.File.MimeType == "application/pdf")
@@ -413,14 +413,14 @@
 </div>
 
 @section scripts {
-    <script src="~/js/filePreviewContentCourse.js"></script>
-    <script src="/js/pdfjs-3.3.122-dist/build/pdf.worker.js"></script>
+    <script src="~/js/filePreviewContentCourse.js" async ></script>
+    <script src="/js/pdfjs-3.3.122-dist/build/pdf.worker.js" async></script>
     <script>
         let previewFilesList = @Html.Raw(Json.Serialize(previewFiles));
 
         $(document).ready(function () {
             previewFilesList.forEach(file => {
-                const url = "/uploads/content_files/" + file.fileName;
+                const url = file.fileName;
                 const targetId = file.targetId;
 
                 var req = new XMLHttpRequest();

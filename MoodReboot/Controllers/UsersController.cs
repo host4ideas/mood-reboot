@@ -32,6 +32,9 @@ namespace MoodReboot.Controllers
         {
             int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
             AppUser? user = await this.serviceUsers.FindUserAsync(userId);
+
+            user.Image = await this.helperFile.GetBlobUriAsync(Containers.ProfileImages, user.Image);
+
             return View(user);
         }
 
@@ -43,7 +46,7 @@ namespace MoodReboot.Controllers
             if (image != null && image.Length > 0)
             {
                 string fileName = "image_" + userId;
-                await this.helperFile.UploadFileAsync(image, Containers.ProfileImages, FileTypes.Image, fileName);
+                await this.helperFile.UpdateFileAsync(image, Containers.ProfileImages, FileTypes.Image, fileName);
                 await this.serviceUsers.UpdateUserBasicsAsync(userName, firstName, lastName, fileName);
                 return RedirectToAction("Profile", new { userId });
             }

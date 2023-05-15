@@ -15,7 +15,7 @@ namespace MoodReboot.Services
             this.httpContextAccessor = httpContextAccessor;
         }
 
-        public Task CreateContentAsync(int contentGroupId, string text)
+        public async Task<HttpResponseMessage> CreateContentAsync(int contentGroupId, string text)
         {
             CreateContentModelApi model = new()
             {
@@ -24,13 +24,15 @@ namespace MoodReboot.Services
             };
 
             string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
-            return this.helperApi.PostAsync(Consts.ApiContent + "/addcontent/", model, token);
+            var response = await this.helperApi.PostAsync(Consts.ApiContent + "/AddContent", model, token);
+            return response;
         }
 
         public async Task CreateContentFileAsync(int contentGroupId, int fileId)
         {
             // Find file in BBDD
-            AppFile? file = await this.helperApi.GetAsync<AppFile>(Consts.ApiFiles + "/FindFile/" + fileId);
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            AppFile? file = await this.helperApi.GetAsync<AppFile>(Consts.ApiFiles + "/FindFile/" + fileId, token);
 
             if (file != null)
             {
@@ -40,7 +42,6 @@ namespace MoodReboot.Services
                     File = file
                 };
 
-                string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
                 await this.helperApi.PostAsync(Consts.ApiContent + "/AddContent", model, token);
             }
         }
@@ -51,9 +52,10 @@ namespace MoodReboot.Services
             await this.helperApi.DeleteAsync(Consts.ApiContent + "/DeleteContent/" + id, token);
         }
 
-        public Task<Content?> FindContentAsync(int id)
+        public async Task<Content?> FindContentAsync(int id)
         {
-            throw new NotImplementedException();
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            return await this.helperApi.GetAsync<Content>(Consts.ApiContent + "/FindContent/" + id, token);
         }
 
         public Task<List<Content>> GetContentByGroupAsync(int groupId)
@@ -70,10 +72,12 @@ namespace MoodReboot.Services
 
         public async Task UpdateContentAsync(int id, string? text = null, int? fileId = null)
         {
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+
             if (fileId != null)
             {
                 // Find file in BBDD
-                AppFile? file = await this.helperApi.GetAsync<AppFile>(Consts.ApiFiles + "/FindFile/" + fileId);
+                AppFile? file = await this.helperApi.GetAsync<AppFile>(Consts.ApiFiles + "/FindFile/" + fileId, token);
 
                 UpdateContentApiModel model = new()
                 {
@@ -81,7 +85,6 @@ namespace MoodReboot.Services
                     File = file,
                 };
 
-                string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
                 await this.helperApi.PutAsync(Consts.ApiContent + "/UpdateContent", model, token);
             }
 
@@ -93,7 +96,6 @@ namespace MoodReboot.Services
                     UnsafeHtml = text,
                 };
 
-                string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
                 await this.helperApi.PutAsync(Consts.ApiContent + "/UpdateContent", model, token);
             }
         }

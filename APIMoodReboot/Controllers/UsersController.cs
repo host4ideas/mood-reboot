@@ -32,21 +32,21 @@ namespace APIMoodReboot.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<ActionResult<int>> GetMaxUser()
         {
             return await this.repositoryUsers.GetMaxUserAsync();
         }
 
-        [HttpGet]
+        [HttpGet("{email}")]
         public async Task<ActionResult<bool>> IsEmailAvailable(string email)
         {
             return await this.repositoryUsers.IsEmailAvailableAsync(email);
         }
 
-        [HttpGet]
+        [HttpGet("{username}")]
         public async Task<ActionResult<bool>> IsUsernameAvailable(string username)
         {
+            username = username.Replace("'", string.Empty);
             return await this.repositoryUsers.IsUsernameAvailableAsync(username);
         }
 
@@ -80,7 +80,6 @@ namespace APIMoodReboot.Controllers
         }
 
         [HttpPut("{userId}/{token}")]
-        [Authorize]
         public async Task<ActionResult> ApproveUserEmail(int userId, string token)
         {
             UserAction? userAction = await this.repositoryUsers.FindUserActionAsync(userId, token);
@@ -135,6 +134,13 @@ namespace APIMoodReboot.Controllers
             AppUser user = JsonConvert.DeserializeObject<AppUser>(jsonUser);
 
             string token = await this.repositoryUsers.CreateUserActionAsync(user.Id);
+            return Ok(token);
+        }
+
+        [HttpPost("{userId}")]
+        public async Task<ActionResult> RequestChangeData(int userId)
+        {
+            string token = await this.repositoryUsers.CreateUserActionAsync(userId);
             return Ok(token);
         }
 

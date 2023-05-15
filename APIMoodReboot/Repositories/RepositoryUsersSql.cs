@@ -512,7 +512,7 @@ namespace APIMoodReboot.Repositories
                 UserName = userName
             };
 
-            this.context.Messages.Add(message);
+            await this.context.Messages.AddAsync(message);
             await this.context.SaveChangesAsync();
         }
 

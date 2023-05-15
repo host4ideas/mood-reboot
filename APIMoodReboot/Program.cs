@@ -1,6 +1,7 @@
 using APIMoodReboot.Data;
 using APIMoodReboot.Helpers;
 using APIMoodReboot.Repositories;
+using Ganss.Xss;
 using Microsoft.EntityFrameworkCore;
 using NugetMoodReboot.Helpers;
 using NugetMoodReboot.Interfaces;
@@ -29,6 +30,9 @@ builder.Services.AddSingleton(helper);
 builder.Services.AddTransient<HelperCourse>();
 builder.Services.AddSingleton<HelperJsonSession>();
 builder.Services.AddSingleton<HelperCryptography>();
+
+// HtmlSanitizer
+builder.Services.AddSingleton<HtmlSanitizer>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

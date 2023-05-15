@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using MoodReboot.Services;
 using NugetMoodReboot.Models;
+using System.Linq;
 using System.Security.Claims;
 
 namespace MoodReboot.Hubs
@@ -8,12 +9,12 @@ namespace MoodReboot.Hubs
     public class ChatHub : Hub
     {
         private readonly ServiceApiUsers serviceUsers;
-        private IHttpContextAccessor httpContextAccessor;
+        private readonly ServiceContentModerator contentModerator;
 
-        public ChatHub(ServiceApiUsers serviceUsers, IHttpContextAccessor httpContextAccessor)
+        public ChatHub(ServiceApiUsers serviceUsers, ServiceContentModerator contentModerator)
         {
             this.serviceUsers = serviceUsers;
-            this.httpContextAccessor = httpContextAccessor;
+            this.contentModerator = contentModerator;
         }
 
         public async Task SendMessage(int userId, int groupChatId, string userName, string text, string fileId)
@@ -23,6 +24,15 @@ namespace MoodReboot.Hubs
 
         public async Task SendMessageToGroup(string userId, string groupChatId, string userName, string text)
         {
+            var result = this.contentModerator.ModerateText(text);
+            text = result.AutoCorrectedText;
+            var reviewNeeded = result.Classification.ReviewRecommended;
+
+            if (reviewNeeded == true)
+            {
+                text = "Moderated message";
+            }
+
             // Send message to group
             await Clients.Group(groupChatId.ToString()).SendAsync(
                 "ReceiveMessageGroup",
@@ -32,7 +42,9 @@ namespace MoodReboot.Hubs
                 text);
 
             // Store the mesage in the DDBB
+            string token = Context.User.FindFirstValue("TOKEN");
             await this.serviceUsers.CreateMessageAsync(
+                token: token,
                 groupChatId: int.Parse(groupChatId),
                 userName: userName,
                 text: text);
@@ -59,14 +71,15 @@ namespace MoodReboot.Hubs
             {
                 string userName = Context.User.FindFirstValue(ClaimTypes.Name);
 
-                //string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
-                //// If the user is logged in add it to its chat groups
-                //List<ChatGroup> groups = this.serviceUsers.GetUserChatGroupsAsync(token).Result;
+                string token = Context.User.FindFirstValue("TOKEN");
 
-                //foreach (ChatGroup group in groups)
-                //{
-                //    this.AddToGroup(group.Id.ToString(), userName).Wait();
-                //}
+                // If the user is logged in add it to its chat groups
+                List<ChatGroup> groups = this.serviceUsers.GetUserChatGroupsAsync(token).Result;
+
+                foreach (ChatGroup group in groups)
+                {
+                    this.AddToGroup(group.Id.ToString(), userName).Wait();
+                }
             }
 
             return base.OnConnectedAsync();

@@ -24,7 +24,7 @@ namespace MoodReboot.Services
         public async Task<List<ContentGroup>?> GetCourseContentGroupsAsync(int courseId)
         {
             string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
-            return await this.helperApi.GetAsync<List<ContentGroup>>(Consts.ApiContentGroups + "/GetCourseContentGroups/" + courseId, token);
+            return await this.helperApi.GetAsync<List<ContentGroup>>(Consts.ApiContentGroups + "/CourseContentGroups/" + courseId, token);
         }
 
         public async Task DeleteContentGroupAsync(int id)

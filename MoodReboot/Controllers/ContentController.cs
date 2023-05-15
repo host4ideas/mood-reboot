@@ -22,10 +22,22 @@ namespace MoodReboot.Controllers
             this.helperFile = helperFile;
         }
 
-        public IActionResult DeleteContent(int contentId, int courseId)
+        public async Task<IActionResult> DeleteContent(int contentId, int courseId)
         {
-            // If using an asynchronous controller invokes 500 server error
-            this.serviceContents.DeleteContentAsync(contentId).Wait();
+            Content? content = await this.serviceContents.FindContentAsync(contentId);
+
+            if (content != null)
+            {
+                await this.serviceContents.DeleteContentAsync(contentId);
+
+                if (content.FileId.HasValue)
+                {
+                    AppFile? file = await this.serviceUsers.FindFileAsync(content.FileId.Value);
+                    await this.helperFile.DeleteFileAsync(Containers.PrivateContent, file!.Name);
+                    await this.serviceUsers.DeleteFileAsync(file!.Id);
+                }
+            }
+
             return RedirectToAction("CourseDetails", "Courses", new { id = courseId });
         }
 
@@ -56,7 +68,14 @@ namespace MoodReboot.Controllers
                 if (isUploaded == true)
                 {
                     // Insert file in DB
-                    int fileId = await this.serviceUsers.InsertFileAsync(fileName, mimeType, userId);
+                    CreateFileApiModel model = new()
+                    {
+                        FileName = fileName,
+                        MimeType = mimeType,
+                        UserId = userId,
+                    };
+
+                    int fileId = await this.serviceUsers.InsertFileAsync(model);
                     // Update Content
                     await this.serviceContents.CreateContentFileAsync(contentGroupId: groupId, fileId: fileId);
                 }
@@ -85,12 +104,12 @@ namespace MoodReboot.Controllers
                     string fileName = "content_file_" + contentId;
                     // Upload file                
                     // Try with a document
-                    bool isUploaded = await this.helperFile.UploadFileAsync(hiddenFileInput, Containers.PrivateContent, FileTypes.Document, fileName);
+                    bool isUploaded = await this.helperFile.UpdateFileAsync(hiddenFileInput, Containers.PrivateContent, FileTypes.Document, fileName);
 
                     if (isUploaded == false)
                     {
                         // Try with an image
-                        isUploaded = await this.helperFile.UploadFileAsync(hiddenFileInput, Containers.PrivateContent, FileTypes.Image, fileName);
+                        isUploaded = await this.helperFile.UpdateFileAsync(hiddenFileInput, Containers.PrivateContent, FileTypes.Image, fileName);
 
                         if (isUploaded == false)
                         {
@@ -105,7 +124,14 @@ namespace MoodReboot.Controllers
                         if (content.FileId == null)
                         {
                             // Update DB
-                            int fileId = await this.serviceUsers.InsertFileAsync(fileName, mimeType, userId);
+                            CreateFileApiModel model = new()
+                            {
+                                FileName = fileName,
+                                MimeType = mimeType,
+                                UserId = userId,
+                            };
+
+                            int fileId = await this.serviceUsers.InsertFileAsync(model);
                             // Update Content
                             await this.serviceContents.UpdateContentAsync(id: contentId, fileId: fileId);
                         }
@@ -113,7 +139,16 @@ namespace MoodReboot.Controllers
                         {
                             // Update DB
                             int fileId = content.FileId.Value;
-                            await this.serviceUsers.UpdateFileUserAsync(fileId, fileName, mimeType, userId);
+
+                            UpdateFileApiModel model = new()
+                            {
+                                FileId = fileId,
+                                FileName = fileName,
+                                MimeType = mimeType,
+                                UserId = userId,
+                            };
+
+                            await this.serviceUsers.UpdateFileAsync(model);
                             // Update Content
                             await this.serviceContents.UpdateContentAsync(id: contentId, fileId: fileId);
                         }

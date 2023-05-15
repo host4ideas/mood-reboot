@@ -74,6 +74,14 @@ namespace MoodReboot.Services
             await containerClient.UploadBlobAsync(blobName, stream);
         }
 
+        public async Task UpdateBlobAsync(string containerName, string blobName, Stream stream)
+        {
+            BlobContainerClient containerClient =
+                this.blobServiceClient.GetBlobContainerClient(containerName);
+            BlobClient blobClient = containerClient.GetBlobClient(blobName);
+            await blobClient.UploadAsync(stream, true);
+        }
+
         public async Task<string> GetBlobUriAsync(string container, string blobName)
         {
             BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(container);

@@ -1,7 +1,8 @@
+using Azure.Security.KeyVault.Secrets;
 using Azure.Storage.Blobs;
 using Ganss.Xss;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Azure;
 using MoodReboot.Helpers;
 using MoodReboot.Hubs;
 using MoodReboot.Services;
@@ -10,22 +11,41 @@ using NugetMoodReboot.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddAzureClients(factory =>
+{
+    factory.AddSecretClient(builder.Configuration.GetSection("KeyVault"));
+});
+
+SecretClient secretClient =
+    builder.Services.BuildServiceProvider().GetService<SecretClient>();
+
+// SignalR
+KeyVaultSecret signalRendpointKey = await
+    secretClient.GetSecretAsync("signalrendpoint");
+string signalrCnn = signalRendpointKey.Value;
+
+// Storage Account
+KeyVaultSecret storageKey = await
+    secretClient.GetSecretAsync("storageurl");
+string azureStorageKeys = storageKey.Value;
+
+//string signalrCnn = builder.Configuration.GetConnectionString("SignalR");
+//string azureStorageKeys = builder.Configuration.GetValue<string>("AzureKeys:StorageAccount");
+
 // IHttpClientFactory
 builder.Services.AddHttpClient();
 
 // HttpContextAccessor
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddHttpContextAccessor();
 
 // HtmlSanitizer
 builder.Services.AddSingleton<HtmlSanitizer>();
 
 // SignalR
-string signalrCnn = builder.Configuration.GetConnectionString("SignalR");
 builder.Services.AddSignalR().AddAzureSignalR(signalrCnn);
 
 // Azure storage blobs
-string azureKeys = builder.Configuration.GetValue<string>("AzureKeys:StorageAccount");
-BlobServiceClient blobServiceClient = new(azureKeys);
+BlobServiceClient blobServiceClient = new(azureStorageKeys);
 builder.Services.AddSingleton(blobServiceClient);
 builder.Services.AddTransient<ServiceStorageBlob>();
 
@@ -74,9 +94,6 @@ builder.Services.AddAuthentication(options =>
         }
 );
 
-// BBDD
-string connectionString = builder.Configuration.GetConnectionString("SqlMoodReboot");
-
 // Indicamos que queremos utilizar nuestras propias rutas
 builder.Services.AddControllersWithViews(
     options => options.EnableEndpointRouting = false
@@ -91,6 +108,8 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+app.UseDeveloperExceptionPage();
 
 app.Use(async (context, next) =>
 {
