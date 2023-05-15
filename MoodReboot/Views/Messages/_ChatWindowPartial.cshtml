@@ -1,5 +1,5 @@
-﻿@using MoodReboot.Interfaces;
-@inject IRepositoryUsers repositoryUsers
+﻿@using MoodReboot.Services;
+@inject ServiceApiUsers serviceUsers
 @model List<ChatGroup>
 
 @{
@@ -17,7 +17,7 @@
                     string dropdownId = "chat-options-" + group.Id;
                     string groupName = group.Name;
                     bool isAdmin = false;
-                    List<ChatUserModel> users = await repositoryUsers.GetChatGroupUsers(group.Id);
+                    List<ChatUserModel> users = await serviceUsers.GetChatGroupUsersAsync(group.Id);
 
                     // If the group name is PRIVATE show the username of the other user as group name
                     if (groupName == "PRIVATE")

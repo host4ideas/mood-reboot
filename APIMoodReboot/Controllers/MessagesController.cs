@@ -19,6 +19,12 @@ namespace APIMoodReboot.Controllers
         }
 
         [HttpGet("{chatGroupId}")]
+        public async Task<List<ChatUserModel>> ChatGroupUsers(int chatGroupId)
+        {
+            return await this.repositoryUsers.GetChatGroupUsersAsync(chatGroupId);
+        }
+
+        [HttpGet("{chatGroupId}")]
         public async Task<ActionResult<List<Message>>> GetChatMessages(int chatGroupId)
         {
             return await this.repositoryUsers.GetMessagesByGroupAsync(chatGroupId);
@@ -31,9 +37,10 @@ namespace APIMoodReboot.Controllers
             return await this.repositoryUsers.GetUserChatGroupsAsync(userId);
         }
 
-        [HttpGet("{userId}")]
-        public async Task<ActionResult<List<Message>>> GetUnseenMessages(int userId)
+        [HttpGet]
+        public async Task<ActionResult<List<Message>>> GetUnseenMessages()
         {
+            int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
             return await this.repositoryUsers.GetUnseenMessagesAsync(userId);
         }
 

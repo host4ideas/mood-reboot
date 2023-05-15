@@ -28,6 +28,13 @@ namespace APIMoodReboot.Controllers
             return Ok(centers);
         }
 
+        [HttpDelete("{userId}")]
+        public async Task<ActionResult> DeleteUser(int userId)
+        {
+            await this.repositoryUsers.DeleteUserAsync(userId);
+            return NoContent();
+        }
+
         [HttpGet]
         public async Task<ActionResult> UserRequests()
         {
@@ -64,13 +71,6 @@ namespace APIMoodReboot.Controllers
         {
             List<AppUser> users = await this.repositoryUsers.GetAllUsersAsync();
             return Ok(users);
-        }
-
-        [HttpDelete("{userId}")]
-        public async Task<ActionResult> DeleteUser(int userId)
-        {
-            await this.repositoryUsers.DeleteUserAsync(userId);
-            return NoContent();
         }
 
         [HttpGet]

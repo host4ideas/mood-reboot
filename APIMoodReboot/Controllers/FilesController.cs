@@ -18,6 +18,12 @@ namespace APIMoodReboot.Controllers
             this.repositoryUsers = repositoryUsers;
         }
 
+        [HttpGet]
+        public async Task<ActionResult<int>> GetMaxFile()
+        {
+            return await this.repositoryUsers.GetMaxFileAsync();
+        }
+
         [HttpPut("{fileId}/{fileName}/{mimeType}")]
         public async Task<ActionResult> UpdateFile(int fileId, string fileName, string mimeType)
         {

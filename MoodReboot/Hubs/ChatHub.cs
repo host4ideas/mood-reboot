@@ -55,11 +55,10 @@ namespace MoodReboot.Hubs
             // Check if the user is logged
             if (Context.User.Identity.IsAuthenticated == true)
             {
-                int userId = int.Parse(Context.User.FindFirstValue(ClaimTypes.NameIdentifier));
                 string userName = Context.User.FindFirstValue(ClaimTypes.Name);
 
                 // If the user is logged in add it to its chat groups
-                List<ChatGroup> groups = this.serviceUsers.GetUserChatGroupsAsync(userId).Result;
+                List<ChatGroup> groups = this.serviceUsers.GetUserChatGroupsAsync().Result;
 
                 foreach (ChatGroup group in groups)
                 {

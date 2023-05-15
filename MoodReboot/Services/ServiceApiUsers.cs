@@ -1,22 +1,36 @@
-﻿using AngleSharp.Io;
-using APIMoodReboot.Utils;
-using Newtonsoft.Json.Linq;
+﻿using APIMoodReboot.Utils;
 using NugetMoodReboot.Helpers;
-using NugetMoodReboot.Interfaces;
 using NugetMoodReboot.Models;
-using System.IO;
 
 namespace MoodReboot.Services
 {
     public class ServiceApiUsers
     {
         private readonly HelperApi helperApi;
-        private readonly HttpContextAccessor httpContextAccessor;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
-        public ServiceApiUsers(HelperApi helperApi, HttpContextAccessor httpContextAccessor)
+        public ServiceApiUsers(HelperApi helperApi, IHttpContextAccessor httpContextAccessor)
         {
             this.helperApi = helperApi;
             this.httpContextAccessor = httpContextAccessor;
+        }
+
+        public async Task<List<ChatUserModel>> GetChatGroupUsersAsync(int chatGroupId)
+        {
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            return await this.helperApi.GetAsync<List<ChatUserModel>>(Consts.ApiMessages + "/ChatGroupUsers/" + chatGroupId, token);
+        }
+
+        public async Task DeleteUserAsync(int userId)
+        {
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            await this.helperApi.DeleteAsync(Consts.ApiUsers + "/DeleteUser/" + userId, token);
+        }
+
+        public async Task<int> GetMaxFileAsync()
+        {
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            return await this.helperApi.GetAsync<int>(Consts.ApiFiles + "/GetMaxFile", token);
         }
 
         public async Task AddUsersToChatAsync(int chatGroupId, List<int> userIds)
@@ -93,25 +107,10 @@ namespace MoodReboot.Services
             await this.helperApi.DeleteAsync(request: Consts.ApiFiles + "/DeleteFile/" + fileId, token: token);
         }
 
-        public Task DeleteMessageAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task DeleteUserAsync(int userId)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<AppFile?> FindFileAsync(int fileId)
         {
             string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
             return this.helperApi.GetAsync<AppFile>(Consts.ApiFiles + "/FindFile/" + fileId, token);
-        }
-
-        public Task<UserAction?> FindUserActionAsync(int userId, string token)
-        {
-            throw new NotImplementedException();
         }
 
         public Task<AppUser?> FindUserAsync(int userId)
@@ -124,16 +123,6 @@ namespace MoodReboot.Services
         {
             string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
             return this.helperApi.GetAsync<List<AppUser>>(Consts.ApiAdmin + "/Users" + token);
-        }
-
-        public Task<List<ChatUserModel>> GetChatGroupUsersAsync(int chatGroupId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<int> GetMaxFileAsync()
-        {
-            throw new NotImplementedException();
         }
 
         public Task<int> GetMaxUserAsync()
@@ -154,13 +143,13 @@ namespace MoodReboot.Services
             return await this.helperApi.GetAsync<List<AppUser>>(Consts.ApiAdmin + "/UserRequests", token);
         }
 
-        public async Task<List<Message>> GetUnseenMessagesAsync(int userId)
+        public async Task<List<Message>> GetUnseenMessagesAsync()
         {
             string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
-            return await this.helperApi.GetAsync<List<Message>>(Consts.ApiMessages + "/GetUnseenMessages/" + userId);
+            return await this.helperApi.GetAsync<List<Message>>(Consts.ApiMessages + "/GetUnseenMessages/", token);
         }
 
-        public async Task<List<ChatGroup>> GetUserChatGroupsAsync(int userId)
+        public async Task<List<ChatGroup>> GetUserChatGroupsAsync()
         {
             string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
             return await this.helperApi.GetAsync<List<ChatGroup>>(Consts.ApiMessages + "/GetUserChatGroups/", token);
@@ -218,7 +207,7 @@ namespace MoodReboot.Services
             return await this.helperApi.PostAsync<string>(Consts.ApiAuth + "/login", model);
         }
 
-        public async Task<Tuple<string, AppUser>> LoginUserAsync(string email, string password)
+        public async Task<Tuple<string, AppUser>?> LoginUserAsync(string email, string password)
         {
             string? token = await this.GetTokenAsync(email, password);
             AppUser? user = await this.helperApi.GetAsync<AppUser>(Consts.ApiUsers + "/profile" + token);

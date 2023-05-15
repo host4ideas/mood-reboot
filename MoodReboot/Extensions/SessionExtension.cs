@@ -1,4 +1,4 @@
-﻿using MoodReboot.Helpers;
+﻿using NugetMoodReboot.Helpers;
 
 namespace MoodReboot.Extensions
 {

@@ -2,14 +2,22 @@ using Azure.Storage.Blobs;
 using Ganss.Xss;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using MoodReboot.Helpers;
 using MoodReboot.Hubs;
 using MoodReboot.Services;
+using MvcLogicApps.Services;
 using NugetMoodReboot.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // IHttpClientFactory
 builder.Services.AddHttpClient();
+
+// HttpContextAccessor
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+// HtmlSanitizer
+builder.Services.AddSingleton<HtmlSanitizer>();
 
 // SignalR
 string signalrCnn = builder.Configuration.GetConnectionString("SignalR");
@@ -21,14 +29,26 @@ BlobServiceClient blobServiceClient = new(azureKeys);
 builder.Services.AddSingleton(blobServiceClient);
 builder.Services.AddTransient<ServiceStorageBlob>();
 
+// Api Services
 builder.Services.AddTransient<ServiceApiCenters>();
 builder.Services.AddTransient<ServiceApiContents>();
 builder.Services.AddTransient<ServiceApiContentGroups>();
 builder.Services.AddTransient<ServiceApiCourses>();
 builder.Services.AddTransient<ServiceApiUsers>();
 
-builder.Services.AddSingleton<HelperApi>();
+// Logic apps
+builder.Services.AddTransient<ServiceLogicApps>();
 
+// Content moderator
+builder.Services.AddTransient<ServiceContentModerator>();
+
+// Helpers
+builder.Services.AddSingleton<HelperApi>();
+builder.Services.AddSingleton<HelperCryptography>();
+builder.Services.AddSingleton<HelperFileAzure>();
+builder.Services.AddSingleton<HelperMail>();
+
+// Session
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -54,13 +74,8 @@ builder.Services.AddAuthentication(options =>
         }
 );
 
-// Sessions
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
+// BBDD
 string connectionString = builder.Configuration.GetConnectionString("SqlMoodReboot");
-
-// Custom
-builder.Services.AddSingleton<HtmlSanitizer>();
 
 // Indicamos que queremos utilizar nuestras propias rutas
 builder.Services.AddControllersWithViews(
@@ -100,9 +115,10 @@ app.MapHub<ChatHub>("/chatHub");
 
 app.UseMvc(routes =>
 {
-    routes.MapRoute(name: "default", template: "{controller=Home}/{action=Index}/{id?}");
+    routes.MapRoute(
+        name: "default",
+        template: "{controller=Home}/{action=Index}/{id?}"
+        );
 });
-
-app.MapHub<ChatHub>("/chatHub");
 
 app.Run();

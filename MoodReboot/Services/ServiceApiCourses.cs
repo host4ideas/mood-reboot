@@ -7,9 +7,9 @@ namespace MoodReboot.Services
     public class ServiceApiCourses
     {
         private readonly HelperApi helperApi;
-        private readonly HttpContextAccessor httpContextAccessor;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
-        public ServiceApiCourses(HelperApi helperApi, HttpContextAccessor httpContextAccessor)
+        public ServiceApiCourses(HelperApi helperApi, IHttpContextAccessor httpContextAccessor)
         {
             this.helperApi = helperApi;
             this.httpContextAccessor = httpContextAccessor;
@@ -17,7 +17,8 @@ namespace MoodReboot.Services
 
         public async Task AddCourseEditorAsync(int courseId, int userId)
         {
-            await this.helperApi.PostAsync(Consts.ApiCourses + $"/AddCourseEditor/{courseId}/{userId}", null);
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            await this.helperApi.PostAsync(Consts.ApiCourses + $"/AddCourseEditor/{courseId}/{userId}", null, token);
         }
 
         public async Task<bool> AddCourseUserAsync(int courseId, int userId, bool isEditor)
@@ -31,6 +32,7 @@ namespace MoodReboot.Services
 
             string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
             HttpResponseMessage response = await this.helperApi.PostAsync(Consts.ApiCourses + $"/CourseEnrollment", model, token);
+
             if (response.IsSuccessStatusCode)
             {
                 return true;
@@ -50,6 +52,7 @@ namespace MoodReboot.Services
 
             string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
             HttpResponseMessage response = await this.helperApi.PostAsync(Consts.ApiCourses + $"/CourseEnrollment", model, token);
+
             if (response.IsSuccessStatusCode)
             {
                 return true;
@@ -148,7 +151,7 @@ namespace MoodReboot.Services
         public Task UpdateCourseVisibilityAsync(int courseId)
         {
             string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
-            return this.helperApi.PutAsync(Consts.ApiCourses + "/UpdateCourseVisibility/" + courseId, token);
+            return this.helperApi.PutAsync(Consts.ApiCourses + "/UpdateCourseVisibility/" + courseId, null, token);
         }
     }
 }

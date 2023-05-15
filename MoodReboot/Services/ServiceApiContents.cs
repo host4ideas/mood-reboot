@@ -7,15 +7,15 @@ namespace MoodReboot.Services
     public class ServiceApiContents
     {
         private readonly HelperApi helperApi;
-        private HttpContextAccessor httpContextAccessor;
+        private IHttpContextAccessor httpContextAccessor;
 
-        public ServiceApiContents(HelperApi helperApi, HttpContextAccessor httpContextAccessor)
+        public ServiceApiContents(HelperApi helperApi, IHttpContextAccessor httpContextAccessor)
         {
             this.helperApi = helperApi;
             this.httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task CreateContentAsync(int contentGroupId, string text)
+        public Task CreateContentAsync(int contentGroupId, string text)
         {
             CreateContentModelApi model = new()
             {
@@ -23,7 +23,8 @@ namespace MoodReboot.Services
                 UnsafeHtml = text,
             };
 
-            await this.helperApi.PostAsync(Consts.ApiContent + "/addcontent/", model);
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            return this.helperApi.PostAsync(Consts.ApiContent + "/addcontent/", model, token);
         }
 
         public async Task CreateContentFileAsync(int contentGroupId, int fileId)
@@ -39,13 +40,15 @@ namespace MoodReboot.Services
                     File = file
                 };
 
-                await this.helperApi.PostAsync(Consts.ApiContent + "/AddContent", model);
+                string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+                await this.helperApi.PostAsync(Consts.ApiContent + "/AddContent", model, token);
             }
         }
 
         public async Task DeleteContentAsync(int id)
         {
-            await this.helperApi.DeleteAsync(Consts.ApiContent + "/DeleteContent/" + id);
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            await this.helperApi.DeleteAsync(Consts.ApiContent + "/DeleteContent/" + id, token);
         }
 
         public Task<Content?> FindContentAsync(int id)
@@ -55,12 +58,14 @@ namespace MoodReboot.Services
 
         public Task<List<Content>> GetContentByGroupAsync(int groupId)
         {
-            return this.helperApi.GetAsync<List<Content>>(Consts.ApiContent + "/GetContentByGroup/" + groupId);
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            return this.helperApi.GetAsync<List<Content>>(Consts.ApiContent + "/GetContentByGroup/" + groupId, token);
         }
 
         public Task<int> GetMaxContentAsync()
         {
-            return this.helperApi.GetAsync<int>(Consts.ApiContent + "/GetMaxContent/");
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            return this.helperApi.GetAsync<int>(Consts.ApiContent + "/GetMaxContent/", token);
         }
 
         public async Task UpdateContentAsync(int id, string? text = null, int? fileId = null)
@@ -75,7 +80,9 @@ namespace MoodReboot.Services
                     ContentId = id,
                     File = file,
                 };
-                await this.helperApi.PutAsync(Consts.ApiContent + "/UpdateContent", model);
+
+                string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+                await this.helperApi.PutAsync(Consts.ApiContent + "/UpdateContent", model, token);
             }
 
             if (text != null)
@@ -85,7 +92,9 @@ namespace MoodReboot.Services
                     ContentId = id,
                     UnsafeHtml = text,
                 };
-                await this.helperApi.PutAsync(Consts.ApiContent + "/UpdateContent", model);
+
+                string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+                await this.helperApi.PutAsync(Consts.ApiContent + "/UpdateContent", model, token);
             }
         }
     }

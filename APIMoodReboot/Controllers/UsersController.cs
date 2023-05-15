@@ -9,7 +9,6 @@ namespace APIMoodReboot.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly IRepositoryUsers repositoryUsers;
@@ -20,6 +19,7 @@ namespace APIMoodReboot.Controllers
         }
 
         [HttpGet("{pattern}")]
+        [Authorize]
         public async Task<ActionResult<List<Tuple<string, int>>>> SearchUsers(string pattern)
         {
             return await this.repositoryUsers.SearchUsersAsync(pattern);
@@ -32,6 +32,7 @@ namespace APIMoodReboot.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<int>> GetMaxUser()
         {
             return await this.repositoryUsers.GetMaxUserAsync();
@@ -50,6 +51,7 @@ namespace APIMoodReboot.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public ActionResult<AppUser> Profile()
         {
             Claim claim = HttpContext.User.Claims.SingleOrDefault(x => x.Type == "UserData");
@@ -60,19 +62,25 @@ namespace APIMoodReboot.Controllers
         }
 
         [HttpPut]
+        [Authorize]
         public async Task<ActionResult> Profile(UpdateProfileApiModel updateProfile)
         {
+            Claim claim = HttpContext.User.Claims.SingleOrDefault(x => x.Type == "UserData");
+            string jsonUser = claim.Value;
+            AppUser user = JsonConvert.DeserializeObject<AppUser>(jsonUser);
+
             if (updateProfile.Image != null)
             {
-                await this.repositoryUsers.UpdateUserBasicsAsync(updateProfile.UserId, updateProfile.Username, updateProfile.FirstName, updateProfile.LastName, updateProfile.Image.Name);
+                await this.repositoryUsers.UpdateUserBasicsAsync(user.Id, updateProfile.Username, updateProfile.FirstName, updateProfile.LastName, updateProfile.Image);
                 return NoContent();
             }
 
-            await this.repositoryUsers.UpdateUserBasicsAsync(updateProfile.UserId, updateProfile.Username, updateProfile.FirstName, updateProfile.LastName);
+            await this.repositoryUsers.UpdateUserBasicsAsync(user.Id, updateProfile.Username, updateProfile.FirstName, updateProfile.LastName);
             return NoContent();
         }
 
         [HttpPut("{userId}/{token}")]
+        [Authorize]
         public async Task<ActionResult> ApproveUserEmail(int userId, string token)
         {
             UserAction? userAction = await this.repositoryUsers.FindUserActionAsync(userId, token);
@@ -96,6 +104,7 @@ namespace APIMoodReboot.Controllers
         #region CHANGE EMAIL
 
         [HttpPost("{userId}/{token}/{email}")]
+        [Authorize]
         public async Task<ActionResult> ChangeEmail(int userId, string token, string email)
         {
             UserAction? userAction = await this.repositoryUsers.FindUserActionAsync(userId, token);
@@ -134,6 +143,7 @@ namespace APIMoodReboot.Controllers
         #region CHANGE PASSWORD
 
         [HttpPost("{userId}/{token}/{password}")]
+        [Authorize]
         public async Task<ActionResult> ChangePassword(int userId, string token, string password)
         {
             UserAction? userAction = await this.repositoryUsers.FindUserActionAsync(userId, token);

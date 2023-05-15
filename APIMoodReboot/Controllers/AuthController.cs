@@ -40,10 +40,10 @@ namespace APIMoodReboot.Controllers
 
             SigningCredentials credentials = new(this.authToken.GetKeyToken(), SecurityAlgorithms.HmacSha512);
 
-            string jsonEmpleado = JsonConvert.SerializeObject(user);
+            string jsonAppUser = JsonConvert.SerializeObject(user);
             Claim[] informacion = new[]
             {
-                new Claim("UserData", jsonEmpleado)
+                new Claim("UserData", jsonAppUser)
             };
 
             JwtSecurityToken token = new(

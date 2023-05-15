@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
-using NugetMoodReboot.Models;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
@@ -24,7 +22,14 @@ namespace NugetMoodReboot.Helpers
             httpClient.BaseAddress = new Uri(this._urlApi);
             httpClient.DefaultRequestHeaders.Clear();
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            return await httpClient.GetFromJsonAsync<T>(new Uri(request));
+            var response = await httpClient.GetAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadAsAsync<T>();
+            }
+
+            return default;
         }
 
         public async Task<T?> GetAsync<T>(string request, string token)
@@ -34,7 +39,14 @@ namespace NugetMoodReboot.Helpers
             httpClient.DefaultRequestHeaders.Clear();
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             httpClient.DefaultRequestHeaders.Add("Authorization", "bearer " + token);
-            return await httpClient.GetFromJsonAsync<T>(new Uri(request));
+            var response = await httpClient.GetAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadAsAsync<T>();
+            }
+
+            return default;
         }
 
         public async Task<HttpResponseMessage> DeleteAsync(string request)
@@ -96,33 +108,39 @@ namespace NugetMoodReboot.Helpers
             return await httpClient.PostAsJsonAsync(request, body);
         }
 
-        public async Task<T> PostAsync<T>(string request, object? body)
+        public async Task<T?> PostAsync<T>(string request, object? body)
         {
-            using (HttpClient client = new())
-            {
-                client.BaseAddress = new Uri(this._urlApi);
-                client.DefaultRequestHeaders.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            using HttpClient client = HttpClientFactory.CreateClient();
+            client.BaseAddress = new Uri(this._urlApi);
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                var response = await client.PostAsJsonAsync(request, body);
-                var data = await response.Content.ReadAsStringAsync();
-                return JObject.Parse(data).Value<T>("response");
+            var response = await client.PostAsJsonAsync(request, body);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadAsAsync<T>();
             }
+
+            return default;
         }
 
-        public async Task<T> PostAsync<T>(string request, object? body, string token)
+        public async Task<T?> PostAsync<T>(string request, object? body, string token)
         {
-            using (HttpClient client = new())
-            {
-                client.BaseAddress = new Uri(this._urlApi);
-                client.DefaultRequestHeaders.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                client.DefaultRequestHeaders.Add("Authorization", "bearer " + token);
+            using HttpClient client = HttpClientFactory.CreateClient();
+            client.BaseAddress = new Uri(this._urlApi);
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.Add("Authorization", "bearer " + token);
 
-                var response = await client.PostAsJsonAsync(request, body);
-                var data = await response.Content.ReadAsStringAsync();
-                return JObject.Parse(data).Value<T>("response");
+            var response = await client.PostAsJsonAsync(request, body);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadAsAsync<T>();
             }
+
+            return default;
         }
 
         public async Task<HttpResponseMessage> PostAsync(string request, object? body, string token)

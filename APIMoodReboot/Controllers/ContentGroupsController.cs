@@ -40,7 +40,7 @@ namespace APIMoodReboot.Controllers
             return CreatedAtAction(null, null);
         }
 
-        [HttpPut("{id}/{name}/isVisible}")]
+        [HttpPut("{id}/{name}/{isVisible}")]
         public async Task<ActionResult> UpdateContentGroup(int id, string name, bool isVisible)
         {
             if (name != null && name.Any())

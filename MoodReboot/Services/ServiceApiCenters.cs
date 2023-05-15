@@ -1,6 +1,5 @@
 ﻿using APIMoodReboot.Utils;
 using NugetMoodReboot.Helpers;
-using NugetMoodReboot.Interfaces;
 using NugetMoodReboot.Models;
 
 namespace MoodReboot.Services
@@ -8,9 +7,9 @@ namespace MoodReboot.Services
     public class ServiceApiCenters
     {
         private readonly HelperApi helperApi;
-        private readonly HttpContextAccessor httpContextAccessor;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
-        public ServiceApiCenters(HelperApi helperApi, HttpContextAccessor httpContextAccessor)
+        public ServiceApiCenters(HelperApi helperApi, IHttpContextAccessor httpContextAccessor)
         {
             this.helperApi = helperApi;
             this.httpContextAccessor = httpContextAccessor;
@@ -74,17 +73,20 @@ namespace MoodReboot.Services
                 Telephone = telephone,
             };
 
-            await this.helperApi.PostAsync(request, center);
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            await this.helperApi.PostAsync(request, center, token);
         }
 
         public async Task DeleteCenterAsync(int id)
         {
-            await this.helperApi.DeleteAsync(Consts.ApiCenters + "/DeleteCenter/" + id);
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            await this.helperApi.DeleteAsync(Consts.ApiCenters + "/DeleteCenter/" + id, token);
         }
 
         public Task<Center?> FindCenterAsync(int id)
         {
-            return this.helperApi.GetAsync<Center>(Consts.ApiCenters + "/");
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            return this.helperApi.GetAsync<Center>(Consts.ApiCenters + "/FindCenter/" + id, token);
         }
 
         public Task<List<CenterListView>?> GetAllCentersAsync()
@@ -94,32 +96,48 @@ namespace MoodReboot.Services
 
         public Task<List<AppUser>?> GetCenterEditorsAsync(int centerId)
         {
-            return this.helperApi.GetAsync<List<AppUser>?>(Consts.ApiCenters + "/");
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            return this.helperApi.GetAsync<List<AppUser>?>(Consts.ApiCenters + "/CenterEditors/" + centerId, token);
         }
 
         public Task<int> GetMaxCenterAsync()
         {
-            throw new NotImplementedException();
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            return this.helperApi.GetAsync<int>(Consts.ApiCenters + "/GetMaxCenter", token);
         }
 
         public Task<List<Center>?> GetPendingCentersAsync()
         {
-            return this.helperApi.GetAsync<List<Center>?>(Consts.ApiAdmin + "/centerrequests");
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            return this.helperApi.GetAsync<List<Center>?>(Consts.ApiAdmin + "/centerrequests", token);
         }
 
         public Task<List<CenterListView>?> GetUserCentersAsync(int userId)
         {
-            return this.helperApi.GetAsync<List<CenterListView>?>(Consts.ApiCenters + "/usercenters");
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            return this.helperApi.GetAsync<List<CenterListView>?>(Consts.ApiCenters + "/UserCenters/" + userId, token);
         }
 
         public Task RemoveUserCenterAsync(int userId, int centerId)
         {
-            return this.helperApi.DeleteAsync(Consts.ApiCenters + $"/{userId}/{centerId}");
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            return this.helperApi.DeleteAsync(Consts.ApiCenters + $"/RemoveUserCenter/{userId}/{centerId}", token);
         }
 
         public Task UpdateCenterAsync(int centerId, string email, string name, string address, string telephone, string image)
         {
-            throw new NotImplementedException();
+            UpdateCenterApiModel model = new()
+            {
+                CenterId = centerId,
+                Email = email,
+                Name = name,
+                Address = address,
+                Telephone = telephone,
+                Image = image
+            };
+
+            string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
+            return this.helperApi.PutAsync(Consts.ApiCenters + "/updatecenter", model, token);
         }
     }
 }

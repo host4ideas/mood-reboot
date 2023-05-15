@@ -1,10 +1,6 @@
-﻿using Markdig;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using MoodReboot.Models;
-using MoodReboot.Helpers;
-using MoodReboot.Extensions;
-using Microsoft.AspNetCore.Http;
+using NugetMoodReboot.Models;
 
 namespace MoodReboot.Controllers
 {

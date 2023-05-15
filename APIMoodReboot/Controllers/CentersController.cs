@@ -43,6 +43,13 @@ namespace APIMoodReboot.Controllers
         }
 
         [Authorize]
+        [HttpGet("{userId}")]
+        public async Task<ActionResult<List<CenterListView>>> UserCenters(int userId)
+        {
+            return await this.repositoryCenters.GetUserCentersAsync(userId);
+        }
+
+        [Authorize]
         [HttpDelete("{userId}/{centerId}")]
         public async Task<ActionResult> RemoveUserCenter(int userId, int centerId)
         {
@@ -61,6 +68,14 @@ namespace APIMoodReboot.Controllers
         #endregion
 
         #region EDITOR VIEW
+
+        [Authorize]
+        [HttpPut]
+        public async Task<ActionResult> UpdateCenter(UpdateCenterApiModel model)
+        {
+            await this.repositoryCenters.UpdateCenterAsync(model.CenterId, model.Email, model.Name, model.Address, model.Telephone, model.Image);
+            return NoContent();
+        }
 
         [Authorize]
         [HttpPost]
@@ -92,6 +107,27 @@ namespace APIMoodReboot.Controllers
         {
             await this.repositoryCourses.UpdateCourseVisibilityAsync(courseId);
             return NoContent();
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<ActionResult<int>> GetMaxCenter()
+        {
+            return await this.repositoryCenters.GetMaxCenterAsync();
+        }
+
+        [Authorize]
+        [HttpGet("{centerId}")]
+        public async Task<ActionResult<List<AppUser>>> CenterEditors(int centerId)
+        {
+            return await this.repositoryCenters.GetCenterEditorsAsync(centerId);
+        }
+
+        [Authorize]
+        [HttpGet("{centerId}")]
+        public async Task<ActionResult<Center?>> FindCenter(int centerId)
+        {
+            return await this.repositoryCenters.FindCenterAsync(centerId);
         }
 
         [Authorize]

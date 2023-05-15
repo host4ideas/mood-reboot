@@ -22,15 +22,15 @@ namespace MoodReboot.Controllers
             return View();
         }
 
-        public async Task<IActionResult> ChatWindowPartial(int userId)
+        public async Task<IActionResult> ChatWindowPartial()
         {
-            List<ChatGroup> groups = await this.serviceUsers.GetUserChatGroupsAsync(userId);
+            List<ChatGroup> groups = await this.serviceUsers.GetUserChatGroupsAsync();
             return PartialView("_ChatWindowPartial", groups);
         }
 
-        public async Task<IActionResult> ChatNotificationsPartial(int userId)
+        public async Task<IActionResult> ChatNotificationsPartial()
         {
-            List<Message> unseen = await this.serviceUsers.GetUnseenMessagesAsync(userId);
+            List<Message> unseen = await this.serviceUsers.GetUnseenMessagesAsync();
             return PartialView("_ChatNotificationsPartial", unseen);
         }
 
@@ -40,9 +40,9 @@ namespace MoodReboot.Controllers
             return messages;
         }
 
-        public async Task<List<Message>> GetUnseenMessages(int userId)
+        public async Task<List<Message>> GetUnseenMessages()
         {
-            return await this.serviceUsers.GetUnseenMessagesAsync(userId);
+            return await this.serviceUsers.GetUnseenMessagesAsync();
         }
 
         public async Task UpdateChatLastSeen(int chatGroupId)

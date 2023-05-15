@@ -12,15 +12,11 @@ namespace APIMoodReboot.Controllers
     public class CoursesController : ControllerBase
     {
         private readonly IRepositoryCourses repositoryCourses;
-        private readonly IRepositoryContent repositoryContent;
-        private readonly IRepositoryContentGroups repositoryContentGroups;
         private readonly IRepositoryUsers repositoryUsers;
 
-        public CoursesController(IRepositoryCourses repositoryCourses, IRepositoryContent repositoryContent, IRepositoryContentGroups repositoryContentGroups, IRepositoryUsers repositoryUsers)
+        public CoursesController(IRepositoryCourses repositoryCourses, IRepositoryUsers repositoryUsers)
         {
             this.repositoryCourses = repositoryCourses;
-            this.repositoryContent = repositoryContent;
-            this.repositoryContentGroups = repositoryContentGroups;
             this.repositoryUsers = repositoryUsers;
         }
 

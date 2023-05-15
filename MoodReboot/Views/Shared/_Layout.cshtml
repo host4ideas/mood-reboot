@@ -126,7 +126,7 @@
             <script>
                 $(document).ready(function () {
                     // Load chat window
-                    $("#chatWindow").load('@Url.Action("ChatWindowPartial", "Messages", new { userId = userId })', function (responseTxt, statusTxt, xhr) {
+                    $("#chatWindow").load('@Url.Action("ChatWindowPartial", "Messages")', function (responseTxt, statusTxt, xhr) {
                         // If the chat is loaded change the button
                         if (statusTxt == "success") {
                             let html = `
@@ -138,7 +138,7 @@
                             $("#btnChatToggle").html(html);
 
                             // Load notifications
-                            $("#notifications-window").load('@Url.Action("ChatNotificationsPartial", "Messages", new { userId = userId })');
+                            $("#notifications-window").load('@Url.Action("ChatNotificationsPartial", "Messages")');
 
                             initializeConnection("@connectionString", "@currentUserName");
                         }
