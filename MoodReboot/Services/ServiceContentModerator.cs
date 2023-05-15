@@ -2,6 +2,7 @@
 using Microsoft.Azure.CognitiveServices.ContentModerator;
 using MoodReboot.Models;
 using System.Text;
+using Azure.Security.KeyVault.Secrets;
 
 namespace MoodReboot.Services
 {
@@ -9,10 +10,20 @@ namespace MoodReboot.Services
     {
         private readonly ContentModeratorClient client;
 
-        public ServiceContentModerator(IConfiguration configuration)
+        public ServiceContentModerator(IConfiguration configuration, SecretClient secretClient)
         {
-            string key = configuration.GetValue<string>("AzureKeys:ContentModeratorKey");
-            string endpoint = configuration.GetValue<string>("AzureKeys:ContentModeratorEndpoint");
+            // Endpoint
+            KeyVaultSecret moderatorEndpoint =
+                secretClient.GetSecret("moderatorendpoint");
+            string endpoint = moderatorEndpoint.Value;
+
+            // Key
+            KeyVaultSecret moderatorKey =
+                secretClient.GetSecret("moderatorkey");
+            string key = moderatorKey.Value;
+
+            //string key = configuration.GetValue<string>("AzureKeys:ContentModeratorKey");
+            //string endpoint = configuration.GetValue<string>("AzureKeys:ContentModeratorEndpoint");
 
             this.client = this.Authenticate(key, endpoint);
         }

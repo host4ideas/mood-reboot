@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using Azure.Security.KeyVault.Secrets;
+using Newtonsoft.Json;
 using NugetMoodReboot.Helpers;
 using System.Net.Http.Headers;
-using System.Net.Mail;
 using System.Text;
 
 namespace MvcLogicApps.Services
@@ -13,12 +13,20 @@ namespace MvcLogicApps.Services
         private readonly string UrlMail;
         private readonly HelperMail helperMail;
 
-        public ServiceLogicApps(IHttpClientFactory httpClientFactory, IConfiguration configuration, HelperMail helperMail)
+        public ServiceLogicApps(IHttpClientFactory httpClientFactory, IConfiguration configuration, HelperMail helperMail, SecretClient secretClient)
         {
             this.Header =
                 new MediaTypeWithQualityHeaderValue("application/json");
             this._httpClientFactory = httpClientFactory;
-            this.UrlMail = configuration.GetValue<string>("MailSettings:UrlMail");
+
+            // Url Mail LogicApps
+            KeyVaultSecret urlLogicAppsMail =
+                secretClient.GetSecret("logicappsurlmail");
+            string urlMail = urlLogicAppsMail.Value;
+
+            this.UrlMail = urlMail;
+
+            //this.UrlMail = configuration.GetValue<string>("MailSettings:UrlMail");
             this.helperMail = helperMail;
         }
 
