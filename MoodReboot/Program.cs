@@ -65,7 +65,7 @@ builder.Services.AddTransient<ServiceContentModerator>();
 // Helpers
 builder.Services.AddSingleton<HelperApi>();
 builder.Services.AddSingleton<HelperCryptography>();
-builder.Services.AddSingleton<HelperFileAzure>();
+builder.Services.AddTransient<HelperFileAzure>();
 builder.Services.AddSingleton<HelperMail>();
 
 // Session
