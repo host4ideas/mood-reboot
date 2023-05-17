@@ -131,7 +131,7 @@ namespace MoodReboot.Services
         public Task<List<AppUser>> GetAllUsersAsync()
         {
             string token = this.httpContextAccessor.HttpContext.Session.GetString("TOKEN");
-            return this.helperApi.GetAsync<List<AppUser>>(Consts.ApiAdmin + "/Users" + token);
+            return this.helperApi.GetAsync<List<AppUser>>(Consts.ApiAdmin + "/Users", token);
         }
 
         public Task<int> GetMaxUserAsync()
