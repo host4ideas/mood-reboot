@@ -123,15 +123,18 @@ namespace MoodReboot.Helpers
 
                 await this.serviceStorage.UploadBlobAsync(containerBlob, fileName, stream);
 
-                string urlFile = await this.GetBlobUriAsync(container, fileName);
-
-                var result = await this.contentModerator.ModerateImageAsync(urlFile);
-
-                if (result.ImageModeration.IsImageAdultClassified == true ||
-                result.ImageModeration.IsImageRacyClassified == true)
+                if (fileType == FileTypes.Image)
                 {
-                    await this.DeleteFileAsync(container, fileName);
-                    return false;
+                    string urlFile = await this.GetBlobUriAsync(container, fileName);
+
+                    var result = await this.contentModerator.ModerateImageAsync(urlFile);
+
+                    if (result.ImageModeration.IsImageAdultClassified == true ||
+                    result.ImageModeration.IsImageRacyClassified == true)
+                    {
+                        await this.DeleteFileAsync(container, fileName);
+                        return false;
+                    }
                 }
 
                 return true;
@@ -207,15 +210,18 @@ namespace MoodReboot.Helpers
                 using Stream stream = file.OpenReadStream();
                 await this.serviceStorage.UpdateBlobAsync(containerBlob, fileName, stream);
 
-                string urlFile = await this.GetBlobUriAsync(container, fileName);
-
-                var result = await this.contentModerator.ModerateImageAsync(urlFile);
-
-                if (result.ImageModeration.IsImageAdultClassified == true ||
-                result.ImageModeration.IsImageRacyClassified == true)
+                if (fileType == FileTypes.Image)
                 {
-                    await this.DeleteFileAsync(container, fileName);
-                    return false;
+                    string urlFile = await this.GetBlobUriAsync(container, fileName);
+
+                    var result = await this.contentModerator.ModerateImageAsync(urlFile);
+
+                    if (result.ImageModeration.IsImageAdultClassified == true ||
+                    result.ImageModeration.IsImageRacyClassified == true)
+                    {
+                        await this.DeleteFileAsync(container, fileName);
+                        return false;
+                    }
                 }
 
                 return true;
