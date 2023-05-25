@@ -1,5 +1,4 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using APIMoodReboot.Data;
 using NugetMoodReboot.Models;
 using NugetMoodReboot.Interfaces;
@@ -28,27 +27,27 @@ namespace APIMoodReboot.Repositories
             return consulta.ToListAsync();
         }
 
-        public Task CreateContentGroupAsync(string name, int courseId, bool isVisible = false)
+        private async Task<int> GetMaxContentGroupAsync()
         {
-            string sql = "SP_CREATE_GROUP_CONTENT @NAME, @COURSE_ID, @IS_VISIBLE, @GROUPCONTENTID OUT";
-
-            int bitIsVisible = 0;
-
-            if (isVisible == true)
+            if (!await this.context.ContentGroups.AnyAsync())
             {
-                bitIsVisible = 1;
+                return 1;
             }
+            return await this.context.ContentGroups.MaxAsync(x => x.ContentGroupId) + 1;
+        }
 
-            SqlParameter paramName = new("@NAME", name);
-            SqlParameter paramCourseId = new("@COURSE_ID", courseId);
-            SqlParameter paramIsVisible = new("@IS_VISIBLE", bitIsVisible);
-            SqlParameter paramGroupIdOut = new("@GROUPCONTENTID", 0)
+        public async Task CreateContentGroupAsync(string name, int courseId, bool isVisible = false)
+        {
+            await this.context.ContentGroups.AddAsync(new()
             {
-                Direction = System.Data.ParameterDirection.Output,
-                SqlDbType = System.Data.SqlDbType.Bit
-            };
+                ContentGroupId = await this.GetMaxContentGroupAsync(),
+                Contents = new(),
+                CourseID = courseId,
+                IsVisible = isVisible,
+                Name = name,
+            });
 
-            return this.context.Database.ExecuteSqlRawAsync(sql, paramName, paramCourseId, paramIsVisible, paramGroupIdOut);
+            await this.context.SaveChangesAsync();
         }
 
         public async Task UpdateContentGroupAsync(int id, string name, Boolean isVisible)
